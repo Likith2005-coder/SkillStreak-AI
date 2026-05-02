@@ -8,15 +8,18 @@ import { useUserStore } from "@/store/userStore";
 /**
  * Bootstraps the user from the persisted token on first mount.
  * Call once at the top of any layout that needs auth context.
+ *
+ * Reads `status` via getState() rather than subscribing, so the effect
+ * doesn't re-run when status transitions idle → loading and cancel its
+ * own in-flight fetch.
  */
 export function useBootstrapUser() {
-  const status = useUserStore((s) => s.status);
   const setMe = useUserStore((s) => s.setMe);
   const setStatus = useUserStore((s) => s.setStatus);
   const clear = useUserStore((s) => s.clear);
 
   useEffect(() => {
-    if (status !== "idle") return;
+    if (useUserStore.getState().status !== "idle") return;
 
     const token = getToken();
     if (!token) {
@@ -24,20 +27,11 @@ export function useBootstrapUser() {
       return;
     }
 
-    let cancelled = false;
     setStatus("loading");
     fetchMe()
-      .then((data) => {
-        if (!cancelled) setMe(data);
-      })
-      .catch(() => {
-        if (!cancelled) clear();
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [status, setMe, setStatus, clear]);
+      .then((data) => setMe(data))
+      .catch(() => clear());
+  }, [setMe, setStatus, clear]);
 }
 
 export function useUser() {
