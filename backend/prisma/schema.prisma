@@ -1,7 +1,8 @@
 // SkillStreak AI — Prisma schema
 // Phase 1: User + UserProfile (auth, onboarding survey).
-// More tables (domains, topics, progress, chat, etc.) added in subsequent phases.
-// Database: Supabase Postgres (Singapore), via Supavisor pooler.
+// Phase 2: Domain, Roadmap, Topic (with embedding), UserProgress.
+// More tables (chat, quiz attempts, badges, etc.) added in subsequent phases.
+// Database: Supabase Postgres (Tokyo), via Supavisor pooler.
 
 generator client {
   provider        = "prisma-client-js"
@@ -26,6 +27,7 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   profile      UserProfile?
+  progress     UserProgress[]
 
   @@map("users")
 }
@@ -43,4 +45,72 @@ model UserProfile {
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_profiles")
+}
+
+model Domain {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String
+  icon        String                                  // lucide icon name, e.g. "shield-check"
+  color       String                                  // tailwind hue, e.g. "indigo" | "emerald"
+  difficulty  String                                  // 'beginner' | 'intermediate' | 'mixed'
+  isCurated   Boolean  @default(false) @map("is_curated")
+  orderIndex  Int      @map("order_index")            // gallery ordering
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  roadmap     Roadmap?
+
+  @@map("domains")
+}
+
+model Roadmap {
+  id            String   @id @default(uuid())
+  domainId      String   @unique @map("domain_id")
+  title         String
+  totalTopics   Int      @map("total_topics")
+  estimatedDays Int      @map("estimated_days")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  domain        Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  topics        Topic[]
+
+  @@map("roadmaps")
+}
+
+model Topic {
+  id         String   @id @default(uuid())
+  roadmapId  String   @map("roadmap_id")
+  orderIndex Int      @map("order_index")
+  title      String
+  summary    String
+  difficulty String                                  // 'easy' | 'standard' | 'hard'
+  phase      String                                  // 'foundations' | 'core' | 'advanced'
+  embedding  Unsupported("vector(1536)")?           // populated in Phase 7 recommender
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  roadmap    Roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  progress   UserProgress[]
+
+  @@unique([roadmapId, orderIndex])
+  @@map("topics")
+}
+
+model UserProgress {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  topicId          String    @map("topic_id")
+  status           String                                  // 'not_started' | 'in_progress' | 'completed'
+  bestScore        Int?      @map("best_score")
+  timeSpentSeconds Int       @default(0) @map("time_spent_seconds")
+  completedAt      DateTime? @map("completed_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic            Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+  @@index([userId])
+  @@map("user_progress")
 }

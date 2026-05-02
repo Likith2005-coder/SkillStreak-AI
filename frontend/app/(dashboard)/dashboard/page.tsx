@@ -1,6 +1,8 @@
 "use client";
 
-import { Flame, Sparkles, Target } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, BookOpen, Flame, Sparkles, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/userStore";
 
 const PRIOR_LEVEL_LABEL: Record<string, string> = {
@@ -30,15 +32,22 @@ export default function DashboardPage() {
       <section className="rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Phase 1 · Auth complete
+          Phase 2 · Domains live
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
           Welcome, {user.name.split(" ")[0]}.
         </h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Your account is set up. Domains, roadmaps, and the AI tutor land in the
-          next phases — your dashboard will fill in as you progress.
+          9 domains are ready — pick one and start your first topic. The AI tutor
+          generates a tailored explanation for every topic on demand.
         </p>
+        <Button asChild size="lg" className="mt-5">
+          <Link href="/domains">
+            <BookOpen className="h-4 w-4" />
+            Browse domains
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
       </section>
 
       <section className="mt-6 grid gap-4 sm:grid-cols-3">

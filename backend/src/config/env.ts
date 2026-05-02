@@ -15,11 +15,11 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("7d"),
   BCRYPT_ROUNDS: z.coerce.number().int().positive().default(10),
 
-  LLM_PROVIDER: z.enum(["openai", "anthropic", "gemini"]).default("openai"),
+  LLM_PROVIDER: z.enum(["openai", "anthropic", "gemini"]).default("gemini"),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
-  LLM_MODEL: z.string().default("gpt-4o-mini"),
+  LLM_MODEL: z.string().default("gemini-2.0-flash"),
 
   YOUTUBE_API_KEY: z.string().optional(),
 

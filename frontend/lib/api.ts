@@ -123,3 +123,90 @@ export function apiErrorMessage(err: unknown, fallback = "Something went wrong")
   }
   return fallback;
 }
+
+// ─── Domains & Topics (Phase 2) ─────────────────────────
+
+export type Domain = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  difficulty: "beginner" | "intermediate" | "mixed";
+  isCurated: boolean;
+  orderIndex: number;
+  roadmap?: { totalTopics: number; estimatedDays: number } | null;
+};
+
+export type RoadmapTopic = {
+  id: string;
+  orderIndex: number;
+  title: string;
+  summary: string;
+  difficulty: "easy" | "standard" | "hard";
+  phase: "foundations" | "core" | "advanced";
+};
+
+export type RoadmapView = Domain & {
+  roadmap: {
+    id: string;
+    title: string;
+    totalTopics: number;
+    estimatedDays: number;
+    topics: RoadmapTopic[];
+  } | null;
+  progress: Array<{
+    topicId: string;
+    status: "not_started" | "in_progress" | "completed";
+    bestScore: number | null;
+    completedAt: string | null;
+  }>;
+};
+
+export type TopicView = RoadmapTopic & {
+  roadmap: {
+    id: string;
+    title: string;
+    domain: { id: string; slug: string; name: string; color: string; icon: string };
+  };
+  progress: {
+    status: "not_started" | "in_progress" | "completed";
+    bestScore: number | null;
+    completedAt: string | null;
+    timeSpentSeconds: number;
+  } | null;
+};
+
+export type ExplainResponse = {
+  explanation: string;
+  level: "beginner" | "intermediate" | "advanced";
+  cached: boolean;
+};
+
+export async function fetchDomains(): Promise<Domain[]> {
+  const { data } = await api.get<{ domains: Domain[] }>("/domains");
+  return data.domains;
+}
+
+export async function fetchRoadmap(slug: string): Promise<RoadmapView> {
+  const { data } = await api.get<{ domain: RoadmapView }>(`/roadmap/${slug}`);
+  return data.domain;
+}
+
+export async function fetchTopic(id: string): Promise<TopicView> {
+  const { data } = await api.get<{ topic: TopicView }>(`/topics/${id}`);
+  return data.topic;
+}
+
+export async function explainTopic(id: string): Promise<ExplainResponse> {
+  const { data } = await api.post<ExplainResponse>(`/topics/${id}/explain`);
+  return data;
+}
+
+export async function completeTopic(id: string): Promise<TopicView["progress"]> {
+  const { data } = await api.post<{ progress: NonNullable<TopicView["progress"]> }>(
+    `/topics/${id}/complete`
+  );
+  return data.progress;
+}
