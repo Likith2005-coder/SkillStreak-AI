@@ -39,7 +39,8 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <div className="aurora-bg" aria-hidden />
       <Navbar />
       {children}
       {!onChatbotPage && <ChatWidget />}

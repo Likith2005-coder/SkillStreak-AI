@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Bot, Maximize2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatBootstrap } from "@/hooks/useChat";
@@ -15,6 +16,7 @@ type Props = {
 
 export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
   useChatBootstrap();
+  const reduce = useReducedMotion();
 
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -31,25 +33,61 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
 
   return (
     <>
-      <button
+      <motion.button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close chat" : "Open chat"}
+        initial={{ opacity: 0, scale: 0.6, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: reduce ? 0 : 0.45, delay: reduce ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={reduce ? undefined : { scale: 1.08 }}
+        whileTap={reduce ? undefined : { scale: 0.92 }}
         className={cn(
-          "fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition",
-          "bg-gradient-to-br from-indigo-500 to-violet-500 hover:scale-105 active:scale-95"
+          "group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_8px_30px_rgba(99,102,241,0.5)] transition-shadow",
+          "bg-gradient-to-br from-indigo-500 to-violet-500 hover:shadow-[0_10px_40px_rgba(139,92,246,0.7)]"
         )}
       >
-        {open ? <X className="h-5 w-5" /> : <Bot className="h-6 w-6" />}
-      </button>
+        {/* Pulse ring while idle */}
+        {!open && !reduce && (
+          <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-indigo-500/30" />
+        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {open ? (
+            <motion.span
+              key="x"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <X className="h-5 w-5" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="bot"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Bot className="h-6 w-6" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
 
+      <AnimatePresence>
       {open && (
-        <div
+        <motion.div
           ref={panelRef}
           role="dialog"
           aria-label="AI chat"
+          initial={{ opacity: 0, y: 16, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 16, scale: 0.96 }}
+          transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "fixed bottom-24 right-5 z-40 flex h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+            "fixed bottom-24 right-5 z-40 flex h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl"
           )}
         >
           <header className="flex items-center justify-between border-b border-border bg-card/40 px-4 py-2.5 backdrop-blur">
@@ -90,8 +128,9 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
               emptyHint="Floating tutor — opens full-screen with the icon above."
             />
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </>
   );
 }

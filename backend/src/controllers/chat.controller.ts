@@ -101,8 +101,12 @@ export const sendMessage: RequestHandler = async (req, res, next) => {
       regenerate: body.regenerate,
     });
 
+    let clientGone = false;
+    res.on("close", () => {
+      clientGone = true;
+    });
     for await (const event of stream) {
-      if (req.destroyed) break;
+      if (clientGone) break;
       writeSse(res, event.type, event);
     }
   } catch (err) {

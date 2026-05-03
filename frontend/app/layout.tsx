@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,7 +22,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans`}>{children}</body>
+      <body className={`${inter.variable} font-sans`}>
+        {children}
+        <Toaster
+          theme="dark"
+          position="bottom-center"
+          richColors
+          closeButton
+          toastOptions={{
+            style: {
+              background: "hsl(var(--card))",
+              border: "1px solid hsl(var(--border))",
+              color: "hsl(var(--foreground))",
+            },
+          }}
+        />
+      </body>
     </html>
   );
 }
