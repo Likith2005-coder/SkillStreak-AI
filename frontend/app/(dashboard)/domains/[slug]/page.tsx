@@ -7,8 +7,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
-  CheckCircle2,
-  CircleDashed,
   Loader2,
   MessageCircle,
 } from "lucide-react";
@@ -16,6 +14,7 @@ import {
 import { apiErrorMessage, fetchRoadmap, type RoadmapTopic, type RoadmapView } from "@/lib/api";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
+import { WindingRoadmap } from "@/components/roadmap/WindingRoadmap";
 import { cn } from "@/lib/utils";
 
 type ProgressStatus = "not_started" | "in_progress" | "completed";
@@ -124,21 +123,19 @@ export default function RoadmapPage() {
         progress={{ completed: completedCount, total, percent }}
       />
 
-      <div className="mt-10 space-y-10">
+      <div className="mt-10 space-y-12">
         {(["foundations", "core", "advanced"] as const).map((phase) => {
           const topics = grouped[phase];
           if (topics.length === 0) return null;
           return (
             <section key={phase}>
               <PhaseHeader phase={phase} count={topics.length} />
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {topics.map((t) => (
-                  <TopicCard
-                    key={t.id}
-                    topic={t}
-                    status={progressByTopic.get(t.id) ?? "not_started"}
-                  />
-                ))}
+              <div className="mt-8">
+                <WindingRoadmap
+                  topics={topics}
+                  progressMap={progressByTopic}
+                  color={data.color}
+                />
               </div>
             </section>
           );
@@ -237,60 +234,6 @@ function PhaseHeader({
         {count} topics
       </span>
     </div>
-  );
-}
-
-function TopicCard({
-  topic,
-  status,
-}: {
-  topic: RoadmapTopic;
-  status: ProgressStatus;
-}) {
-  const StatusIcon =
-    status === "completed" ? CheckCircle2 : status === "in_progress" ? Loader2 : CircleDashed;
-
-  return (
-    <Link
-      href={`/topic/${topic.id}`}
-      className={cn(
-        "group flex flex-col rounded-xl border border-border bg-card/40 p-4 transition-all",
-        "hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card/70"
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground tabular-nums">
-          {String(topic.orderIndex).padStart(2, "0")}
-        </span>
-        <StatusIcon
-          className={cn(
-            "h-4 w-4",
-            status === "completed" && "text-emerald-400",
-            status === "in_progress" && "animate-spin text-primary",
-            status === "not_started" && "text-muted-foreground/50"
-          )}
-        />
-      </div>
-
-      <h3 className="mt-2 text-sm font-medium leading-snug">{topic.title}</h3>
-      <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">{topic.summary}</p>
-
-      <div className="mt-3 flex items-center justify-between text-xs">
-        <span
-          className={cn(
-            "rounded-full border px-2 py-0.5 capitalize",
-            topic.difficulty === "easy" && "border-emerald-500/30 text-emerald-400",
-            topic.difficulty === "standard" && "border-blue-500/30 text-blue-400",
-            topic.difficulty === "hard" && "border-rose-500/30 text-rose-400"
-          )}
-        >
-          {topic.difficulty}
-        </span>
-        <span className="text-muted-foreground transition-transform group-hover:translate-x-0.5">
-          <ArrowRight className="h-3.5 w-3.5" />
-        </span>
-      </div>
-    </Link>
   );
 }
 

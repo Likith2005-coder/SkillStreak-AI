@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/shared/Navbar";
 import { ChatWidget } from "@/components/chat/ChatWidget";
@@ -18,6 +19,7 @@ export default function DashboardLayout({
   const user = useUserStore((s) => s.user);
   const router = useRouter();
   const pathname = usePathname();
+  const reduce = useReducedMotion();
   const onChatbotPage = pathname?.startsWith("/chatbot") ?? false;
 
   useEffect(() => {
@@ -42,7 +44,17 @@ export default function DashboardLayout({
     <div className="relative min-h-screen bg-background">
       <div className="aurora-bg" aria-hidden />
       <Navbar />
-      {children}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: reduce ? 0 : -4 }}
+          transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
       {!onChatbotPage && <ChatWidget />}
     </div>
   );

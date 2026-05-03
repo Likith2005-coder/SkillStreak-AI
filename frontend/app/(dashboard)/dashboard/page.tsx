@@ -31,6 +31,7 @@ import { StreakBanner } from "@/components/gamification/StreakBanner";
 import { XpBar } from "@/components/gamification/XpBar";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
+import { useCountUp } from "@/hooks/useCountUp";
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
 
@@ -117,16 +118,16 @@ export default function DashboardPage() {
 
       {/* Stat tiles */}
       <section className="mt-6 grid gap-4 sm:grid-cols-3">
-        <StatTile
+        <NumberTile
           icon={<Target className="h-4 w-4 text-primary" />}
           label="Topics completed"
-          value={overview ? `${overview.totals.topicsCompleted}` : "—"}
+          target={overview?.totals.topicsCompleted ?? 0}
           hint={overview ? `of ${overview.totals.topicsAvailable} · ${totalPct}%` : "loading…"}
         />
-        <StatTile
+        <NumberTile
           icon={<ListChecks className="h-4 w-4 text-emerald-400" />}
           label="Recent quiz attempts"
-          value={overview ? `${overview.totals.attempts}` : "—"}
+          target={overview?.totals.attempts ?? 0}
           hint="last 5 shown below"
         />
         <Link href="/leaderboard" className="block">
@@ -221,7 +222,8 @@ function StatTile({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur"
+      whileHover={{ y: -3 }}
+      className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur transition-shadow hover:shadow-lg"
     >
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
         {icon}
@@ -231,6 +233,21 @@ function StatTile({
       <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
     </motion.div>
   );
+}
+
+function NumberTile({
+  icon,
+  label,
+  target,
+  hint,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  target: number;
+  hint: string;
+}) {
+  const display = useCountUp(target, 1100);
+  return <StatTile icon={icon} label={label} value={`${display}`} hint={hint} />;
 }
 
 function SkeletonGrid() {

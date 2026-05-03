@@ -1,5 +1,22 @@
+import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import type { GamificationDelta } from "@/lib/api";
+
+function fireConfetti() {
+  const burst = (particleRatio: number, opts: confetti.Options) => {
+    confetti({
+      origin: { y: 0.7 },
+      spread: 70,
+      startVelocity: 30,
+      particleCount: Math.floor(140 * particleRatio),
+      ...opts,
+    });
+  };
+  burst(0.25, { spread: 26, startVelocity: 55 });
+  burst(0.2, { spread: 60 });
+  burst(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+  burst(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+}
 
 const REASON_LABEL: Record<string, string> = {
   topic_complete: "Topic complete",
@@ -22,10 +39,11 @@ export function surfaceGamification(delta: GamificationDelta | null) {
   }
 
   if (delta.xp.newLevel > delta.xp.oldLevel) {
-    toast.success(`Level up! → Lvl ${delta.xp.newLevel}`, {
+    toast.success(`🎉 Level up! → Lvl ${delta.xp.newLevel}`, {
       description: "You unlocked a new tier. Keep going.",
       duration: 6000,
     });
+    fireConfetti();
   }
 
   if (delta.streak.changedToday && delta.streak.current > 1) {
