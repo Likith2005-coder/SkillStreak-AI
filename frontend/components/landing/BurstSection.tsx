@@ -45,9 +45,10 @@ export function BurstSection() {
   const aRef = useRef<HTMLSpanElement | null>(null);
   const reduce = useReducedMotion();
 
-  // `once: false` so the animation replays every time the section re-enters
-  // view — including when the user scrolls back up to look at the wordmark.
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
+  // Trigger as soon as 15% of the section enters view — feels more "in sync"
+  // with the user's scroll than waiting for the section to be 30% visible.
+  // `once: false` so the animation replays whenever the section re-enters.
+  const isInView = useInView(sectionRef, { once: false, amount: 0.15 });
 
   const [origin, setOrigin] = useState({ x: 50, y: 30 });
 
@@ -100,12 +101,24 @@ export function BurstSection() {
       ref={sectionRef}
       className="relative flex h-screen w-full items-center justify-center overflow-hidden"
     >
-      {/* ── Burst circle — behind everything (z-0). Centre = measured "a" ── */}
+      {/* Smooth fade at the top + bottom edges so the gradient blends into
+          adjacent dark sections instead of meeting them at a hard line. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-24 bg-gradient-to-b from-background to-transparent"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-24 bg-gradient-to-t from-background to-transparent"
+        aria-hidden
+      />
+      {/* ── Burst circle — behind everything (z-0). Centre = measured "a".
+          Animates simultaneously with the wordmark so there's never a
+          moment where the wordmark sits alone on a dark background. */}
       <motion.div
         initial={{ scale: reduced ? 1.4 : 0 }}
         animate={{ scale: animate ? 1.4 : 0 }}
         transition={{
-          delay: reduced ? 0 : 0.9,
+          delay: reduced ? 0 : 0.05,
           duration: reduced ? 0 : 0.8,
           ease: [0.22, 1, 0.36, 1],
         }}
@@ -126,9 +139,13 @@ export function BurstSection() {
       <div className="relative z-10 flex max-h-full w-full flex-col items-center gap-8 overflow-y-auto px-4 py-10 text-center sm:gap-10 lg:gap-12">
         {/* Wordmark — fades in once, stays put forever after */}
         <motion.div
-          initial={reduced ? { opacity: 1 } : { opacity: 0, y: 60 }}
-          animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 60 }}
-          transition={{ duration: reduced ? 0 : 0.7, ease: "easeOut" }}
+          initial={reduced ? { opacity: 1 } : { opacity: 0, y: 40 }}
+          animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 40 }}
+          transition={{
+            delay: reduced ? 0 : 0.15,
+            duration: reduced ? 0 : 0.6,
+            ease: [0.22, 1, 0.36, 1],
+          }}
           className="flex flex-col items-center"
         >
           <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white/80 drop-shadow">
@@ -147,8 +164,8 @@ export function BurstSection() {
                 className="inline-block text-white"
                 animate={animate ? { scale: [1, 1.18, 1] } : { scale: 1 }}
                 transition={{
-                  delay: reduced ? 0 : 0.4,
-                  duration: reduced ? 0 : 0.55,
+                  delay: reduced ? 0 : 0.5,
+                  duration: reduced ? 0 : 0.5,
                   ease: "easeInOut",
                 }}
               >
@@ -171,9 +188,9 @@ export function BurstSection() {
             y: animate ? 0 : 30,
           }}
           transition={{
-            delay: reduced ? 0 : 1.3,
-            duration: reduced ? 0 : 0.55,
-            ease: "easeOut",
+            delay: reduced ? 0 : 0.7,
+            duration: reduced ? 0 : 0.5,
+            ease: [0.22, 1, 0.36, 1],
           }}
           className="flex w-full max-w-2xl flex-col items-center text-white"
         >
