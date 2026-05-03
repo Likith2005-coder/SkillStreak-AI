@@ -8,9 +8,7 @@ import {
   BarChart3,
   BookOpen,
   Bot,
-  Flame,
   ListChecks,
-  Loader2,
   Sparkles,
   Target,
   Trophy,
@@ -19,24 +17,38 @@ import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/userStore";
 import {
   apiErrorMessage,
+  fetchBadges,
   fetchOverview,
+  fetchStreak,
+  type Badge,
   type ProgressOverview,
   type RecentAttempt,
+  type Streak,
 } from "@/lib/api";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
+import { StreakBanner } from "@/components/gamification/StreakBanner";
+import { XpBar } from "@/components/gamification/XpBar";
+import { BadgeGallery } from "@/components/gamification/BadgeGallery";
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const user = useUserStore((s) => s.user);
   const [overview, setOverview] = useState<ProgressOverview | null>(null);
+  const [streak, setStreak] = useState<Streak | null>(null);
+  const [badges, setBadges] = useState<Badge[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchOverview()
-      .then((d) => !cancelled && setOverview(d))
+    Promise.all([fetchOverview(), fetchStreak(), fetchBadges()])
+      .then(([o, s, b]) => {
+        if (cancelled) return;
+        setOverview(o);
+        setStreak(s);
+        setBadges(b);
+      })
       .catch((err) => !cancelled && setError(apiErrorMessage(err, "Could not load your progress")));
     return () => {
       cancelled = true;
@@ -96,32 +108,34 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Streak + XP */}
+      <section className="mt-6 grid gap-4 lg:grid-cols-2">
+        <StreakBanner streak={streak} />
+        <XpBar level={user.level} xp={user.xp} />
+      </section>
+
       {/* Stat tiles */}
-      <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mt-6 grid gap-4 sm:grid-cols-3">
         <StatTile
           icon={<Target className="h-4 w-4 text-primary" />}
           label="Topics completed"
           value={overview ? `${overview.totals.topicsCompleted}` : "—"}
-          hint={overview ? `of ${overview.totals.topicsAvailable} curated · ${totalPct}%` : "loading…"}
+          hint={overview ? `of ${overview.totals.topicsAvailable} · ${totalPct}%` : "loading…"}
         />
         <StatTile
           icon={<ListChecks className="h-4 w-4 text-emerald-400" />}
-          label="Quiz attempts"
+          label="Recent quiz attempts"
           value={overview ? `${overview.totals.attempts}` : "—"}
-          hint="(showing recent 5)"
+          hint="last 5 shown below"
         />
-        <StatTile
-          icon={<Trophy className="h-4 w-4 text-amber-400" />}
-          label="Level"
-          value={`Lvl ${user.level}`}
-          hint={`${user.xp} XP earned`}
-        />
-        <StatTile
-          icon={<Flame className="h-4 w-4 text-orange-400" />}
-          label="Streak"
-          value="—"
-          hint="Coming in Phase 6"
-        />
+        <Link href="/leaderboard" className="block">
+          <StatTile
+            icon={<Trophy className="h-4 w-4 text-amber-400" />}
+            label="Weekly leaderboard"
+            value="View →"
+            hint="Top 10 by XP this week"
+          />
+        </Link>
       </section>
 
       {/* Domain rings */}
@@ -171,6 +185,16 @@ export default function DashboardPage() {
           {overview && <WeakAreasCard items={overview.weakAreas} />}
         </div>
       </section>
+
+      {/* Badges */}
+      {badges && (
+        <section className="mt-8">
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+            Badges
+          </h2>
+          <BadgeGallery badges={badges} />
+        </section>
+      )}
     </main>
   );
 }

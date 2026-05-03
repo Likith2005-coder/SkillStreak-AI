@@ -87,11 +87,12 @@ export default function TopicPage() {
     if (!id || completeState === "saving") return;
     setCompleteState("saving");
     try {
-      await completeTopic(id);
+      const { gamification } = await completeTopic(id);
       setCompleteState("done");
+      const { surfaceGamification } = await import("@/lib/gamification-toasts");
+      surfaceGamification(gamification);
     } catch (err) {
       setCompleteState("idle");
-      // Best-effort error; quiet for now.
       console.error(apiErrorMessage(err));
     }
   }

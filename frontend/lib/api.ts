@@ -204,11 +204,14 @@ export async function explainTopic(id: string): Promise<ExplainResponse> {
   return data;
 }
 
-export async function completeTopic(id: string): Promise<TopicView["progress"]> {
-  const { data } = await api.post<{ progress: NonNullable<TopicView["progress"]> }>(
-    `/topics/${id}/complete`
-  );
-  return data.progress;
+export type CompleteTopicResponse = {
+  progress: NonNullable<TopicView["progress"]>;
+  gamification: GamificationDelta | null;
+};
+
+export async function completeTopic(id: string): Promise<CompleteTopicResponse> {
+  const { data } = await api.post<CompleteTopicResponse>(`/topics/${id}/complete`);
+  return data;
 }
 
 // ─── Chat (Phase 3) ─────────────────────────────────────
@@ -293,6 +296,71 @@ export type StreamCallbacks = {
   onDone: (info: { messageId: string; followUps: string[] }) => void;
   onError?: (err: { error: string; status?: number }) => void;
 };
+
+// ─── Gamification (Phase 6) ─────────────────────────────
+
+export type Streak = {
+  currentStreak: number;
+  longestStreak: number;
+  freezesAvailable: number;
+  lastActiveDate: string | null;
+};
+
+export type Badge = {
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  earnedAt: string | null;
+};
+
+export type LeaderboardEntry = {
+  rank: number;
+  userId: string;
+  name: string;
+  level: number;
+  xpTotal: number;
+  xpThisWeek: number;
+};
+
+export type XpEventDelta = {
+  amount: number;
+  reason: "topic_complete" | "first_topic_of_day" | "quiz_pass" | "quiz_perfect" | "streak_day" | "comeback";
+  meta?: Record<string, unknown>;
+};
+
+export type GamificationDelta = {
+  xp: { totalAwarded: number; newXp: number; oldLevel: number; newLevel: number; events: XpEventDelta[] };
+  streak: {
+    current: number;
+    longest: number;
+    freezesAvailable: number;
+    changedToday: boolean;
+    comebackBonus: boolean;
+    freezeUsed: boolean;
+  };
+  badges: Array<{ slug: string; name: string; description: string; icon: string; earnedAt: string }>;
+};
+
+export async function fetchStreak(): Promise<Streak> {
+  const { data } = await api.get<Streak>("/streak");
+  return data;
+}
+
+export async function spendStreakFreeze(): Promise<{ remaining: number }> {
+  const { data } = await api.post<{ remaining: number }>("/streak/freeze");
+  return data;
+}
+
+export async function fetchBadges(): Promise<Badge[]> {
+  const { data } = await api.get<{ badges: Badge[] }>("/badges");
+  return data.badges;
+}
+
+export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
+  const { data } = await api.get<{ entries: LeaderboardEntry[] }>("/leaderboard");
+  return data.entries;
+}
 
 // ─── Progress / Analytics (Phase 5) ─────────────────────
 
@@ -407,6 +475,7 @@ export type QuizSubmitResponse = {
   passed: boolean;
   score: number;
   total: number;
+  gamification: GamificationDelta | null;
 };
 
 export type QuizHistoryAttempt = {

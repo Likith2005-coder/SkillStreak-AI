@@ -24,6 +24,6 @@ export const explain: RequestHandler = async (req, res) => {
 
 export const complete: RequestHandler = async (req, res) => {
   if (!req.user) throw new ApiError(401, "Unauthenticated");
-  const progress = await topicService.markTopicComplete(id(req), req.user.sub);
-  res.json({ progress });
+  const result = await topicService.markTopicComplete(id(req), req.user.sub);
+  res.json(result);
 };

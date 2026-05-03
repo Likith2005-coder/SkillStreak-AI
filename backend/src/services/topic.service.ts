@@ -2,6 +2,7 @@ import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
 import { complete } from "./llm.service";
 import { remember } from "./cache.service";
+import { recordTopicComplete, type GamificationDelta } from "./gamification.service";
 
 export type SkillLevel = "beginner" | "intermediate" | "advanced";
 
@@ -111,6 +112,13 @@ export async function markTopicComplete(topicId: string, userId: string) {
   });
   if (!topic) throw new ApiError(404, "Topic not found");
 
+  // Was this already completed? If so, skip gamification (no double-award).
+  const existing = await prisma.userProgress.findUnique({
+    where: { userId_topicId: { userId, topicId } },
+    select: { status: true },
+  });
+  const wasAlreadyComplete = existing?.status === "completed";
+
   const progress = await prisma.userProgress.upsert({
     where: { userId_topicId: { userId, topicId } },
     create: {
@@ -131,5 +139,9 @@ export async function markTopicComplete(topicId: string, userId: string) {
     },
   });
 
-  return progress;
+  const gamification: GamificationDelta | null = wasAlreadyComplete
+    ? null
+    : await recordTopicComplete(userId, { topicId });
+
+  return { progress, gamification };
 }

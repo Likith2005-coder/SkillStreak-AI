@@ -3,6 +3,7 @@ import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
 import { complete } from "./llm.service";
 import { getJson, remember, setJson } from "./cache.service";
+import { recordQuizSubmit, type GamificationDelta } from "./gamification.service";
 import { SkillLevel } from "../prompts/system.prompt";
 import {
   QUIZ_GENERATOR_SYSTEM,
@@ -319,7 +320,27 @@ export async function submitAttempt(opts: {
     });
   }
 
-  return { attempt, breakdown, passed, score, total: TOTAL_QUESTIONS };
+  // Award XP / streak / badges. If this attempt newly completes the topic
+  // (was not_started or in_progress before, now completed via pass), the
+  // gamification call here covers the +10 streak bonus and quiz XP. The
+  // separate "Mark complete" button awards topic_complete XP via
+  // topic.service.markTopicComplete; we don't double-award.
+  let gamification: GamificationDelta | null = null;
+  try {
+    gamification = await recordQuizSubmit(opts.userId, {
+      topicId: opts.topicId,
+      score,
+      total: TOTAL_QUESTIONS,
+      passed,
+    });
+  } catch (err) {
+    // Don't break the quiz response if gamification fails.
+    log.warn("recordQuizSubmit failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+
+  return { attempt, breakdown, passed, score, total: TOTAL_QUESTIONS, gamification };
 }
 
 export async function getHistory(userId: string) {

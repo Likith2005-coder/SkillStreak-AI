@@ -89,6 +89,8 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
       const res = await submitQuiz(topicId, safe);
       setResult(res);
       setPhase("done");
+      const { surfaceGamification } = await import("@/lib/gamification-toasts");
+      surfaceGamification(res.gamification);
     } catch (err) {
       setErrorMsg(apiErrorMessage(err, "Could not submit the quiz."));
       setPhase("error");
