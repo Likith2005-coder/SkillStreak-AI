@@ -4,6 +4,7 @@ import authRoutes from "./auth.routes";
 import domainRoutes, { roadmapRouter } from "./domain.routes";
 import topicRoutes from "./topic.routes";
 import chatRoutes from "./chat.routes";
+import quizRoutes from "./quiz.routes";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use("/domains", domainRoutes);
 router.use("/roadmap", roadmapRouter);
 router.use("/topics", topicRoutes);
 router.use("/chat", chatRoutes);
+router.use("/quiz", quizRoutes);
 
 router.get("/", (_req, res) => {
   res.json({

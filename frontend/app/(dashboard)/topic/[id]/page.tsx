@@ -247,11 +247,26 @@ export default function TopicPage() {
             </Button>
           </div>
 
-          <PlaceholderCard
-            icon={<ListChecks className="h-4 w-4 text-primary" />}
-            title="Quiz"
-            body="A 5-question quiz lands in Phase 4. You'll need 3/5 to count this topic toward your streak."
-          />
+          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <ListChecks className="h-4 w-4 text-primary" />
+              Quiz
+              {topic.progress?.bestScore != null && (
+                <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Best {topic.progress.bestScore}/5
+                </span>
+              )}
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              5 AI-generated MCQs. Pass with 3/5 to mark this topic complete.
+            </p>
+            <Button asChild size="sm" className="mt-3 w-full">
+              <Link href={`/quiz/${topic.id}`}>
+                <ListChecks className="h-4 w-4" />
+                {topic.progress?.bestScore != null ? "Take quiz again" : "Take quiz"}
+              </Link>
+            </Button>
+          </div>
 
           <PlaceholderCard
             icon={<Video className="h-4 w-4 text-primary" />}

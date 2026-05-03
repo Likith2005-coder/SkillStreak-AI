@@ -294,6 +294,77 @@ export type StreamCallbacks = {
   onError?: (err: { error: string; status?: number }) => void;
 };
 
+// ─── Quiz (Phase 4) ─────────────────────────────────────
+
+export type QuizLevel = "beginner" | "intermediate" | "advanced";
+
+export type QuizQuestionPublic = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+};
+
+export type QuizGenerateResponse = {
+  topicId: string;
+  level: QuizLevel;
+  cached: boolean;
+  questions: QuizQuestionPublic[];
+};
+
+export type QuizBreakdownItem = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+  selectedIndex: number;
+  correct: boolean;
+};
+
+export type QuizSubmitResponse = {
+  attempt: { id: string; score: number; total: number; passed: boolean; attemptedAt: string };
+  breakdown: QuizBreakdownItem[];
+  passed: boolean;
+  score: number;
+  total: number;
+};
+
+export type QuizHistoryAttempt = {
+  id: string;
+  topicId: string;
+  topicTitle: string;
+  domain: { slug: string; name: string };
+  level: QuizLevel;
+  score: number;
+  total: number;
+  passed: boolean;
+  attemptedAt: string;
+};
+
+export async function generateQuiz(topicId: string, fresh = false): Promise<QuizGenerateResponse> {
+  const { data } = await api.post<QuizGenerateResponse>(
+    `/quiz/topics/${topicId}/generate`,
+    { fresh }
+  );
+  return data;
+}
+
+export async function submitQuiz(
+  topicId: string,
+  answers: number[]
+): Promise<QuizSubmitResponse> {
+  const { data } = await api.post<QuizSubmitResponse>(
+    `/quiz/topics/${topicId}/submit`,
+    { answers }
+  );
+  return data;
+}
+
+export async function fetchQuizHistory(): Promise<QuizHistoryAttempt[]> {
+  const { data } = await api.get<{ attempts: QuizHistoryAttempt[] }>("/quiz/history");
+  return data.attempts;
+}
+
 export async function streamChatMessage(
   sessionId: string,
   message: string,

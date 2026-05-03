@@ -2,7 +2,8 @@
 // Phase 1: User + UserProfile (auth, onboarding survey).
 // Phase 2: Domain, Roadmap, Topic (with embedding), UserProgress.
 // Phase 3: ChatSession + ChatMessage (streaming chatbot with intent routing).
-// More tables (quiz attempts, badges, etc.) added in subsequent phases.
+// Phase 4: QuizAttempt (LLM-generated MCQs, score, mark complete).
+// More tables (badges, etc.) added in subsequent phases.
 // Database: Supabase Postgres (Tokyo), via Supavisor pooler.
 
 generator client {
@@ -30,6 +31,7 @@ model User {
   profile      UserProfile?
   progress     UserProgress[]
   chatSessions ChatSession[]
+  quizAttempts QuizAttempt[]
 
   @@map("users")
 }
@@ -94,6 +96,7 @@ model Topic {
   roadmap    Roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
   progress   UserProgress[]
   chatSessions ChatSession[]
+  quizAttempts QuizAttempt[]
 
   @@unique([roadmapId, orderIndex])
   @@map("topics")
@@ -147,4 +150,23 @@ model ChatMessage {
 
   @@index([sessionId, createdAt])
   @@map("chat_messages")
+}
+
+model QuizAttempt {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  topicId     String   @map("topic_id")
+  level       String                                  // 'beginner' | 'intermediate' | 'advanced'
+  questions   Json                                    // [{ question, options, correctIndex, explanation }]
+  userAnswers Json     @map("user_answers")           // [number] — selected option index per question
+  score       Int                                     // 0..5
+  total       Int                                     // 5
+  passed      Boolean                                 // score >= 3
+  attemptedAt DateTime @default(now()) @map("attempted_at")
+
+  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic       Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([userId, topicId, attemptedAt(sort: Desc)])
+  @@map("quiz_attempts")
 }
