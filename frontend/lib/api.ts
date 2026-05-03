@@ -210,3 +210,168 @@ export async function completeTopic(id: string): Promise<TopicView["progress"]> 
   );
   return data.progress;
 }
+
+// ─── Chat (Phase 3) ─────────────────────────────────────
+
+export type Intent =
+  | "explain"
+  | "roadmap"
+  | "quiz"
+  | "recommend"
+  | "doubt"
+  | "motivational";
+
+export type ChatRole = "user" | "assistant" | "system";
+
+export type ChatMessage = {
+  id: string;
+  role: ChatRole;
+  content: string;
+  intent: Intent | null;
+  createdAt: string;
+};
+
+export type ChatSessionSummary = {
+  id: string;
+  title: string;
+  topicId: string | null;
+  topicTitle: string | null;
+  messageCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ChatSessionDetail = {
+  id: string;
+  title: string;
+  topicId: string | null;
+  topicTitle: string | null;
+  createdAt: string;
+  updatedAt: string;
+  messages: ChatMessage[];
+};
+
+export async function listChatSessions(): Promise<ChatSessionSummary[]> {
+  const { data } = await api.get<{ sessions: ChatSessionSummary[] }>("/chat/sessions");
+  return data.sessions;
+}
+
+export async function createChatSession(opts: {
+  topicId?: string | null;
+  title?: string;
+}): Promise<ChatSessionSummary> {
+  const { data } = await api.post<{ session: ChatSessionSummary }>("/chat/sessions", opts);
+  return data.session;
+}
+
+export async function getChatSession(id: string): Promise<ChatSessionDetail> {
+  const { data } = await api.get<{ session: ChatSessionDetail }>(`/chat/sessions/${id}`);
+  return data.session;
+}
+
+export async function renameChatSession(id: string, title: string): Promise<ChatSessionSummary> {
+  const { data } = await api.patch<{ session: ChatSessionSummary }>(
+    `/chat/sessions/${id}`,
+    { title }
+  );
+  return data.session;
+}
+
+export async function deleteChatSession(id: string): Promise<void> {
+  await api.delete(`/chat/sessions/${id}`);
+}
+
+/**
+ * Stream an assistant reply via SSE-over-fetch. Resolves when the stream ends.
+ *
+ * Native EventSource doesn't support custom headers (no Authorization), so we
+ * use fetch + ReadableStream and parse SSE frames manually.
+ */
+export type StreamCallbacks = {
+  onIntent?: (intent: Intent) => void;
+  onDelta: (text: string) => void;
+  onDone: (info: { messageId: string; followUps: string[] }) => void;
+  onError?: (err: { error: string; status?: number }) => void;
+};
+
+export async function streamChatMessage(
+  sessionId: string,
+  message: string,
+  cbs: StreamCallbacks,
+  opts?: { regenerate?: boolean; signal?: AbortSignal }
+): Promise<void> {
+  const token = getToken();
+  const res = await fetch(`${baseURL}/chat/sessions/${sessionId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ message, regenerate: opts?.regenerate ?? false }),
+    signal: opts?.signal,
+  });
+
+  if (!res.ok || !res.body) {
+    let errorMessage = `Request failed (${res.status})`;
+    try {
+      const data = await res.json();
+      if (data?.error) errorMessage = data.error;
+    } catch {
+      /* ignore parse failure */
+    }
+    cbs.onError?.({ error: errorMessage, status: res.status });
+    throw new Error(errorMessage);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  // SSE frames are separated by a blank line. Each frame has lines like:
+  //   event: delta
+  //   data: {"type":"delta","text":"..."}
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let sep: number;
+    while ((sep = buffer.indexOf("\n\n")) !== -1) {
+      const frame = buffer.slice(0, sep);
+      buffer = buffer.slice(sep + 2);
+      if (!frame.trim() || frame.startsWith(":")) continue;
+
+      let event = "message";
+      const dataLines: string[] = [];
+      for (const line of frame.split("\n")) {
+        if (line.startsWith("event:")) event = line.slice(6).trim();
+        else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+      }
+      if (!dataLines.length) continue;
+
+      let payload: { type?: string; text?: string; intent?: Intent; messageId?: string; followUps?: string[]; error?: string; status?: number };
+      try {
+        payload = JSON.parse(dataLines.join("\n"));
+      } catch {
+        continue;
+      }
+
+      if (event === "delta" && typeof payload.text === "string") {
+        cbs.onDelta(payload.text);
+      } else if (event === "intent" && payload.intent) {
+        cbs.onIntent?.(payload.intent);
+      } else if (event === "done" && payload.messageId) {
+        cbs.onDone({
+          messageId: payload.messageId,
+          followUps: payload.followUps ?? [],
+        });
+      } else if (event === "error") {
+        cbs.onError?.({
+          error: payload.error ?? "Stream error",
+          status: payload.status,
+        });
+      }
+    }
+  }
+}

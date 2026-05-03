@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/shared/Navbar";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import { useAuthStatus, useBootstrapUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/userStore";
 
@@ -16,6 +17,8 @@ export default function DashboardLayout({
   const status = useAuthStatus();
   const user = useUserStore((s) => s.user);
   const router = useRouter();
+  const pathname = usePathname();
+  const onChatbotPage = pathname?.startsWith("/chatbot") ?? false;
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -39,6 +42,7 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-background">
       <Navbar />
       {children}
+      {!onChatbotPage && <ChatWidget />}
     </div>
   );
 }

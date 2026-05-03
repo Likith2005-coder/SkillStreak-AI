@@ -32,14 +32,15 @@ export default function DashboardPage() {
       <section className="rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Phase 2 · Domains live
+          Phase 3 · AI tutor live
         </div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
           Welcome, {user.name.split(" ")[0]}.
         </h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          9 domains are ready — pick one and start your first topic. The AI tutor
-          generates a tailored explanation for every topic on demand.
+          9 domains, 5 deep roadmaps, and a streaming AI chatbot. Pick a topic
+          to learn — or open the chat anytime for explanations, roadmaps, and
+          practice quizzes tailored to your level.
         </p>
         <Button asChild size="lg" className="mt-5">
           <Link href="/domains">

@@ -19,7 +19,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
-  LLM_MODEL: z.string().default("gemini-2.0-flash"),
+  LLM_MODEL: z.string().default("gemini-flash-lite-latest"),
 
   YOUTUBE_API_KEY: z.string().optional(),
 

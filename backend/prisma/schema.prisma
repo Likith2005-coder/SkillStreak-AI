@@ -1,7 +1,8 @@
 // SkillStreak AI — Prisma schema
 // Phase 1: User + UserProfile (auth, onboarding survey).
 // Phase 2: Domain, Roadmap, Topic (with embedding), UserProgress.
-// More tables (chat, quiz attempts, badges, etc.) added in subsequent phases.
+// Phase 3: ChatSession + ChatMessage (streaming chatbot with intent routing).
+// More tables (quiz attempts, badges, etc.) added in subsequent phases.
 // Database: Supabase Postgres (Tokyo), via Supavisor pooler.
 
 generator client {
@@ -28,6 +29,7 @@ model User {
 
   profile      UserProfile?
   progress     UserProgress[]
+  chatSessions ChatSession[]
 
   @@map("users")
 }
@@ -91,6 +93,7 @@ model Topic {
 
   roadmap    Roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
   progress   UserProgress[]
+  chatSessions ChatSession[]
 
   @@unique([roadmapId, orderIndex])
   @@map("topics")
@@ -113,4 +116,35 @@ model UserProgress {
   @@unique([userId, topicId])
   @@index([userId])
   @@map("user_progress")
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  topicId   String?  @map("topic_id")               // optional pinned topic context
+  title     String                                  // first user message, truncated, or "New chat"
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic?        @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  messages  ChatMessage[]
+
+  @@index([userId, updatedAt(sort: Desc)])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  sessionId String   @map("session_id")
+  role      String                                   // 'user' | 'assistant' | 'system'
+  content   String   @db.Text
+  intent    String?                                  // 'explain' | 'roadmap' | 'quiz' | 'recommend' | 'doubt' | 'motivational'
+  tokens    Int?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
 }

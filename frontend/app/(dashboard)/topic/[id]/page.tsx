@@ -7,10 +7,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
   ArrowLeft,
+  Bot,
   CheckCircle2,
   ListChecks,
   Loader2,
-  PlayCircle,
   RefreshCw,
   Sparkles,
   Video,
@@ -259,11 +259,22 @@ export default function TopicPage() {
             body="YouTube videos and documentation links show up here once Phase 7 ships."
           />
 
-          <PlaceholderCard
-            icon={<PlayCircle className="h-4 w-4 text-primary" />}
-            title="Talk to the AI tutor"
-            body="The chatbot opens with this topic preloaded. Phase 3."
-          />
+          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Bot className="h-4 w-4 text-primary" />
+              Talk to the AI tutor
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Open a chat pre-loaded with this topic. Ask for analogies, deeper
+              dives, or a quick quiz.
+            </p>
+            <Button asChild size="sm" className="mt-3 w-full" variant="outline">
+              <Link href={`/chatbot?topic=${topic.id}`}>
+                <Bot className="h-4 w-4" />
+                Ask about this topic
+              </Link>
+            </Button>
+          </div>
         </aside>
       </section>
     </main>

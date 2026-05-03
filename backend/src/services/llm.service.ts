@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 import { env } from "../config/env";
 import { ApiError } from "../middleware/error.middleware";
 import { log } from "../utils/logger.util";
@@ -6,6 +6,16 @@ import { log } from "../utils/logger.util";
 export type CompletionOptions = {
   systemPrompt?: string;
   userPrompt: string;
+  temperature?: number;
+  maxTokens?: number;
+};
+
+export type ChatTurn = { role: "user" | "assistant"; content: string };
+
+export type StreamOptions = {
+  systemPrompt?: string;
+  history: ChatTurn[];        // prior turns, oldest → newest
+  userPrompt: string;          // current user message
   temperature?: number;
   maxTokens?: number;
 };
@@ -83,4 +93,45 @@ export async function complete(opts: CompletionOptions): Promise<string> {
     error: lastError instanceof Error ? lastError.message : String(lastError),
   });
   throw new ApiError(502, "Upstream LLM provider error. Try again in a moment.");
+}
+
+/**
+ * Stream a chat completion token-by-token.
+ * Async iterator yields incremental text chunks. Caller is responsible for
+ * accumulating the full text and persisting after the stream ends.
+ */
+export async function* streamComplete(opts: StreamOptions): AsyncGenerator<string, void, unknown> {
+  if (env.LLM_PROVIDER !== "gemini") {
+    notImplemented(env.LLM_PROVIDER);
+  }
+
+  const client = getGemini();
+  const model = client.getGenerativeModel({
+    model: env.LLM_MODEL,
+    systemInstruction: opts.systemPrompt,
+    generationConfig: {
+      temperature: opts.temperature ?? 0.7,
+      maxOutputTokens: opts.maxTokens ?? 800,
+    },
+  });
+
+  const history: Content[] = opts.history.map((t) => ({
+    role: t.role === "assistant" ? "model" : "user",
+    parts: [{ text: t.content }],
+  }));
+
+  const chat = model.startChat({ history });
+
+  try {
+    const result = await chat.sendMessageStream(opts.userPrompt);
+    for await (const chunk of result.stream) {
+      const text = chunk.text();
+      if (text) yield text;
+    }
+  } catch (err) {
+    log.error("LLM stream failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    throw new ApiError(502, "LLM stream interrupted. Try again.");
+  }
 }
