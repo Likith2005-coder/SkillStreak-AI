@@ -70,7 +70,13 @@ export type UserProfile = {
   pace: "relaxed" | "standard" | "intense";
   preferredDomains: string[];
   reminderTime: string | null;
+  digestEnabled: boolean;
   onboardedAt: string;
+};
+
+export type SettingsPayload = {
+  reminderTime?: string | null;
+  digestEnabled?: boolean;
 };
 
 export type MeResponse = { user: PublicUser & { profile: UserProfile | null } };
@@ -103,6 +109,118 @@ export async function fetchMe(): Promise<MeResponse> {
 
 export async function updateProfile(payload: ProfilePayload): Promise<{ profile: UserProfile }> {
   const { data } = await api.patch<{ profile: UserProfile }>("/auth/me/profile", payload);
+  return data;
+}
+
+export async function updateSettings(payload: SettingsPayload): Promise<{ profile: UserProfile }> {
+  const { data } = await api.patch<{ profile: UserProfile }>("/auth/me/settings", payload);
+  return data;
+}
+
+// ─── Phase 8 Admin ──────────────────────────────────────
+
+export type AdminTopic = {
+  id: string;
+  title: string;
+  summary: string;
+  difficulty: "easy" | "standard" | "hard";
+  phase: "foundations" | "core" | "advanced";
+  orderIndex: number;
+  domain: { slug: string; name: string; color: string };
+  completedBy: number;
+  quizAttempts: number;
+};
+
+export type AdminMetrics = {
+  users: {
+    total: number;
+    newLast24h: number;
+    newLast30d: number;
+    activeLast24h: number;
+    activeLast30d: number;
+  };
+  learning: {
+    topicsCompleted: number;
+    topicsCompletedLast24h: number;
+    quizAttempts: number;
+    quizAttemptsLast24h: number;
+  };
+  popular: Array<{
+    topicId: string;
+    title: string;
+    domain: { name: string; color: string };
+    completions: number;
+  }>;
+};
+
+export type EmailSendResult =
+  | { sent: true; id: string }
+  | { sent: false; reason: "no_api_key" | "send_error"; error?: string };
+
+export async function adminListTopics(): Promise<AdminTopic[]> {
+  const { data } = await api.get<{ topics: AdminTopic[] }>("/admin/topics");
+  return data.topics;
+}
+
+export async function adminUpdateTopic(
+  id: string,
+  patch: Partial<Pick<AdminTopic, "title" | "summary" | "difficulty" | "phase">>
+): Promise<{ topic: AdminTopic }> {
+  const { data } = await api.patch<{ topic: AdminTopic }>(`/admin/topics/${id}`, patch);
+  return data;
+}
+
+export async function adminDeleteTopic(id: string): Promise<void> {
+  await api.delete(`/admin/topics/${id}`);
+}
+
+export async function adminMetrics(): Promise<AdminMetrics> {
+  const { data } = await api.get<AdminMetrics>("/admin/metrics");
+  return data;
+}
+
+export async function adminEmailStatus(): Promise<{ configured: boolean }> {
+  const { data } = await api.get<{ configured: boolean }>("/admin/email/status");
+  return data;
+}
+
+export async function adminSendTestStreak(): Promise<EmailSendResult> {
+  const { data } = await api.post<EmailSendResult>("/admin/email/test/streak");
+  return data;
+}
+
+export async function adminSendTestDigest(): Promise<EmailSendResult> {
+  const { data } = await api.post<EmailSendResult>("/admin/email/test/digest");
+  return data;
+}
+
+export async function adminDispatchStreaks(): Promise<{
+  attempted: number;
+  sent: number;
+  skipped: number;
+  failed: number;
+}> {
+  const { data } = await api.post<{
+    attempted: number;
+    sent: number;
+    skipped: number;
+    failed: number;
+  }>("/admin/email/dispatch/streaks");
+  return data;
+}
+
+export async function adminDispatchDigests(): Promise<{
+  attempted: number;
+  sent: number;
+  skipped: number;
+  failed: number;
+}> {
+  const { data } = await api.post<{
+    attempted: number;
+    sent: number;
+    skipped: number;
+    failed: number;
+  }>("/admin/email/dispatch/digests");
   return data;
 }
 

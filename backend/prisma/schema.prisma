@@ -5,6 +5,7 @@
 // Phase 4: QuizAttempt (LLM-generated MCQs, score, mark complete).
 // Phase 6: Streak, Badge, UserBadge, XpEvent (streaks/XP/badges/leaderboard).
 // Phase 7: Resource (curated videos + docs per topic, 7-day cache).
+// Phase 8: digest_enabled flag on UserProfile (notifications opt-in).
 // Database: Supabase Postgres (Tokyo), via Supavisor pooler.
 
 generator client {
@@ -47,6 +48,7 @@ model UserProfile {
   pace             String                                  // 'relaxed' | 'standard' | 'intense'
   preferredDomains String[] @default([]) @map("preferred_domains") // domain slugs; FK to domains in Phase 2
   reminderTime     String?  @map("reminder_time")          // 'HH:mm' (24h, user-local); used by Phase 8
+  digestEnabled    Boolean  @default(true) @map("digest_enabled")  // weekly Sunday digest opt-in (Phase 8)
   onboardedAt      DateTime @default(now()) @map("onboarded_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 

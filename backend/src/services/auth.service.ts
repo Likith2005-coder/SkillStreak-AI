@@ -19,6 +19,7 @@ const PROFILE_FIELDS = {
   pace: true,
   preferredDomains: true,
   reminderTime: true,
+  digestEnabled: true,
   onboardedAt: true,
 } as const;
 
@@ -30,6 +31,11 @@ export type ProfileInput = {
   pace: "relaxed" | "standard" | "intense";
   preferredDomains?: string[];
   reminderTime?: string | null;
+  digestEnabled?: boolean;
+};
+export type SettingsInput = {
+  reminderTime?: string | null;
+  digestEnabled?: boolean;
 };
 
 function assertRole(role: string): "user" | "admin" {
@@ -86,6 +92,7 @@ export async function upsertProfile(userId: string, input: ProfileInput) {
     pace: input.pace,
     preferredDomains: input.preferredDomains ?? [],
     reminderTime: input.reminderTime ?? null,
+    ...(input.digestEnabled !== undefined && { digestEnabled: input.digestEnabled }),
   };
 
   const profile = await prisma.userProfile.upsert({
@@ -96,4 +103,23 @@ export async function upsertProfile(userId: string, input: ProfileInput) {
   });
 
   return profile;
+}
+
+/**
+ * Partial update for the Phase 8 settings page — only touches notification
+ * fields, doesn't require the full onboarding payload.
+ */
+export async function updateSettings(userId: string, input: SettingsInput) {
+  const profile = await prisma.userProfile.findUnique({ where: { userId } });
+  if (!profile) throw new ApiError(404, "Complete onboarding first");
+
+  const updated = await prisma.userProfile.update({
+    where: { userId },
+    data: {
+      ...(input.reminderTime !== undefined && { reminderTime: input.reminderTime }),
+      ...(input.digestEnabled !== undefined && { digestEnabled: input.digestEnabled }),
+    },
+    select: PROFILE_FIELDS,
+  });
+  return updated;
 }

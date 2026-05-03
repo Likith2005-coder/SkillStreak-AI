@@ -24,7 +24,7 @@ const envSchema = z.object({
   YOUTUBE_API_KEY: z.string().optional(),
 
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default("noreply@skillstreak.ai"),
+  EMAIL_FROM: z.string().default("SkillStreak AI <onboarding@resend.dev>"),
 });
 
 const parsed = envSchema.safeParse(process.env);

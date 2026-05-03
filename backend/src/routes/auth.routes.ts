@@ -19,6 +19,7 @@ router.post("/register", authLimiter, validate(ctl.registerSchema), asyncHandler
 router.post("/login", authLimiter, validate(ctl.loginSchema), asyncHandler(ctl.login));
 router.get("/me", requireAuth, asyncHandler(ctl.me));
 router.patch("/me/profile", requireAuth, validate(ctl.profileSchema), asyncHandler(ctl.updateProfile));
+router.patch("/me/settings", requireAuth, validate(ctl.settingsSchema), asyncHandler(ctl.updateSettings));
 router.post("/logout", requireAuth, ctl.logout);
 
 export default router;

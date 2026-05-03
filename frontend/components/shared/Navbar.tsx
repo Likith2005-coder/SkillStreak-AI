@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Flame, LogOut, Sparkles, Trophy } from "lucide-react";
+import { Bot, Flame, LogOut, Settings, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logoutUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
@@ -46,6 +46,20 @@ export function Navbar() {
             <Link href="/chatbot">
               <Bot className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
+            </Link>
+          </Button>
+          {user?.role === "admin" && (
+            <Button asChild variant="ghost" size="sm" aria-label="Admin">
+              <Link href="/admin">
+                <ShieldCheck className="h-4 w-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            </Button>
+          )}
+          <Button asChild variant="ghost" size="sm" aria-label="Settings">
+            <Link href="/settings">
+              <Settings className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">Settings</span>
             </Link>
           </Button>
           <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Log out">

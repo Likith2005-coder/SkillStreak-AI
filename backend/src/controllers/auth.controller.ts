@@ -27,6 +27,16 @@ export const profileSchema = z.object({
     .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Use 24h HH:mm format")
     .nullable()
     .optional(),
+  digestEnabled: z.boolean().optional(),
+});
+
+export const settingsSchema = z.object({
+  reminderTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Use 24h HH:mm format")
+    .nullable()
+    .optional(),
+  digestEnabled: z.boolean().optional(),
 });
 
 export const register: RequestHandler = async (req, res) => {
@@ -48,6 +58,12 @@ export const me: RequestHandler = async (req, res) => {
 export const updateProfile: RequestHandler = async (req, res) => {
   if (!req.user) throw new ApiError(401, "Unauthenticated");
   const profile = await authService.upsertProfile(req.user.sub, req.body);
+  res.json({ profile });
+};
+
+export const updateSettings: RequestHandler = async (req, res) => {
+  if (!req.user) throw new ApiError(401, "Unauthenticated");
+  const profile = await authService.updateSettings(req.user.sub, req.body);
   res.json({ profile });
 };
 
