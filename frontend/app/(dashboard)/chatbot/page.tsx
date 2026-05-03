@@ -49,7 +49,11 @@ function ChatbotPage() {
 
   return (
     <main className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
-      <SessionSidebar />
+      {/* Sidebar hides on mobile so the chat fills the screen.
+          Tablet+ shows the sidebar. */}
+      <div className="hidden md:block">
+        <SessionSidebar />
+      </div>
       <div className="flex-1 overflow-hidden">
         <ChatWindow />
       </div>

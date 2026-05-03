@@ -43,10 +43,19 @@ export default function DashboardLayout({
   return (
     <div className="relative min-h-screen bg-background">
       <div className="aurora-bg" aria-hidden />
+      {/* Skip link — only visible when focused via keyboard */}
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
       <Navbar />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={pathname}
+          id="main"
+          tabIndex={-1}
           initial={{ opacity: 0, y: reduce ? 0 : 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: reduce ? 0 : -4 }}
