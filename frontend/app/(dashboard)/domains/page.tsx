@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BookOpen, MessageCircle, Sparkles } from "lucide-react";
@@ -8,6 +9,22 @@ import { apiErrorMessage, fetchDomains, type Domain } from "@/lib/api";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { cn } from "@/lib/utils";
+
+// 3D Whobee robot — public Spline scene. Override via NEXT_PUBLIC_SPLINE_ROBOT_SCENE
+// in frontend/.env.local to use your own scene from app.spline.design.
+const DEFAULT_ROBOT_SCENE =
+  "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode";
+const ROBOT_SCENE =
+  process.env.NEXT_PUBLIC_SPLINE_ROBOT_SCENE ?? DEFAULT_ROBOT_SCENE;
+
+// Spline runtime is heavy; lazy-load so the domains page initial paint stays fast.
+const InteractiveRobotSpline = dynamicImport(
+  () =>
+    import("@/components/3d/InteractiveRobotSpline").then(
+      (m) => m.InteractiveRobotSpline
+    ),
+  { ssr: false }
+);
 
 export default function DomainsPage() {
   const [domains, setDomains] = useState<Domain[] | null>(null);
@@ -29,18 +46,32 @@ export default function DomainsPage() {
 
   return (
     <main className="container px-4 py-10">
-      <header className="max-w-2xl">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Pick your domain
+      <header className="grid items-center gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="max-w-2xl">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            Pick your domain
+          </div>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            9 paths into modern tech
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Five domains have full curated roadmaps. The other four are served
+            on-demand by the AI tutor — same depth, generated as you go.
+          </p>
         </div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          9 paths into modern tech
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Five domains have full curated roadmaps. The other four are served
-          on-demand by the AI tutor — same depth, generated as you go.
-        </p>
+
+        {/* 3D robot mascot — interactive on hover/drag */}
+        <div className="relative h-[260px] w-full overflow-hidden rounded-2xl border border-border bg-card/30 backdrop-blur-sm sm:h-[280px] lg:h-[300px]">
+          <InteractiveRobotSpline scene={ROBOT_SCENE} className="h-full w-full" />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/40 to-transparent"
+            aria-hidden
+          />
+          <div className="pointer-events-none absolute bottom-2 right-3 rounded-full border border-border bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground backdrop-blur">
+            drag me
+          </div>
+        </div>
       </header>
 
       {error && (

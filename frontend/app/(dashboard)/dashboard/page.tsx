@@ -25,6 +25,7 @@ import {
   type RecentAttempt,
   type Streak,
 } from "@/lib/api";
+import dynamic from "next/dynamic";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
 import { StreakBanner } from "@/components/gamification/StreakBanner";
@@ -32,6 +33,13 @@ import { XpBar } from "@/components/gamification/XpBar";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
 import { useCountUp } from "@/hooks/useCountUp";
+
+// 3D scene is ~150KB of three.js — lazy-load so the dashboard initial paint
+// isn't blocked by it. SSR off because three.js needs a real WebGL context.
+const FloatingOrbs = dynamic(
+  () => import("@/components/3d/FloatingOrbs").then((m) => m.FloatingOrbs),
+  { ssr: false }
+);
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
 
@@ -65,42 +73,51 @@ export default function DashboardPage() {
 
   return (
     <main className="container px-4 py-10">
-      {/* Hero */}
-      <section className="rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Phase 5 · Progress live
-        </div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          Welcome back, {user.name.split(" ")[0]}.
-        </h1>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          {overview?.recommended
-            ? `Pick up where you left off — your next topic is ready below.`
-            : `Browse domains, take a quiz, or chat with the AI tutor anytime.`}
-        </p>
+      {/* Hero with 3D floating orbs */}
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
+        {/* 3D scene fills the right ~half, fades into the card */}
+        <FloatingOrbs className="pointer-events-none absolute inset-0 opacity-90" />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card/95 via-card/70 to-transparent"
+          aria-hidden
+        />
 
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          {overview?.recommended ? (
-            <Button asChild size="lg">
-              <Link href={`/topic/${overview.recommended.topicId}`}>
-                <BookOpen className="h-4 w-4" />
-                Continue: {overview.recommended.topicTitle}
-                <ArrowRight className="h-4 w-4" />
+        <div className="relative">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            Phase 5 · Progress live
+          </div>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+            Welcome back, {user.name.split(" ")[0]}.
+          </h1>
+          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+            {overview?.recommended
+              ? `Pick up where you left off — your next topic is ready below.`
+              : `Browse domains, take a quiz, or chat with the AI tutor anytime.`}
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            {overview?.recommended ? (
+              <Button asChild size="lg">
+                <Link href={`/topic/${overview.recommended.topicId}`}>
+                  <BookOpen className="h-4 w-4" />
+                  Continue: {overview.recommended.topicTitle}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg">
+                <Link href="/domains">
+                  <BookOpen className="h-4 w-4" /> Browse domains <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+            <Button asChild variant="outline" size="lg">
+              <Link href="/chatbot">
+                <Bot className="h-4 w-4" /> Open AI tutor
               </Link>
             </Button>
-          ) : (
-            <Button asChild size="lg">
-              <Link href="/domains">
-                <BookOpen className="h-4 w-4" /> Browse domains <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          )}
-          <Button asChild variant="outline" size="lg">
-            <Link href="/chatbot">
-              <Bot className="h-4 w-4" /> Open AI tutor
-            </Link>
-          </Button>
+          </div>
         </div>
       </section>
 

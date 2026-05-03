@@ -118,4 +118,20 @@
       animation: none;
     }
   }
+
+  /* Loader used by SplineScene's Suspense fallback. */
+  .loader {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    border: 3px solid hsl(var(--border));
+    border-top-color: hsl(var(--primary));
+    animation: loader-spin 0.9s linear infinite;
+  }
+  @keyframes loader-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
