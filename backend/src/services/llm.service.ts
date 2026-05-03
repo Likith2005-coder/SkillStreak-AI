@@ -96,6 +96,40 @@ export async function complete(opts: CompletionOptions): Promise<string> {
 }
 
 /**
+ * Generate an embedding vector for the given text.
+ * Uses Gemini's text-embedding-004 (768-dim) by default. The topics.embedding
+ * column is `vector(1536)` from Phase 1 (sized for OpenAI text-embedding-3-small);
+ * we right-pad with zeros to fit so the column doesn't need a migration.
+ *
+ * Returns a number[] of length 1536.
+ */
+const TARGET_EMBEDDING_DIM = 1536;
+const GEMINI_EMBEDDING_MODEL = "text-embedding-004";
+
+export async function embedText(text: string): Promise<number[]> {
+  if (env.LLM_PROVIDER !== "gemini") {
+    notImplemented(env.LLM_PROVIDER);
+  }
+  const client = getGemini();
+  const model = client.getGenerativeModel({ model: GEMINI_EMBEDDING_MODEL });
+  const trimmed = text.length > 8000 ? text.slice(0, 8000) : text;
+  let result;
+  try {
+    result = await model.embedContent(trimmed);
+  } catch (err) {
+    log.error("embedding call failed", { error: err instanceof Error ? err.message : String(err) });
+    throw new ApiError(502, "Embedding generation failed");
+  }
+  const v = result.embedding?.values ?? [];
+  if (!v.length) throw new ApiError(502, "Empty embedding returned");
+
+  if (v.length === TARGET_EMBEDDING_DIM) return v;
+  if (v.length > TARGET_EMBEDDING_DIM) return v.slice(0, TARGET_EMBEDDING_DIM);
+  // Right-pad with zeros to fit the pgvector column.
+  return [...v, ...new Array(TARGET_EMBEDDING_DIM - v.length).fill(0)];
+}
+
+/**
  * Stream a chat completion token-by-token.
  * Async iterator yields incremental text chunks. Caller is responsible for
  * accumulating the full text and persisting after the stream ends.

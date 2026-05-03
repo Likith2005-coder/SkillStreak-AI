@@ -7,6 +7,7 @@ import chatRoutes from "./chat.routes";
 import quizRoutes from "./quiz.routes";
 import progressRoutes from "./progress.routes";
 import gamificationRoutes from "./gamification.routes";
+import resourceRoutes from "./resource.routes";
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.use("/topics", topicRoutes);
 router.use("/chat", chatRoutes);
 router.use("/quiz", quizRoutes);
 router.use("/progress", progressRoutes);
+router.use("/resources", resourceRoutes);
 router.use("/", gamificationRoutes);
 
 router.get("/", (_req, res) => {

@@ -4,6 +4,7 @@
 // Phase 3: ChatSession + ChatMessage (streaming chatbot with intent routing).
 // Phase 4: QuizAttempt (LLM-generated MCQs, score, mark complete).
 // Phase 6: Streak, Badge, UserBadge, XpEvent (streaks/XP/badges/leaderboard).
+// Phase 7: Resource (curated videos + docs per topic, 7-day cache).
 // Database: Supabase Postgres (Tokyo), via Supavisor pooler.
 
 generator client {
@@ -100,6 +101,7 @@ model Topic {
   progress   UserProgress[]
   chatSessions ChatSession[]
   quizAttempts QuizAttempt[]
+  resources  Resource[]
 
   @@unique([roadmapId, orderIndex])
   @@map("topics")
@@ -229,4 +231,23 @@ model QuizAttempt {
 
   @@index([userId, topicId, attemptedAt(sort: Desc)])
   @@map("quiz_attempts")
+}
+
+model Resource {
+  id              String   @id @default(uuid())
+  topicId         String   @map("topic_id")
+  type            String                                  // 'video' | 'doc'
+  title           String
+  url             String
+  source          String                                  // YouTube channel, doc site name (e.g. "MDN")
+  thumbnailUrl    String?  @map("thumbnail_url")
+  durationSeconds Int?     @map("duration_seconds")       // videos only
+  orderIndex      Int      @map("order_index")            // display order within (topicId, type)
+  qualityScore    Int      @default(0) @map("quality_score") // for future ranking; admin/click signal
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  topic           Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId, type, orderIndex])
+  @@map("resources")
 }

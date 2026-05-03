@@ -30,6 +30,7 @@ import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
 import { StreakBanner } from "@/components/gamification/StreakBanner";
 import { XpBar } from "@/components/gamification/XpBar";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
+import { RecommendedNext } from "@/components/resources/RecommendedNext";
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
 
@@ -136,6 +137,11 @@ export default function DashboardPage() {
             hint="Top 10 by XP this week"
           />
         </Link>
+      </section>
+
+      {/* Recommended next */}
+      <section className="mt-8">
+        <RecommendedNext />
       </section>
 
       {/* Domain rings */}

@@ -13,8 +13,8 @@ import {
   Loader2,
   RefreshCw,
   Sparkles,
-  Video,
 } from "lucide-react";
+import { ResourceList } from "@/components/resources/ResourceList";
 
 import {
   apiErrorMessage,
@@ -269,11 +269,9 @@ export default function TopicPage() {
             </Button>
           </div>
 
-          <PlaceholderCard
-            icon={<Video className="h-4 w-4 text-primary" />}
-            title="Curated resources"
-            body="YouTube videos and documentation links show up here once Phase 7 ships."
-          />
+          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+            <ResourceList topicId={topic.id} />
+          </div>
 
           <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
             <div className="flex items-center gap-2 text-sm font-medium">
@@ -311,22 +309,3 @@ function ExplanationSkeleton() {
   );
 }
 
-function PlaceholderCard({
-  icon,
-  title,
-  body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-dashed border-border bg-card/30 p-5 backdrop-blur">
-      <div className="flex items-center gap-2 text-sm font-medium">
-        {icon}
-        {title}
-      </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">{body}</p>
-    </div>
-  );
-}

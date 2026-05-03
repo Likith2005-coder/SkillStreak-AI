@@ -297,6 +297,46 @@ export type StreamCallbacks = {
   onError?: (err: { error: string; status?: number }) => void;
 };
 
+// ─── Resources & Recommendations (Phase 7) ──────────────
+
+export type ResourceItem = {
+  id: string;
+  type: "video" | "doc";
+  title: string;
+  url: string;
+  source: string;
+  thumbnailUrl: string | null;
+  durationSeconds: number | null;
+};
+
+export type ResourcesResponse = {
+  videos: ResourceItem[];
+  docs: ResourceItem[];
+  cached: boolean;
+};
+
+export type RecommendedTopic = {
+  topicId: string;
+  title: string;
+  summary: string;
+  phase: "foundations" | "core" | "advanced";
+  domain: { slug: string; name: string; color: string; icon: string };
+  similarity: number;
+  reason: "personalized" | "fallback_unstarted";
+};
+
+export async function fetchResources(topicId: string): Promise<ResourcesResponse> {
+  const { data } = await api.get<ResourcesResponse>(`/resources/topics/${topicId}`);
+  return data;
+}
+
+export async function fetchRecommendations(limit = 6): Promise<RecommendedTopic[]> {
+  const { data } = await api.get<{ recommendations: RecommendedTopic[] }>(
+    `/resources/recommendations?limit=${limit}`
+  );
+  return data.recommendations;
+}
+
 // ─── Gamification (Phase 6) ─────────────────────────────
 
 export type Streak = {
