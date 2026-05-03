@@ -294,6 +294,86 @@ export type StreamCallbacks = {
   onError?: (err: { error: string; status?: number }) => void;
 };
 
+// ─── Progress / Analytics (Phase 5) ─────────────────────
+
+export type DomainProgressTile = {
+  slug: string;
+  name: string;
+  color: string;
+  icon: string;
+  done: number;
+  total: number;
+  avgScore: number | null;
+};
+
+export type WeakArea = {
+  topicId: string;
+  title: string;
+  bestScore: number | null;
+  domain: { slug: string; name: string; color: string };
+};
+
+export type RecentAttempt = {
+  id: string;
+  topicId: string;
+  topicTitle: string;
+  domain: { slug: string; name: string; color: string };
+  score: number;
+  total: number;
+  passed: boolean;
+  attemptedAt: string;
+};
+
+export type ProgressOverview = {
+  user: { id: string; name: string; level: number; xp: number; memberSince: string };
+  totals: { topicsCompleted: number; topicsAvailable: number; attempts: number };
+  perDomain: DomainProgressTile[];
+  weakAreas: WeakArea[];
+  recentAttempts: RecentAttempt[];
+  recommended: { topicId: string; topicTitle: string; domain: { slug: string; name: string; color: string } } | null;
+};
+
+export type DomainProgressDetail = {
+  domain: { slug: string; name: string; color: string; icon: string };
+  totals: { topicsCompleted: number; topicsAvailable: number };
+  quiz: {
+    attempts: number;
+    passes: number;
+    avgScore: number | null;
+    trend: Array<{ date: string; score: number; total: number }>;
+  };
+  topics: Array<{
+    id: string;
+    orderIndex: number;
+    title: string;
+    phase: "foundations" | "core" | "advanced";
+    status: "not_started" | "in_progress" | "completed";
+    bestScore: number | null;
+    completedAt: string | null;
+  }>;
+};
+
+export type HeatmapData = {
+  days: Array<{ date: string; count: number }>;
+  totalActiveDays: number;
+  totalActions: number;
+};
+
+export async function fetchOverview(): Promise<ProgressOverview> {
+  const { data } = await api.get<ProgressOverview>("/progress");
+  return data;
+}
+
+export async function fetchDomainProgress(slug: string): Promise<DomainProgressDetail> {
+  const { data } = await api.get<DomainProgressDetail>(`/progress/domain/${slug}`);
+  return data;
+}
+
+export async function fetchHeatmap(): Promise<HeatmapData> {
+  const { data } = await api.get<HeatmapData>("/progress/heatmap");
+  return data;
+}
+
 // ─── Quiz (Phase 4) ─────────────────────────────────────
 
 export type QuizLevel = "beginner" | "intermediate" | "advanced";
