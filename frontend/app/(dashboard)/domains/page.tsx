@@ -61,16 +61,39 @@ export default function DomainsPage() {
           </p>
         </div>
 
-        {/* 3D robot mascot — interactive on hover/drag */}
-        <div className="relative h-[260px] w-full overflow-hidden rounded-2xl border border-border bg-card/30 backdrop-blur-sm sm:h-[280px] lg:h-[300px]">
-          <InteractiveRobotSpline scene={ROBOT_SCENE} className="h-full w-full" />
+        {/* 3D robot mascot — immersed in the page.
+            mix-blend-mode: screen drops the canvas's dark background against
+            the dark page; the radial mask softens the rectangular canvas into
+            a vignette. The watermark cover sits OUTSIDE the masked layer so
+            it stays solid and reliably hides the "Built with Spline" pill. */}
+        <div className="relative h-[260px] w-full sm:h-[280px] lg:h-[300px]">
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/40 to-transparent"
-            aria-hidden
-          />
-          <div className="pointer-events-none absolute bottom-2 right-3 rounded-full border border-border bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground backdrop-blur">
-            drag me
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              WebkitMaskImage:
+                "radial-gradient(ellipse 65% 75% at 55% 45%, black 35%, transparent 85%)",
+              maskImage:
+                "radial-gradient(ellipse 65% 75% at 55% 45%, black 35%, transparent 85%)",
+            }}
+          >
+            <div
+              className="absolute -top-24 -bottom-24 left-0 right-0 origin-center scale-[0.6]"
+              style={{ mixBlendMode: "screen" }}
+            >
+              <InteractiveRobotSpline scene={ROBOT_SCENE} className="h-full w-full" />
+            </div>
           </div>
+          {/* Soft fade-to-page-bg over the bottom band where the watermark
+              sits. Gradient instead of solid block so the cover blends into
+              the scene rather than slicing it with a hard horizontal line. */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-20"
+            aria-hidden
+            style={{
+              background:
+                "linear-gradient(to top, hsl(var(--background)) 30%, hsl(var(--background) / 0.85) 55%, transparent 100%)",
+            }}
+          />
         </div>
       </header>
 

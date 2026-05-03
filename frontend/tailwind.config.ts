@@ -68,11 +68,16 @@ const config: Config = {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.35s ease-out",
         "slide-in-right": "slide-in-right 0.25s ease-out",
         "gradient-shift": "gradient-shift 8s ease infinite",
+        marquee: "marquee 35s linear infinite",
       },
     },
   },

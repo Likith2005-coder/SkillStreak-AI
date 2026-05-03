@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { apiErrorMessage, fetchMe, loginUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
+import { useAuthForm } from "../auth-form-context";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -26,15 +27,31 @@ export default function LoginPage() {
   const setAuth = useUserStore((s) => s.setAuth);
   const setMe = useUserStore((s) => s.setMe);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Publish form interaction to the auth context so the side-panel characters
+  // can react (lean toward the form when typing, peek if password is shown).
+  const { setIsTyping, setPasswordLength, setPasswordVisible } = useAuthForm();
+
+  useEffect(() => {
+    setPasswordVisible(showPassword);
+  }, [showPassword, setPasswordVisible]);
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  // Watch password length and publish.
+  const password = watch("password");
+  useEffect(() => {
+    setPasswordLength(password?.length ?? 0);
+  }, [password, setPasswordLength]);
 
   const onSubmit = async (values: LoginValues) => {
     setFormError(null);
@@ -65,21 +82,39 @@ export default function LoginPage() {
             autoComplete="email"
             className="mt-1.5"
             aria-invalid={!!errors.email}
-            {...register("email")}
+            {...register("email", {
+              onChange: () => setIsTyping(true),
+              onBlur: () => setIsTyping(false),
+            })}
+            onFocus={() => setIsTyping(true)}
           />
           <FieldError message={errors.email?.message} />
         </div>
 
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            className="mt-1.5"
-            aria-invalid={!!errors.password}
-            {...register("password")}
-          />
+          <div className="relative mt-1.5">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              className="pr-10"
+              aria-invalid={!!errors.password}
+              {...register("password", {
+                onChange: () => setIsTyping(true),
+                onBlur: () => setIsTyping(false),
+              })}
+              onFocus={() => setIsTyping(true)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           <FieldError message={errors.password?.message} />
         </div>
 

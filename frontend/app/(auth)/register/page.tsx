@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { apiErrorMessage, registerUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
+import { useAuthForm } from "../auth-form-context";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -29,15 +30,27 @@ export default function RegisterPage() {
   const router = useRouter();
   const setAuth = useUserStore((s) => s.setAuth);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { setIsTyping, setPasswordLength, setPasswordVisible } = useAuthForm();
+  useEffect(() => {
+    setPasswordVisible(showPassword);
+  }, [showPassword, setPasswordVisible]);
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: "", email: "", password: "" },
   });
+
+  const password = watch("password");
+  useEffect(() => {
+    setPasswordLength(password?.length ?? 0);
+  }, [password, setPasswordLength]);
 
   const onSubmit = async (values: RegisterValues) => {
     setFormError(null);
@@ -65,7 +78,11 @@ export default function RegisterPage() {
             autoComplete="name"
             className="mt-1.5"
             aria-invalid={!!errors.name}
-            {...register("name")}
+            {...register("name", {
+              onChange: () => setIsTyping(true),
+              onBlur: () => setIsTyping(false),
+            })}
+            onFocus={() => setIsTyping(true)}
           />
           <FieldError message={errors.name?.message} />
         </div>
@@ -78,21 +95,39 @@ export default function RegisterPage() {
             autoComplete="email"
             className="mt-1.5"
             aria-invalid={!!errors.email}
-            {...register("email")}
+            {...register("email", {
+              onChange: () => setIsTyping(true),
+              onBlur: () => setIsTyping(false),
+            })}
+            onFocus={() => setIsTyping(true)}
           />
           <FieldError message={errors.email?.message} />
         </div>
 
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            className="mt-1.5"
-            aria-invalid={!!errors.password}
-            {...register("password")}
-          />
+          <div className="relative mt-1.5">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              className="pr-10"
+              aria-invalid={!!errors.password}
+              {...register("password", {
+                onChange: () => setIsTyping(true),
+                onBlur: () => setIsTyping(false),
+              })}
+              onFocus={() => setIsTyping(true)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           <FieldError message={errors.password?.message} />
           <p className="mt-1 text-xs text-muted-foreground">
             Use at least 8 characters. Mix it up.
