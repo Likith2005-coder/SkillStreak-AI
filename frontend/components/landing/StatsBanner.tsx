@@ -85,7 +85,7 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
       onViewportEnter={() => setCounting(true)}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.45, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 backdrop-blur transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
     >
       <div className={`flex items-center gap-2 ${stat.accent}`}>
         {stat.icon}

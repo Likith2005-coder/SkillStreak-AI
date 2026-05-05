@@ -71,35 +71,39 @@
   }
 
   /* Aurora background — soft, slow-moving color blooms behind the page.
-     Sits behind everything (-z-10), pointer-events none, never touches text. */
+     Sits behind everything (-z-10), pointer-events none, never touches text.
+     `contain: paint` and a transform tag promote each blob to its own GPU
+     layer so scrolling never re-rasterises the heavy blur. */
   .aurora-bg {
     position: fixed;
     inset: 0;
     z-index: -10;
     pointer-events: none;
     overflow: hidden;
+    contain: paint;
   }
   .aurora-bg::before,
   .aurora-bg::after {
     content: "";
     position: absolute;
-    width: 60vmax;
-    height: 60vmax;
+    width: 45vmax;
+    height: 45vmax;
     border-radius: 9999px;
-    filter: blur(120px);
-    opacity: 0.18;
+    filter: blur(80px);
+    opacity: 0.22;
     will-change: transform;
+    transform: translate3d(0, 0, 0);
   }
   .aurora-bg::before {
     background: radial-gradient(closest-side, hsl(243 75% 59%), transparent 70%);
-    top: -20vmax;
-    left: -10vmax;
+    top: -15vmax;
+    left: -8vmax;
     animation: aurora-drift-a 24s ease-in-out infinite alternate;
   }
   .aurora-bg::after {
     background: radial-gradient(closest-side, hsl(290 75% 60%), transparent 70%);
-    bottom: -25vmax;
-    right: -10vmax;
+    bottom: -18vmax;
+    right: -8vmax;
     animation: aurora-drift-b 30s ease-in-out infinite alternate;
   }
 

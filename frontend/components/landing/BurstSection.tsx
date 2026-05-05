@@ -124,13 +124,12 @@ export function BurstSection() {
         }}
         className="pointer-events-none absolute z-0 rounded-full bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 will-change-transform"
         style={{
-          width: "200vmax",
-          height: "200vmax",
-          left: `calc(${origin.x}% - 100vmax)`,
-          top: `calc(${origin.y}% - 100vmax)`,
+          width: "140vmax",
+          height: "140vmax",
+          left: `calc(${origin.x}% - 70vmax)`,
+          top: `calc(${origin.y}% - 70vmax)`,
           transformOrigin: "center",
-          boxShadow:
-            "0 0 200px rgba(139, 92, 246, 0.4), inset 0 0 200px rgba(217, 70, 239, 0.15)",
+          contain: "paint",
         }}
         aria-hidden
       />

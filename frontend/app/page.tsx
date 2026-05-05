@@ -57,7 +57,7 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             AI-powered learning, reimagined
           </div>
@@ -117,7 +117,7 @@ export default function LandingPage() {
             aria-hidden
           />
           {/* Drag hint */}
-          <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-card/70 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur">
+          <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-card/70 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur-sm">
             ✨ drag to interact
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function LandingPage() {
 
 function Pill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 backdrop-blur">
+    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 backdrop-blur-sm">
       {icon}
       {children}
     </li>
@@ -250,7 +250,7 @@ function BentoCard({
 }) {
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 backdrop-blur transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
+      className={`group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
     >
       <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity duration-500 group-hover:opacity-100 ${gradient}`} />
       <div className="relative">
@@ -289,7 +289,7 @@ function DomainMarquee() {
           return (
             <div
               key={i}
-              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/40 px-4 py-2 text-sm text-muted-foreground backdrop-blur"
+              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm text-muted-foreground"
             >
               <Icon className={`h-4 w-4 ${d.color}`} />
               {d.name}

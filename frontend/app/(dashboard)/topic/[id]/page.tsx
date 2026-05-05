@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
   Bot,
@@ -168,8 +169,19 @@ export default function TopicPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Sparkles className={cn("h-4 w-4", s.text)} />
+                <Sparkles
+                  className={cn(
+                    "h-4 w-4",
+                    s.text,
+                    explainState.kind === "loading" && "animate-pulse"
+                  )}
+                />
                 AI explanation
+                {explainState.kind === "loading" && (
+                  <span className="text-xs font-normal text-muted-foreground">
+                    generating…
+                  </span>
+                )}
                 {explainState.kind === "ok" && explainState.data.cached && (
                   <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
                     Cached
@@ -209,11 +221,7 @@ export default function TopicPage() {
               )}
 
               {explainState.kind === "ok" && (
-                <article className="prose prose-invert prose-sm max-w-none prose-headings:mt-6 prose-headings:mb-2 prose-p:leading-relaxed prose-pre:bg-muted/50 prose-code:bg-muted/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {explainState.data.explanation}
-                  </ReactMarkdown>
-                </article>
+                <ExplanationContent markdown={explainState.data.explanation} />
               )}
             </div>
 
@@ -224,8 +232,16 @@ export default function TopicPage() {
         </div>
 
         {/* Sidebar */}
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+        <motion.aside
+          className="space-y-4"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
+          }}
+        >
+          <SidebarCard>
             <h2 className="text-sm font-medium">Mark progress</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               When you understand the explanation and feel ready, mark this topic
@@ -246,9 +262,9 @@ export default function TopicPage() {
                   ? "Saving…"
                   : "Mark complete"}
             </Button>
-          </div>
+          </SidebarCard>
 
-          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+          <SidebarCard>
             <div className="flex items-center gap-2 text-sm font-medium">
               <ListChecks className="h-4 w-4 text-primary" />
               Quiz
@@ -267,13 +283,13 @@ export default function TopicPage() {
                 {topic.progress?.bestScore != null ? "Take quiz again" : "Take quiz"}
               </Link>
             </Button>
-          </div>
+          </SidebarCard>
 
-          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+          <SidebarCard>
             <ResourceList topicId={topic.id} />
-          </div>
+          </SidebarCard>
 
-          <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+          <SidebarCard>
             <div className="flex items-center gap-2 text-sm font-medium">
               <Bot className="h-4 w-4 text-primary" />
               Talk to the AI tutor
@@ -288,23 +304,62 @@ export default function TopicPage() {
                 Ask about this topic
               </Link>
             </Button>
-          </div>
-        </aside>
+          </SidebarCard>
+        </motion.aside>
       </section>
     </main>
   );
 }
 
+function SidebarCard({ children }: { children: React.ReactNode }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: reduce ? 0 : 10 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+      }}
+      whileHover={reduce ? undefined : { y: -2 }}
+      className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur-sm transition-colors hover:border-primary/30"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function ExplanationContent({ markdown }: { markdown: string }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="prose prose-invert prose-sm max-w-none prose-headings:mt-7 prose-headings:mb-3 prose-h2:text-lg prose-h2:font-semibold prose-h2:tracking-tight prose-h2:text-foreground prose-h2:flex prose-h2:items-center prose-h2:gap-2 prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-li:marker:text-primary prose-pre:bg-muted/40 prose-pre:border prose-pre:border-border/60 prose-code:bg-muted/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none prose-h2:before:content-[''] prose-h2:before:h-1 prose-h2:before:w-6 prose-h2:before:bg-gradient-to-r prose-h2:before:from-primary prose-h2:before:to-fuchsia-500 prose-h2:before:rounded-full"
+    >
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+    </motion.article>
+  );
+}
+
 function ExplanationSkeleton() {
   return (
-    <div className="space-y-3">
-      <div className="h-4 w-3/4 animate-pulse rounded bg-muted/50" />
-      <div className="h-4 w-full animate-pulse rounded bg-muted/40" />
-      <div className="h-4 w-5/6 animate-pulse rounded bg-muted/40" />
-      <div className="mt-4 h-4 w-2/3 animate-pulse rounded bg-muted/50" />
-      <div className="h-4 w-full animate-pulse rounded bg-muted/30" />
-      <div className="h-4 w-4/5 animate-pulse rounded bg-muted/30" />
-      <div className="h-4 w-3/4 animate-pulse rounded bg-muted/30" />
+    <div className="space-y-6">
+      {[
+        ["w-1/3", ["w-3/4", "w-full", "w-5/6"]],
+        ["w-1/4", ["w-full", "w-11/12", "w-4/5", "w-3/4", "w-2/3"]],
+        ["w-2/5", ["w-5/6", "w-full", "w-3/4"]],
+      ].map(([h, lines], i) => (
+        <div key={i} className="space-y-3">
+          <div className={`h-5 ${h} animate-pulse rounded bg-muted/60`} />
+          {(lines as string[]).map((w, j) => (
+            <div
+              key={j}
+              className={`h-3.5 ${w} animate-pulse rounded bg-muted/30`}
+              style={{ animationDelay: `${(i * 4 + j) * 60}ms` }}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

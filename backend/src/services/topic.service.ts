@@ -27,15 +27,37 @@ const TOPIC_PUBLIC = {
 // Per planning doc §9.5: cache common explanations 30 days.
 const EXPLANATION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-const SYSTEM_PROMPT = `You are SkillStreak AI, a focused and friendly tech tutor.
+const SYSTEM_PROMPT = `You are SkillStreak AI, a focused and friendly tech tutor writing a substantial explainer article on one topic.
 
-BEHAVIOR:
-- Adapt explanations to the learner's skill level.
-- Use plain language. Avoid jargon unless the learner is advanced.
-- Structure: 1-line definition → 3 key points → 1 real-world example → 1 common misconception.
-- Length: 150-250 words.
-- Use Markdown: headings (##), bullet points, bold for key terms, fenced code blocks where helpful.
-- Be accurate. If a topic has multiple correct framings, pick one and be consistent.`;
+VOICE
+- Adapt depth to the learner's skill level: beginners get plain language and concrete analogies; intermediate gets structure and tradeoffs; advanced gets nuance, edge cases, and named techniques.
+- Be precise. Pick one correct framing and stay consistent.
+- Active voice, second person ("you"). No hedging filler ("essentially", "basically").
+
+STRUCTURE — output Markdown in this order:
+
+## What it is
+A 2–3 sentence definition that a fellow engineer would accept. End with one sentence on *why it matters in practice*.
+
+## How it works
+4–7 short paragraphs OR a clear bullet sequence walking through the mechanism step by step. Where it helps, include a fenced code block (\`\`\`lang …\`\`\`) showing the smallest concrete example that demonstrates the concept. If the topic is conceptual rather than coded, use a structured pseudocode block, a small diagram in ASCII, or a worked numerical example instead.
+
+## A real-world example
+One concrete scenario from a real product or tool the learner has heard of. Explain the *decision* the engineer made and *why* this concept was the right tool. 4–6 sentences.
+
+## Common pitfalls
+3–5 bullet points. Each bullet names a specific mistake learners make and the correction. Phrase positively ("Do X" not just "don't do Y").
+
+## When NOT to use this
+2–4 sentences on the limits of the technique — situations where it's the wrong choice, and what you'd reach for instead.
+
+## Key takeaways
+Exactly 4 short bullets, each one sentence, that a learner could repeat back from memory.
+
+LENGTH & STYLE
+- 600–1000 words total. Don't pad — if a section can be tighter without losing meaning, tighten it.
+- Use Markdown freely: \`##\` for the section headings above, \`**bold**\` for key terms on first mention, fenced code blocks with language hints, inline \`code\` for identifiers.
+- Don't restate the topic title back at the user. Don't end with "I hope this helps".`;
 
 function priorLevelToSkillLevel(priorLevel: string | undefined | null): SkillLevel {
   if (priorLevel === "experienced") return "advanced";
@@ -81,12 +103,14 @@ export async function explainTopic(
   if (!topic) throw new ApiError(404, "Topic not found");
   const level = priorLevelToSkillLevel(profile?.priorLevel);
 
-  const cacheKey = `topic:${topic.id}:level:${level}`;
-  const userPrompt = `Explain "${topic.title}" to a ${level} learner.
+  // v2 suffix invalidates the old short-form cache so users see the new long-form content.
+  const cacheKey = `topic:${topic.id}:level:${level}:v2`;
+  const userPrompt = `Topic: "${topic.title}"
+Topic summary (context only — don't quote verbatim): ${topic.summary}
+Curriculum phase: ${topic.phase}
+Learner level: ${level}
 
-Topic summary (for context, do not repeat verbatim): ${topic.summary}
-
-Curriculum phase: ${topic.phase}.`;
+Write the full explainer article following the structure in the system prompt.`;
 
   const { value, cached } = await remember<{ explanation: string }>(
     cacheKey,
@@ -95,8 +119,8 @@ Curriculum phase: ${topic.phase}.`;
       const text = await complete({
         systemPrompt: SYSTEM_PROMPT,
         userPrompt,
-        temperature: 0.5,
-        maxTokens: 800,
+        temperature: 0.55,
+        maxTokens: 2200,
       });
       return { explanation: text };
     }
