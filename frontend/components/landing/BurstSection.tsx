@@ -35,10 +35,9 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
+import { HeroCTA } from "./HeroCTA";
 
 export function BurstSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -204,32 +203,8 @@ export function BurstSection() {
             move, and keeps you accountable.
           </p>
 
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            {/* Primary CTA — bright, glowing, with a shimmer + arrow nudge on hover. */}
-            <Link href="/register" className="group/cta relative inline-block">
-              {/* Pulsing halo behind the button — sells the "click me" energy */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -inset-1 rounded-full bg-gradient-to-r from-amber-300 via-fuchsia-300 to-amber-300 opacity-70 blur-md transition-opacity duration-300 animate-cta-glow group-hover/cta:opacity-100"
-              />
-              <span className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-9 py-4 text-base font-bold tracking-wide text-violet-900 shadow-2xl shadow-fuchsia-700/40 transition-transform duration-300 group-hover/cta:scale-[1.04] group-active/cta:scale-[0.98]">
-                {/* Diagonal shimmer that sweeps across on hover */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent transition-transform duration-700 ease-out group-hover/cta:translate-x-full"
-                />
-                <span className="relative">Get started for free</span>
-                <ArrowRight className="relative h-5 w-5 transition-transform duration-300 group-hover/cta:translate-x-1" />
-              </span>
-            </Link>
-
-            <Link
-              href="/login"
-              className="group/sec relative inline-flex items-center justify-center rounded-full border-2 border-white/50 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-white hover:bg-white/15"
-            >
-              <span className="relative">I already have an account</span>
-              <ArrowRight className="ml-1 h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover/sec:translate-x-0 group-hover/sec:opacity-100" />
-            </Link>
+          <div className="mt-6">
+            <HeroCTA />
           </div>
 
           <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/75">

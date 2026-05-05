@@ -6,10 +6,9 @@
  * grid still get a clear "sign up" prompt without scrolling back up.
  */
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
+import { HeroCTA } from "./HeroCTA";
 
 export function FinalCTA() {
   return (
@@ -49,25 +48,8 @@ export function FinalCTA() {
             Sign up in 60 seconds. Start with the topic the AI tutor recommends.
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-white px-8 py-6 text-base font-semibold text-violet-700 shadow-2xl shadow-fuchsia-500/30 hover:bg-white/90 hover:shadow-fuchsia-500/50"
-            >
-              <Link href="/register">
-                Get started for free
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="rounded-full border-white/40 bg-transparent px-8 py-6 text-base font-medium text-white hover:border-white/70 hover:bg-white/10"
-            >
-              <Link href="/login">I already have an account</Link>
-            </Button>
+          <div className="mt-8">
+            <HeroCTA />
           </div>
         </div>
       </motion.div>
