@@ -123,6 +123,29 @@
     }
   }
 
+  /* Pulsing halo behind the primary CTA — the "click me" energy. */
+  .animate-cta-glow {
+    animation: cta-glow 2.4s ease-in-out infinite;
+  }
+  @keyframes cta-glow {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.95; transform: scale(1.04); }
+  }
+
+  /* Top-of-page route progress bar */
+  .route-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    z-index: 100;
+    transform-origin: left;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    pointer-events: none;
+  }
+
   /* Loader used by SplineScene's Suspense fallback. */
   .loader {
     display: inline-block;

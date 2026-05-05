@@ -45,10 +45,12 @@ export function BurstSection() {
   const aRef = useRef<HTMLSpanElement | null>(null);
   const reduce = useReducedMotion();
 
-  // Trigger as soon as 15% of the section enters view — feels more "in sync"
-  // with the user's scroll than waiting for the section to be 30% visible.
-  // `once: false` so the animation replays whenever the section re-enters.
-  const isInView = useInView(sectionRef, { once: false, amount: 0.15 });
+  // Trigger only when the section is roughly centred in the viewport, so the
+  // user actually sees the burst happen — not finishes off-screen as they're
+  // still scrolling toward it. `amount: 0.55` ≈ half the section visible;
+  // `once: true` because once the user has seen the reveal we don't want to
+  // replay it every time they scroll back.
+  const isInView = useInView(sectionRef, { once: true, amount: 0.55 });
 
   const [origin, setOrigin] = useState({ x: 50, y: 30 });
 
@@ -203,24 +205,31 @@ export function BurstSection() {
           </p>
 
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-white px-8 py-6 text-base font-semibold text-violet-700 shadow-2xl shadow-fuchsia-500/30 hover:bg-white/90 hover:shadow-fuchsia-500/50"
+            {/* Primary CTA — bright, glowing, with a shimmer + arrow nudge on hover. */}
+            <Link href="/register" className="group/cta relative inline-block">
+              {/* Pulsing halo behind the button — sells the "click me" energy */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -inset-1 rounded-full bg-gradient-to-r from-amber-300 via-fuchsia-300 to-amber-300 opacity-70 blur-md transition-opacity duration-300 animate-cta-glow group-hover/cta:opacity-100"
+              />
+              <span className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-9 py-4 text-base font-bold tracking-wide text-violet-900 shadow-2xl shadow-fuchsia-700/40 transition-transform duration-300 group-hover/cta:scale-[1.04] group-active/cta:scale-[0.98]">
+                {/* Diagonal shimmer that sweeps across on hover */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent transition-transform duration-700 ease-out group-hover/cta:translate-x-full"
+                />
+                <span className="relative">Get started for free</span>
+                <ArrowRight className="relative h-5 w-5 transition-transform duration-300 group-hover/cta:translate-x-1" />
+              </span>
+            </Link>
+
+            <Link
+              href="/login"
+              className="group/sec relative inline-flex items-center justify-center rounded-full border-2 border-white/50 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-white hover:bg-white/15"
             >
-              <Link href="/register">
-                Get started for free
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="rounded-full border-white/40 bg-transparent px-8 py-6 text-base font-medium text-white hover:border-white/70 hover:bg-white/10"
-            >
-              <Link href="/login">I already have an account</Link>
-            </Button>
+              <span className="relative">I already have an account</span>
+              <ArrowRight className="ml-1 h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover/sec:translate-x-0 group-hover/sec:opacity-100" />
+            </Link>
           </div>
 
           <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/75">

@@ -225,9 +225,6 @@ export default function TopicPage() {
               )}
             </div>
 
-            <p className="mt-6 border-t border-border/60 pt-3 text-xs text-muted-foreground">
-              AI responses may occasionally be inaccurate. Verify critical information.
-            </p>
           </div>
         </div>
 

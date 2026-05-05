@@ -51,15 +51,18 @@ export default function DashboardLayout({
         Skip to content
       </a>
       <Navbar />
-      <AnimatePresence mode="wait" initial={false}>
+      {/* No `mode="wait"` — old page fades out underneath the new one rather
+          than blocking the new one from rendering. Faster enter (180ms) and
+          a near-instant exit make navigation feel immediate. */}
+      <AnimatePresence initial={false}>
         <motion.div
           key={pathname}
           id="main"
           tabIndex={-1}
-          initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+          initial={{ opacity: 0, y: reduce ? 0 : 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: reduce ? 0 : -4 }}
-          transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : 0.18, ease: [0.22, 1, 0.36, 1] }}
         >
           {children}
         </motion.div>
