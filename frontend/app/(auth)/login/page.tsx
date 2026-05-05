@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, useReducedMotion } from "framer-motion";
 import { AlertCircle, ArrowUp, Eye, EyeOff, Loader2 } from "lucide-react";
+// motion is kept for the error banner reveal; form itself uses a CSS shake
+// to keep the hydrated DOM identical to the server-rendered shell.
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,18 +121,12 @@ export default function LoginPage() {
         Pick up your streak where you left off.
       </p>
 
-      <motion.form
+      <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-6 space-y-4"
-        noValidate
-        // Re-key on every error to retrigger the shake animation.
+        className={`mt-6 space-y-4 ${errorBumpKey > 0 && errorState ? "animate-shake" : ""}`}
+        // Re-key on every error to retrigger the CSS shake animation.
         key={`form-${errorBumpKey}`}
-        animate={
-          errorState && !reduce
-            ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }
-            : { x: 0 }
-        }
-        transition={{ duration: 0.45, ease: "easeInOut" }}
+        noValidate
       >
         <div>
           <Label htmlFor="email">Email</Label>
@@ -252,7 +248,7 @@ export default function LoginPage() {
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
-      </motion.form>
+      </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         New to SkillStreak?{" "}

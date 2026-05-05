@@ -113,17 +113,11 @@ export default function RegisterPage() {
         Start your streak in under a minute.
       </p>
 
-      <motion.form
+      <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-6 space-y-4"
-        noValidate
+        className={`mt-6 space-y-4 ${errorBumpKey > 0 && formError ? "animate-shake" : ""}`}
         key={`form-${errorBumpKey}`}
-        animate={
-          formError && !reduce
-            ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }
-            : { x: 0 }
-        }
-        transition={{ duration: 0.45, ease: "easeInOut" }}
+        noValidate
       >
         <div>
           <Label htmlFor="name">Full name</Label>
@@ -273,7 +267,7 @@ export default function RegisterPage() {
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Creating account…" : "Create account"}
         </Button>
-      </motion.form>
+      </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
