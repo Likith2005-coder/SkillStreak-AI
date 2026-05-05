@@ -21,9 +21,6 @@ import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FinalCTA } from "@/components/landing/FinalCTA";
-import { ScrollProgress } from "@/components/landing/ScrollProgress";
-import { TiltCard } from "@/components/landing/TiltCard";
-import { RevealText } from "@/components/landing/RevealText";
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -44,8 +41,6 @@ const DOMAIN_TICKER = [
 export default function LandingPage() {
   return (
     <main className="relative overflow-x-hidden bg-background">
-      {/* Scroll-position gradient bar at the top — sells "you're making progress" */}
-      <ScrollProgress />
       {/* Aurora drifts behind everything */}
       <div className="aurora-bg" aria-hidden />
 
@@ -145,10 +140,7 @@ export default function LandingPage() {
               Everything in one place
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-5xl">
-              <RevealText text="Built like a learning" />{" "}
-              <span className="gradient-text">
-                <RevealText text="superpower." delay={0.2} />
-              </span>
+              Built like a learning <span className="gradient-text">superpower</span>.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
               Five tightly-integrated systems that work together so you don't
@@ -249,17 +241,12 @@ function BentoCard({
   accent: string;
 }) {
   return (
-    <TiltCard
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 transition-colors hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
+    <div
+      className={`group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
     >
-      <div
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity duration-500 group-hover:opacity-100 ${gradient}`}
-        aria-hidden
-      />
-      <div className="relative" style={{ transform: "translateZ(20px)" }}>
-        <div
-          className={`inline-flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${accent}`}
-        >
+      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity duration-500 group-hover:opacity-100 ${gradient}`} />
+      <div className="relative">
+        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ${accent}`}>
           {icon}
         </div>
         <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
@@ -269,7 +256,7 @@ function BentoCard({
           {copy}
         </p>
       </div>
-    </TiltCard>
+    </div>
   );
 }
 
