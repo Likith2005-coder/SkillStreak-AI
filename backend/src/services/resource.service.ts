@@ -3,14 +3,13 @@
  *
  * Strategy:
  * - Persisted in the `resources` table; cached for 7 days.
- * - YouTube Data API v3 is OPTIONAL: if YOUTUBE_API_KEY is set, we'd hit the
- *   real API for video search. Not yet wired — see notes below. For now we
- *   have the LLM propose 3-5 video search queries and we build canonical
- *   `youtube.com/results?search_query=...` links. They're not fabricated URLs;
- *   they're real search pages the learner can click into.
+ * - The LLM proposes a direct YouTube watch URL plus a fallback search query
+ *   for each video. We validate the URL — if it parses as a youtube.com/watch
+ *   URL, we use it directly (user lands on a real video). If validation
+ *   fails (hallucinated ID, wrong domain), we fall back to a canonical
+ *   `youtube.com/results?search_query=...` link.
  * - For docs, the LLM is asked to suggest titles + canonical URLs from a
  *   well-known source list (MDN, official framework docs, OWASP, etc.).
- *   Quality scoring + click-through tracking come later.
  */
 
 import { prisma } from "../config/db";
@@ -29,7 +28,12 @@ Output ONLY this JSON shape — no Markdown fences, no commentary:
 
 {
   "videos": [
-    { "title": "string — short descriptive title", "channel": "string — channel name", "searchQuery": "string — concise YouTube search query under 80 chars" }
+    {
+      "title": "string — short descriptive title",
+      "channel": "string — channel name",
+      "videoUrl": "string — full https://www.youtube.com/watch?v=ID URL of a real video you are confident exists",
+      "searchQuery": "string — concise YouTube search query under 80 chars (used as fallback if videoUrl can't be verified)"
+    }
   ],
   "docs": [
     { "title": "string", "source": "string — e.g. MDN, OWASP, Wikipedia, Mozilla, web.dev, scikit-learn, fast.ai", "url": "string — full https URL on the source's official domain" }
@@ -39,11 +43,12 @@ Output ONLY this JSON shape — no Markdown fences, no commentary:
 RULES
 - Exactly ${MAX_VIDEOS} videos and ${MAX_DOCS} docs.
 - Video channel suggestions should be reputable educational channels (e.g. freeCodeCamp, NetworkChuck, 3Blue1Brown, Computerphile, Fireship, IBM Technology, CS50, Krish Naik, Stanford Online).
+- For "videoUrl": output the full URL of a real, well-known video on that channel that you remember exists. Only suggest a videoUrl if you are confident the ID is correct. If unsure, leave videoUrl as an empty string and we'll use searchQuery instead.
 - Doc URLs must be on the source's official domain. If unsure of a specific deep link, give the source's main hub URL.
 - Prefer evergreen, beginner-readable resources unless the topic is clearly advanced.`;
 
 type LlmResource = {
-  videos: Array<{ title: string; channel: string; searchQuery: string }>;
+  videos: Array<{ title: string; channel: string; videoUrl: string; searchQuery: string }>;
   docs: Array<{ title: string; source: string; url: string }>;
 };
 
@@ -63,6 +68,44 @@ function safeUrl(u: string): string | null {
 
 function buildYoutubeSearchUrl(query: string): string {
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(query.slice(0, 200))}`;
+}
+
+/**
+ * Validate the LLM-proposed videoUrl. Returns the YouTube video ID if the
+ * URL parses as a real watch URL on youtube.com or youtu.be, otherwise null.
+ * We accept watch?v=ID, youtu.be/ID, and youtube.com/embed/ID forms.
+ */
+function extractYoutubeVideoId(rawUrl: string): string | null {
+  if (!rawUrl) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+
+  const host = parsed.hostname.replace(/^www\./, "");
+  let id: string | null = null;
+  if (host === "youtube.com" || host === "m.youtube.com") {
+    if (parsed.pathname === "/watch") {
+      id = parsed.searchParams.get("v");
+    } else if (parsed.pathname.startsWith("/embed/")) {
+      id = parsed.pathname.slice("/embed/".length);
+    } else if (parsed.pathname.startsWith("/shorts/")) {
+      id = parsed.pathname.slice("/shorts/".length);
+    }
+  } else if (host === "youtu.be") {
+    id = parsed.pathname.replace(/^\//, "");
+  }
+  if (!id) return null;
+  // YouTube IDs are 11 chars, [A-Za-z0-9_-].
+  if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
+  return id;
+}
+
+function youtubeThumbnail(videoId: string): string {
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
 
 async function generateForTopic(topic: { id: string; title: string; summary: string }): Promise<LlmResource> {
@@ -96,6 +139,12 @@ async function generateForTopic(topic: { id: string; title: string; summary: str
           typeof v.channel === "string" &&
           typeof v.searchQuery === "string"
       )
+      .map((v) => ({
+        title: v.title,
+        channel: v.channel,
+        videoUrl: typeof v.videoUrl === "string" ? v.videoUrl : "",
+        searchQuery: v.searchQuery,
+      }))
       .slice(0, MAX_VIDEOS),
     docs: obj.docs
       .filter(
@@ -155,14 +204,19 @@ export async function getResources(
 
   const videoRows = llm.videos
     .map((v, i) => {
-      const url = buildYoutubeSearchUrl(v.searchQuery);
+      // Prefer the direct video URL when the LLM gave one and it parses as a
+      // real watch URL. Fall back to a search-results page if not.
+      const videoId = extractYoutubeVideoId(v.videoUrl);
+      const url = videoId
+        ? `https://www.youtube.com/watch?v=${videoId}`
+        : buildYoutubeSearchUrl(v.searchQuery);
       return {
         topicId,
         type: "video",
         title: v.title,
         url,
         source: v.channel || "YouTube",
-        thumbnailUrl: null,
+        thumbnailUrl: videoId ? youtubeThumbnail(videoId) : null,
         durationSeconds: null,
         orderIndex: i,
         qualityScore: 0,
