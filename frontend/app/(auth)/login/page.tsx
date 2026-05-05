@@ -135,7 +135,7 @@ export default function LoginPage() {
             type="email"
             autoComplete="email"
             className={`mt-1.5 transition-colors ${
-              errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
+              errors.email || errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
             }`}
             aria-invalid={!!errors.email || errorState}
             placeholder="you@example.com"
@@ -174,7 +174,7 @@ export default function LoginPage() {
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               className={`pr-10 transition-colors ${
-                errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
+                errors.password || errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
               }`}
               aria-invalid={!!errors.password || errorState}
               placeholder="••••••••"
@@ -240,14 +240,25 @@ export default function LoginPage() {
           </motion.div>
         )}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isSubmitting || !isValid}
-        >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Signing in…" : "Sign in"}
-        </Button>
+        <div>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || !isValid}
+          >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Signing in…" : "Sign in"}
+          </Button>
+          {!isValid && !isSubmitting && (
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              {errors.email
+                ? "Enter a valid email address to continue"
+                : errors.password
+                  ? "Enter your password to continue"
+                  : "Fill in both fields to continue"}
+            </p>
+          )}
+        </div>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">

@@ -103,8 +103,11 @@ export default function RegisterPage() {
     }
   };
 
-  const errorClass = (field: FieldKind) =>
-    errorField === field ? "border-destructive/60 focus-visible:ring-destructive" : "";
+  // A field is visually "invalid" if RHF has a Zod error for it OR the
+  // backend flagged it (e.g. 409 email-already-exists).
+  const fieldInvalid = (k: keyof RegisterValues) => !!errors[k] || errorField === k;
+  const errorClass = (k: keyof RegisterValues) =>
+    fieldInvalid(k) ? "border-destructive/60 focus-visible:ring-destructive" : "";
 
   return (
     <div>
@@ -256,17 +259,25 @@ export default function RegisterPage() {
           </motion.div>
         )}
 
-        <Button
-          type="submit"
-          className="w-full"
-          // Disabled until every field passes Zod. With mode:"all" isValid is
-          // live, so the button can only fire when the form is genuinely
-          // submittable — no chance of "Creating account…" with a bad email.
-          disabled={isSubmitting || !isValid}
-        >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Creating account…" : "Create account"}
-        </Button>
+        <div>
+          <Button
+            type="submit"
+            className="w-full"
+            // Disabled until every field passes Zod. With mode:"all" isValid is
+            // live, so the button can only fire when the form is genuinely
+            // submittable — no chance of "Creating account…" with a bad email.
+            disabled={isSubmitting || !isValid}
+          >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Creating account…" : "Create account"}
+          </Button>
+          {/* Tell the user WHY the button is grey — top-site UX pattern */}
+          {!isValid && !isSubmitting && (
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              {nextHint(errors, password ?? "")}
+            </p>
+          )}
+        </div>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
@@ -288,6 +299,20 @@ function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
       {children}
     </li>
   );
+}
+
+function nextHint(
+  errors: Record<string, { message?: string } | undefined>,
+  password: string
+): string {
+  if (errors.name) return "Enter your full name to continue";
+  if (errors.email) return "Enter a valid email address to continue";
+  if (errors.password) {
+    if (!password) return "Pick a password to continue";
+    if (password.length < 8) return "Password needs at least 8 characters";
+    return errors.password.message ?? "Fix the password to continue";
+  }
+  return "Fill in all fields to continue";
 }
 
 function scorePassword(p: string): {
