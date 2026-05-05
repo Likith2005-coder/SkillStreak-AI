@@ -123,13 +123,13 @@
     }
   }
 
-  /* Pulsing halo behind the primary CTA — the "click me" energy. */
-  .animate-cta-glow {
-    animation: cta-glow 2.4s ease-in-out infinite;
+  /* Calm breathing halo behind the primary CTA — slow, low-opacity. */
+  .animate-cta-breathe {
+    animation: cta-breathe 4s ease-in-out infinite;
   }
-  @keyframes cta-glow {
-    0%, 100% { opacity: 0.55; transform: scale(1); }
-    50%      { opacity: 0.95; transform: scale(1.04); }
+  @keyframes cta-breathe {
+    0%, 100% { opacity: 0.25; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(1.03); }
   }
 
   /* Top-of-page route progress bar */

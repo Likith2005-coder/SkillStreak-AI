@@ -16,7 +16,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { HealthIndicator } from "@/components/HealthIndicator";
 import { SplineScene } from "@/components/3d/SplineScene";
 import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
@@ -89,13 +88,6 @@ export default function LandingPage() {
               Leaderboard
             </Pill>
           </ul>
-
-          <div className="mt-8 flex items-center justify-center gap-4 lg:justify-start">
-            <HealthIndicator />
-            <span className="text-xs text-muted-foreground/60">
-              v0.7.0 · live
-            </span>
-          </div>
 
           <div className="mt-10 flex items-center justify-center gap-3 text-sm text-muted-foreground lg:justify-start">
             <ChevronDown className="h-4 w-4 animate-bounce" />
