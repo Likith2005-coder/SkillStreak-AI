@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { AlertCircle, ArrowUp, Check, Eye, EyeOff, Loader2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,11 +27,18 @@ const registerSchema = z.object({
 });
 type RegisterValues = z.infer<typeof registerSchema>;
 
+type FieldKind = "name" | "email" | "password" | null;
+
 export default function RegisterPage() {
   const router = useRouter();
   const setAuth = useUserStore((s) => s.setAuth);
+  const reduce = useReducedMotion();
+
   const [formError, setFormError] = useState<string | null>(null);
+  const [errorBumpKey, setErrorBumpKey] = useState(0);
+  const [errorField, setErrorField] = useState<FieldKind>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   const { setIsTyping, setPasswordLength, setPasswordVisible } = useAuthForm();
   useEffect(() => {
@@ -41,6 +49,7 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -52,16 +61,45 @@ export default function RegisterPage() {
     setPasswordLength(password?.length ?? 0);
   }, [password, setPasswordLength]);
 
+  // Caps Lock detection — same UX touch as login.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (typeof e.getModifierState === "function") {
+        setCapsLockOn(e.getModifierState("CapsLock"));
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+    };
+  }, []);
+
+  // Live password strength meter — visible only once the user starts typing.
+  const strength = useMemo(() => scorePassword(password ?? ""), [password]);
+
   const onSubmit = async (values: RegisterValues) => {
     setFormError(null);
+    setErrorField(null);
     try {
       const { user, token } = await registerUser(values);
       setAuth(user, token);
       router.replace("/onboarding");
     } catch (err) {
-      setFormError(apiErrorMessage(err, "Registration failed"));
+      const msg = apiErrorMessage(err, "We couldn't create your account.");
+      // The backend uses 409 with "An account with that email already exists".
+      // Surface that under the email field specifically.
+      const isDup = /account with that email already exists/i.test(msg);
+      setFormError(isDup ? "An account with that email already exists. Try signing in instead." : msg);
+      setErrorField(isDup ? "email" : null);
+      setErrorBumpKey((k) => k + 1);
+      if (isDup) setTimeout(() => setFocus("email"), 0);
     }
   };
+
+  const errorClass = (field: FieldKind) =>
+    errorField === field ? "border-destructive/60 focus-visible:ring-destructive" : "";
 
   return (
     <div>
@@ -70,16 +108,31 @@ export default function RegisterPage() {
         Start your streak in under a minute.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
+      <motion.form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mt-6 space-y-4"
+        noValidate
+        key={`form-${errorBumpKey}`}
+        animate={
+          formError && !reduce
+            ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }
+            : { x: 0 }
+        }
+        transition={{ duration: 0.45, ease: "easeInOut" }}
+      >
         <div>
           <Label htmlFor="name">Full name</Label>
           <Input
             id="name"
             autoComplete="name"
-            className="mt-1.5"
+            placeholder="Ada Lovelace"
+            className={`mt-1.5 transition-colors ${errorClass("name")}`}
             aria-invalid={!!errors.name}
             {...register("name", {
-              onChange: () => setIsTyping(true),
+              onChange: () => {
+                setIsTyping(true);
+                if (formError) setFormError(null);
+              },
               onBlur: () => setIsTyping(false),
             })}
             onFocus={() => setIsTyping(true)}
@@ -93,10 +146,14 @@ export default function RegisterPage() {
             id="email"
             type="email"
             autoComplete="email"
-            className="mt-1.5"
-            aria-invalid={!!errors.email}
+            placeholder="you@example.com"
+            className={`mt-1.5 transition-colors ${errorClass("email")}`}
+            aria-invalid={!!errors.email || errorField === "email"}
             {...register("email", {
-              onChange: () => setIsTyping(true),
+              onChange: () => {
+                setIsTyping(true);
+                if (formError) setFormError(null);
+              },
               onBlur: () => setIsTyping(false),
             })}
             onFocus={() => setIsTyping(true)}
@@ -111,10 +168,14 @@ export default function RegisterPage() {
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
-              className="pr-10"
+              placeholder="••••••••"
+              className={`pr-10 transition-colors ${errorClass("password")}`}
               aria-invalid={!!errors.password}
               {...register("password", {
-                onChange: () => setIsTyping(true),
+                onChange: () => {
+                  setIsTyping(true);
+                  if (formError) setFormError(null);
+                },
                 onBlur: () => setIsTyping(false),
               })}
               onFocus={() => setIsTyping(true)}
@@ -128,26 +189,79 @@ export default function RegisterPage() {
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+
+          {capsLockOn && (password?.length ?? 0) > 0 && (
+            <motion.p
+              initial={{ opacity: 0, y: -2 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-400"
+            >
+              <ArrowUp className="h-3 w-3" />
+              Caps Lock is on
+            </motion.p>
+          )}
+
           <FieldError message={errors.password?.message} />
-          <p className="mt-1 text-xs text-muted-foreground">
-            Use at least 8 characters. Mix it up.
-          </p>
+
+          {/* Live password strength meter */}
+          {(password?.length ?? 0) > 0 && (
+            <div className="mt-2 space-y-1.5">
+              <div className="flex h-1 gap-1">
+                {[0, 1, 2, 3].map((i) => (
+                  <span
+                    key={i}
+                    className={`flex-1 rounded-full transition-colors ${
+                      i < strength.score
+                        ? strength.score === 1
+                          ? "bg-rose-500"
+                          : strength.score === 2
+                            ? "bg-amber-500"
+                            : strength.score === 3
+                              ? "bg-emerald-500"
+                              : "bg-emerald-400"
+                        : "bg-muted/40"
+                    }`}
+                  />
+                ))}
+              </div>
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                <Rule ok={strength.checks.length}>8+ characters</Rule>
+                <Rule ok={strength.checks.mix}>Letters + numbers</Rule>
+                <Rule ok={strength.checks.case}>Upper + lower case</Rule>
+                <Rule ok={strength.checks.symbol}>A symbol</Rule>
+              </ul>
+            </div>
+          )}
         </div>
 
         {formError && (
-          <div
-            className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          <motion.div
+            initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
             role="alert"
+            aria-live="polite"
           >
-            {formError}
-          </div>
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <p className="font-medium leading-tight">
+              {formError}{" "}
+              {errorField === "email" && (
+                <Link
+                  href="/login"
+                  className="font-medium underline-offset-2 hover:underline"
+                >
+                  Sign in →
+                </Link>
+              )}
+            </p>
+          </motion.div>
         )}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Creating account…" : "Create account"}
         </Button>
-      </form>
+      </motion.form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
@@ -157,4 +271,30 @@ export default function RegisterPage() {
       </p>
     </div>
   );
+}
+
+function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
+  return (
+    <li
+      className={`inline-flex items-center gap-1 ${ok ? "text-emerald-400" : "text-muted-foreground"}`}
+    >
+      {ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3 opacity-50" />}
+      {children}
+    </li>
+  );
+}
+
+function scorePassword(p: string): {
+  score: 0 | 1 | 2 | 3 | 4;
+  checks: { length: boolean; mix: boolean; case: boolean; symbol: boolean };
+} {
+  const length = p.length >= 8;
+  const mix = /[a-z]/i.test(p) && /\d/.test(p);
+  const caseMix = /[a-z]/.test(p) && /[A-Z]/.test(p);
+  const symbol = /[^A-Za-z0-9]/.test(p);
+  const passed = [length, mix, caseMix, symbol].filter(Boolean).length;
+  return {
+    score: passed as 0 | 1 | 2 | 3 | 4,
+    checks: { length, mix, case: caseMix, symbol },
+  };
 }

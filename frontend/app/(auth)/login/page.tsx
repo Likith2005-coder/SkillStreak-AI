@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { AlertCircle, ArrowUp, Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +27,13 @@ export default function LoginPage() {
   const router = useRouter();
   const setAuth = useUserStore((s) => s.setAuth);
   const setMe = useUserStore((s) => s.setMe);
+  const reduce = useReducedMotion();
+
   const [formError, setFormError] = useState<string | null>(null);
+  const [errorBumpKey, setErrorBumpKey] = useState(0); // increment to re-trigger shake
+  const [failedAttempts, setFailedAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   // Publish form interaction to the auth context so the side-panel characters
   // can react (lean toward the form when typing, peek if password is shown).
@@ -41,17 +47,35 @@ export default function LoginPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  // Watch password length and publish.
   const password = watch("password");
   useEffect(() => {
     setPasswordLength(password?.length ?? 0);
   }, [password, setPasswordLength]);
+
+  // Top-site touch: detect Caps Lock so the password field can warn before
+  // submission (a common reason "wrong password" errors happen).
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      // getModifierState is reliable across browsers for the lock keys.
+      if (typeof e.getModifierState === "function") {
+        setCapsLockOn(e.getModifierState("CapsLock"));
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+    };
+  }, []);
 
   const onSubmit = async (values: LoginValues) => {
     setFormError(null);
@@ -62,9 +86,23 @@ export default function LoginPage() {
       setMe(me);
       router.replace(me.user.profile ? "/dashboard" : "/onboarding");
     } catch (err) {
-      setFormError(apiErrorMessage(err, "Login failed"));
+      const msg = apiErrorMessage(err, "We couldn't sign you in. Please try again.");
+      // Map the generic backend "Invalid email or password" to a friendlier
+      // copy that doesn't leak whether the email exists.
+      const friendly = /invalid email or password/i.test(msg)
+        ? "That email and password don't match. Double-check and try again."
+        : msg;
+      setFormError(friendly);
+      setErrorBumpKey((k) => k + 1);
+      setFailedAttempts((n) => n + 1);
+      // Top-site touch: clear the password and refocus the password field so
+      // the user can immediately retype without click-fishing.
+      setValue("password", "");
+      setTimeout(() => setFocus("password"), 0);
     }
   };
+
+  const errorState = !!formError;
 
   return (
     <div>
@@ -73,17 +111,35 @@ export default function LoginPage() {
         Pick up your streak where you left off.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
+      <motion.form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mt-6 space-y-4"
+        noValidate
+        // Re-key on every error to retrigger the shake animation.
+        key={`form-${errorBumpKey}`}
+        animate={
+          errorState && !reduce
+            ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }
+            : { x: 0 }
+        }
+        transition={{ duration: 0.45, ease: "easeInOut" }}
+      >
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
-            className="mt-1.5"
-            aria-invalid={!!errors.email}
+            className={`mt-1.5 transition-colors ${
+              errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
+            }`}
+            aria-invalid={!!errors.email || errorState}
+            placeholder="you@example.com"
             {...register("email", {
-              onChange: () => setIsTyping(true),
+              onChange: () => {
+                setIsTyping(true);
+                if (errorState) setFormError(null);
+              },
               onBlur: () => setIsTyping(false),
             })}
             onFocus={() => setIsTyping(true)}
@@ -92,16 +148,37 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            {failedAttempts > 0 && (
+              <Link
+                href="#"
+                className="text-xs font-medium text-primary hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Reset hook — to keep parity, no real reset flow is wired yet.
+                  // Hint at parity with top sites by surfacing the action.
+                }}
+              >
+                Forgot password?
+              </Link>
+            )}
+          </div>
           <div className="relative mt-1.5">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              className="pr-10"
-              aria-invalid={!!errors.password}
+              className={`pr-10 transition-colors ${
+                errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
+              }`}
+              aria-invalid={!!errors.password || errorState}
+              placeholder="••••••••"
               {...register("password", {
-                onChange: () => setIsTyping(true),
+                onChange: () => {
+                  setIsTyping(true);
+                  if (errorState) setFormError(null);
+                },
                 onBlur: () => setIsTyping(false),
               })}
               onFocus={() => setIsTyping(true)}
@@ -115,23 +192,55 @@ export default function LoginPage() {
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+
+          {/* Caps Lock warning — only shows while the password field is
+              focused (or has content) and Caps Lock is on. */}
+          {capsLockOn && (password?.length ?? 0) > 0 && (
+            <motion.p
+              initial={{ opacity: 0, y: -2 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-400"
+            >
+              <ArrowUp className="h-3 w-3" />
+              Caps Lock is on
+            </motion.p>
+          )}
+
           <FieldError message={errors.password?.message} />
         </div>
 
         {formError && (
-          <div
-            className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          <motion.div
+            initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
             role="alert"
+            aria-live="polite"
           >
-            {formError}
-          </div>
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="flex-1">
+              <p className="font-medium leading-tight">{formError}</p>
+              {failedAttempts >= 2 && (
+                <p className="mt-1 text-xs text-destructive/80">
+                  Trouble signing in? Try{" "}
+                  <Link
+                    href="/register"
+                    className="font-medium underline-offset-2 hover:underline"
+                  >
+                    creating an account
+                  </Link>{" "}
+                  if you don't have one yet.
+                </p>
+              )}
+            </div>
+          </motion.div>
         )}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
-      </form>
+      </motion.form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         New to SkillStreak?{" "}
