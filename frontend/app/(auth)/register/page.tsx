@@ -50,10 +50,15 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     setFocus,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid, isSubmitted },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: "", email: "", password: "" },
+    // Run validation on blur AND on every change after the first submit, so
+    // users see inline errors immediately and the submit button can stay
+    // disabled until all fields are clean.
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   const password = watch("password");
@@ -257,7 +262,14 @@ export default function RegisterPage() {
           </motion.div>
         )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full"
+          // Stays enabled before the first submit so a click can surface the
+          // field-level errors. After the first failed submit, only re-enables
+          // once every field is valid (RHF re-validates onChange).
+          disabled={isSubmitting || (isSubmitted && !isValid)}
+        >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Creating account…" : "Create account"}
         </Button>
