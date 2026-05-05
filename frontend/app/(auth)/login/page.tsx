@@ -49,11 +49,11 @@ export default function LoginPage() {
     watch,
     setValue,
     setFocus,
-    formState: { errors, isSubmitting, isValid, isSubmitted },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
-    mode: "onTouched",
+    mode: "all",
     reValidateMode: "onChange",
   });
 
@@ -247,7 +247,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           className="w-full"
-          disabled={isSubmitting || (isSubmitted && !isValid)}
+          disabled={isSubmitting || !isValid}
         >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Signing in…" : "Sign in"}

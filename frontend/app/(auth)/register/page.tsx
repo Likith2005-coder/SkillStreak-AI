@@ -50,14 +50,14 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     setFocus,
-    formState: { errors, isSubmitting, isValid, isSubmitted },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: "", email: "", password: "" },
-    // Run validation on blur AND on every change after the first submit, so
-    // users see inline errors immediately and the submit button can stay
-    // disabled until all fields are clean.
-    mode: "onTouched",
+    // "all" → validation runs on every change AND every blur, so isValid is
+    // always live. We use it to gate the submit button so the user can't
+    // even attempt to submit a form that wouldn't pass Zod.
+    mode: "all",
     reValidateMode: "onChange",
   });
 
@@ -265,10 +265,10 @@ export default function RegisterPage() {
         <Button
           type="submit"
           className="w-full"
-          // Stays enabled before the first submit so a click can surface the
-          // field-level errors. After the first failed submit, only re-enables
-          // once every field is valid (RHF re-validates onChange).
-          disabled={isSubmitting || (isSubmitted && !isValid)}
+          // Disabled until every field passes Zod. With mode:"all" isValid is
+          // live, so the button can only fire when the form is genuinely
+          // submittable — no chance of "Creating account…" with a bad email.
+          disabled={isSubmitting || !isValid}
         >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting ? "Creating account…" : "Create account"}
