@@ -31,10 +31,10 @@ const HEURISTICS: Array<{ rx: RegExp; intent: Intent }> = [
   { rx: /\b(roadmap|study plan|where (do|should) i start|learning path|in what order)\b/i, intent: "roadmap" },
   { rx: /\b(recommend|suggest|video(s)?|book(s)?|course(s)?|article(s)?|resource(s)?|link(s)?)\b/i, intent: "recommend" },
   { rx: /\b(error|bug|stuck|not working|why (doesn|does not|isn|is not)|throws?|crash|fix)\b/i, intent: "doubt" },
-  { rx: /\b(motivat|giv(e|ing) up|hate this|losing interest|burn(t|ed)? out|i can'?t do)\b/i, intent: "motivational" },
+  { rx: /\b(motivat\w*|giv(e|ing) up|hate this|losing interest|burn(t|ed)? out|i can'?t do)\b/i, intent: "motivational" },
 ];
 
-function heuristicIntent(message: string): Intent | null {
+export function heuristicIntent(message: string): Intent | null {
   for (const { rx, intent } of HEURISTICS) {
     if (rx.test(message)) return intent;
   }

@@ -3,8 +3,8 @@ import { ApiError } from "../middleware/error.middleware";
 export const MAX_USER_MESSAGE_CHARS = 2000;
 
 const INJECTION_PATTERNS: RegExp[] = [
-  /ignore (all|previous|above) (instructions|rules|prompts?)/i,
-  /disregard (all|previous|above) (instructions|rules|prompts?)/i,
+  /ignore (?:all |previous |above |any |the |prior )*(instructions|rules|prompts?)/i,
+  /disregard (?:all |previous |above |any |the |prior )*(instructions|rules|prompts?)/i,
   /forget (everything|your instructions|the system prompt)/i,
   /reveal (your|the) (system )?prompt/i,
   /print (the )?system (prompt|instructions)/i,

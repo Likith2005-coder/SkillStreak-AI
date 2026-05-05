@@ -51,21 +51,21 @@ export function levelForXp(xp: number): { level: number; xpIntoLevel: number; xp
 
 // ─── Date helpers (UTC days) ─────────────────────────────────
 
-function utcDateOnly(d: Date): Date {
+export function utcDateOnly(d: Date): Date {
   const x = new Date(d);
   x.setUTCHours(0, 0, 0, 0);
   return x;
 }
 
-function daysBetweenUtc(a: Date, b: Date): number {
+export function daysBetweenUtc(a: Date, b: Date): number {
   return Math.floor((utcDateOnly(b).getTime() - utcDateOnly(a).getTime()) / 86400000);
 }
 
-function isMondayUtc(d: Date): boolean {
+export function isMondayUtc(d: Date): boolean {
   return d.getUTCDay() === 1;
 }
 
-function startOfIsoWeekUtc(d: Date): Date {
+export function startOfIsoWeekUtc(d: Date): Date {
   const x = utcDateOnly(d);
   const dow = x.getUTCDay(); // 0..6 (Sun..Sat)
   const offset = dow === 0 ? -6 : 1 - dow; // Monday = start
