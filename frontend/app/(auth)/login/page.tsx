@@ -86,19 +86,25 @@ export default function LoginPage() {
       setMe(me);
       router.replace(me.user.profile ? "/dashboard" : "/onboarding");
     } catch (err) {
-      const msg = apiErrorMessage(err, "We couldn't sign you in. Please try again.");
-      // Map the generic backend "Invalid email or password" to a friendlier
-      // copy that doesn't leak whether the email exists.
-      const friendly = /invalid email or password/i.test(msg)
-        ? "That email and password don't match. Double-check and try again."
-        : msg;
-      setFormError(friendly);
+      // 401 from /auth/login is an EXPECTED outcome (wrong credentials), not
+      // a programming bug. Surface the message inline; don't let it bubble up
+      // as a runtime error that triggers the Next.js dev error indicator.
+      const msg = apiErrorMessage(err, "Invalid email or password");
+      setFormError(msg);
       setErrorBumpKey((k) => k + 1);
       setFailedAttempts((n) => n + 1);
-      // Top-site touch: clear the password and refocus the password field so
-      // the user can immediately retype without click-fishing.
-      setValue("password", "");
-      setTimeout(() => setFocus("password"), 0);
+      try {
+        setValue("password", "");
+        setTimeout(() => {
+          try {
+            setFocus("password");
+          } catch {
+            /* form may have unmounted between attempts — ignore */
+          }
+        }, 0);
+      } catch {
+        /* defensive: never let post-error housekeeping throw */
+      }
     }
   };
 

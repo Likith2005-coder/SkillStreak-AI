@@ -20,9 +20,25 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err: AxiosError) => {
+    const url = err.config?.url ?? "";
+    const isLoginAttempt = /\/auth\/login\b/.test(url);
+    const isRegisterAttempt = /\/auth\/register\b/.test(url);
+
     if (err.response?.status === 401 && typeof window !== "undefined") {
-      // Token rejected — drop it so route guards redirect to /login.
-      clearToken();
+      // Token rejected on an authed route — drop it so route guards redirect
+      // to /login. Don't clear on a failed login attempt — the user never had
+      // a token to begin with, and clearing it triggers other store side-effects.
+      if (!isLoginAttempt) clearToken();
+    }
+
+    // Mark "expected" auth failures so the Next.js dev error indicator doesn't
+    // light up on a perfectly normal wrong-password attempt.
+    if (
+      typeof window !== "undefined" &&
+      ((err.response?.status === 401 && isLoginAttempt) ||
+        (err.response?.status === 409 && isRegisterAttempt))
+    ) {
+      Object.defineProperty(err, "__expected", { value: true });
     }
     return Promise.reject(err);
   }
