@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Bot, Check, Copy, User } from "lucide-react";
+import { Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChatMessage, Intent } from "@/lib/api";
 import { TypingIndicator } from "./TypingIndicator";
+import { ShikiCodeBlock } from "@/components/shared/ShikiCodeBlock";
 
 type Props = {
   message: ChatMessage & { streaming?: boolean };
@@ -75,8 +75,17 @@ export function MessageBubble({ message }: Props) {
 }
 
 const mdComponents: Components = {
+  // react-markdown gives us a `pre > code className="language-xxx"` tree;
+  // we read the lang off the inner code and hand the raw text to Shiki.
   pre({ children }) {
-    return <CodeBlock>{children}</CodeBlock>;
+    const codeNode = Array.isArray(children) ? children[0] : children;
+    const props =
+      codeNode && typeof codeNode === "object" && "props" in codeNode
+        ? (codeNode as { props: { className?: string; children?: React.ReactNode } }).props
+        : { className: "", children: "" };
+    const lang = (props.className?.match(/language-([\w-]+)/)?.[1] ?? "").toLowerCase();
+    const text = extractText(props.children);
+    return <ShikiCodeBlock code={text} lang={lang} />;
   },
   code({ className, children, ...rest }) {
     const isInline = !className;
@@ -90,6 +99,8 @@ const mdComponents: Components = {
         </code>
       );
     }
+    // The block path is handled by `pre` above — render the code node naked
+    // here so we don't double-wrap.
     return (
       <code className={cn("font-mono text-[0.85em]", className)} {...rest}>
         {children}
@@ -97,36 +108,6 @@ const mdComponents: Components = {
     );
   },
 };
-
-function CodeBlock({ children }: { children: React.ReactNode }) {
-  const [copied, setCopied] = useState(false);
-  const text = extractText(children);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard unavailable */
-    }
-  }
-
-  return (
-    <div className="group relative my-2 rounded-lg border border-border bg-muted/40">
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-md border border-border/60 bg-background/70 px-2 py-1 text-[11px] text-muted-foreground opacity-0 backdrop-blur transition group-hover:opacity-100 hover:text-foreground"
-        aria-label={copied ? "Copied" : "Copy code"}
-      >
-        {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-        {copied ? "Copied" : "Copy"}
-      </button>
-      <pre className="overflow-x-auto p-4 text-xs leading-relaxed">{children}</pre>
-    </div>
-  );
-}
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === "string") return node;

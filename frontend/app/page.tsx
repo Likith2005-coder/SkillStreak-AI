@@ -21,6 +21,7 @@ import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FinalCTA } from "@/components/landing/FinalCTA";
+import { SmoothScroll } from "@/components/landing/SmoothScroll";
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -41,6 +42,7 @@ const DOMAIN_TICKER = [
 export default function LandingPage() {
   return (
     <main className="relative overflow-x-hidden bg-background">
+      <SmoothScroll />
       {/* Aurora drifts behind everything */}
       <div className="aurora-bg" aria-hidden />
 

@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/shared/Navbar";
 import { ChatWidget } from "@/components/chat/ChatWidget";
+import { CommandPalette } from "@/components/shared/CommandPalette";
 import { useAuthStatus, useBootstrapUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/userStore";
 
@@ -67,6 +68,7 @@ export default function DashboardLayout({
           {children}
         </motion.div>
       </AnimatePresence>
+      <CommandPalette />
       {!onChatbotPage && <ChatWidget />}
     </div>
   );

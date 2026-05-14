@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion, useReducedMotion } from "framer-motion";
+import { ShikiCodeBlock } from "@/components/shared/ShikiCodeBlock";
 import {
   ArrowLeft,
   Bot,
@@ -331,11 +332,36 @@ function ExplanationContent({ markdown }: { markdown: string }) {
       initial={{ opacity: 0, y: reduce ? 0 : 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="prose prose-invert prose-sm max-w-none prose-headings:mt-7 prose-headings:mb-3 prose-h2:text-lg prose-h2:font-semibold prose-h2:tracking-tight prose-h2:text-foreground prose-h2:flex prose-h2:items-center prose-h2:gap-2 prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-li:marker:text-primary prose-pre:bg-muted/40 prose-pre:border prose-pre:border-border/60 prose-code:bg-muted/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none prose-h2:before:content-[''] prose-h2:before:h-1 prose-h2:before:w-6 prose-h2:before:bg-gradient-to-r prose-h2:before:from-primary prose-h2:before:to-fuchsia-500 prose-h2:before:rounded-full"
+      className="prose prose-invert prose-sm max-w-none prose-headings:mt-7 prose-headings:mb-3 prose-h2:text-lg prose-h2:font-semibold prose-h2:tracking-tight prose-h2:text-foreground prose-h2:flex prose-h2:items-center prose-h2:gap-2 prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-li:marker:text-primary prose-pre:!bg-transparent prose-pre:!p-0 prose-pre:!border-0 prose-code:bg-muted/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none prose-h2:before:content-[''] prose-h2:before:h-1 prose-h2:before:w-6 prose-h2:before:bg-gradient-to-r prose-h2:before:from-primary prose-h2:before:to-fuchsia-500 prose-h2:before:rounded-full"
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={topicMdComponents}>
+        {markdown}
+      </ReactMarkdown>
     </motion.article>
   );
+}
+
+const topicMdComponents: Components = {
+  pre({ children }) {
+    const codeNode = Array.isArray(children) ? children[0] : children;
+    const props =
+      codeNode && typeof codeNode === "object" && "props" in codeNode
+        ? (codeNode as { props: { className?: string; children?: React.ReactNode } }).props
+        : { className: "", children: "" };
+    const lang = (props.className?.match(/language-([\w-]+)/)?.[1] ?? "").toLowerCase();
+    const text = extractText(props.children);
+    return <ShikiCodeBlock code={text} lang={lang} />;
+  },
+};
+
+function extractText(node: React.ReactNode): string {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join("");
+  if (node && typeof node === "object" && "props" in node) {
+    return extractText((node as { props: { children: React.ReactNode } }).props.children);
+  }
+  return "";
 }
 
 function ExplanationSkeleton() {

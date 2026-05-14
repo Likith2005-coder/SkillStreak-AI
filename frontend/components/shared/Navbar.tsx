@@ -45,6 +45,21 @@ export function Navbar() {
               <span>{user.xp} XP</span>
             </div>
           )}
+          <button
+            type="button"
+            aria-label="Open command palette"
+            onClick={() => {
+              window.dispatchEvent(
+                new KeyboardEvent("keydown", { key: "k", ctrlKey: true })
+              );
+            }}
+            className="hidden items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:text-foreground md:flex"
+          >
+            <span>Quick jump</span>
+            <kbd className="rounded border border-border/70 bg-background/60 px-1.5 py-0.5 font-mono text-[10px]">
+              ⌘K
+            </kbd>
+          </button>
           <Button asChild variant="ghost" size="sm" aria-label="Domains">
             <Link href="/domains">
               <BookOpen className="h-4 w-4" />
