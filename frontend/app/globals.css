@@ -132,6 +132,46 @@
     50%      { opacity: 0.45; transform: scale(1.03); }
   }
 
+  /* Animated gradient border for bento cards. The card itself uses the
+     box-shadow trick to draw a thin gradient ring on hover — no extra DOM,
+     no pseudo-element re-layout. */
+  .bento-card {
+    position: relative;
+  }
+  .bento-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--bento-angle, 0deg),
+      hsl(243 75% 59% / 0) 0%,
+      hsl(243 75% 59% / 0.55) 20%,
+      hsl(290 75% 60% / 0.55) 40%,
+      hsl(243 75% 59% / 0) 60%,
+      hsl(243 75% 59% / 0) 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+    animation: bento-rotate 8s linear infinite;
+  }
+  .bento-card:hover::before {
+    opacity: 1;
+  }
+  @property --bento-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes bento-rotate {
+    to { --bento-angle: 360deg; }
+  }
+
   /* Form shake — used by auth forms on submit error */
   .animate-shake {
     animation: form-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;

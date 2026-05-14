@@ -22,6 +22,8 @@ import { StatsBanner } from "@/components/landing/StatsBanner";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
+import { Spotlight } from "@/components/landing/Spotlight";
+import { ScrollProgress } from "@/components/landing/ScrollProgress";
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -42,6 +44,7 @@ const DOMAIN_TICKER = [
 export default function LandingPage() {
   return (
     <main className="relative overflow-x-hidden bg-background">
+      <ScrollProgress />
       <SmoothScroll />
       {/* Aurora drifts behind everything */}
       <div className="aurora-bg" aria-hidden />
@@ -136,7 +139,20 @@ export default function LandingPage() {
 
       {/* ── Section 6 — Features bento ───────────────────────── */}
       <section className="relative px-4 py-24 lg:px-12">
-        <div className="mx-auto max-w-6xl">
+        {/* Subtle dotted grid under the section — pure CSS, very cheap. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.4) 1px, transparent 0)",
+            backgroundSize: "28px 28px",
+            maskImage:
+              "radial-gradient(ellipse 60% 60% at 50% 50%, black 35%, transparent 80%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs uppercase tracking-[0.25em] text-primary">
               Everything in one place
@@ -150,7 +166,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-4 md:grid-cols-3 lg:grid-cols-4 lg:grid-rows-2">
+          <Spotlight className="mt-12 grid gap-4 md:grid-cols-3 lg:grid-cols-4 lg:grid-rows-2">
             <BentoCard
               span="md:col-span-2 md:row-span-2"
               icon={<Bot className="h-6 w-6 text-violet-300" />}
@@ -187,7 +203,7 @@ export default function LandingPage() {
               gradient="from-cyan-500/15 to-sky-500/10"
               accent="bg-cyan-500/20"
             />
-          </div>
+          </Spotlight>
         </div>
       </section>
 
@@ -244,17 +260,35 @@ function BentoCard({
 }) {
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
+      className={`bento-card group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
     >
-      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity duration-500 group-hover:opacity-100 ${gradient}`} />
+      {/* Decorative diagonal gradient — visible always, brighter on hover */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-50 transition-opacity duration-500 group-hover:opacity-100 ${gradient}`}
+      />
+
+      {/* Cursor-following soft spotlight — picks up `--mx` / `--my` from the
+          parent <Spotlight> wrapper. Pure CSS, no per-frame React work. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.10), transparent 60%)",
+        }}
+      />
+
       <div className="relative">
-        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ${accent}`}>
+        <div
+          className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-white/5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 ${accent}`}
+        >
           {icon}
         </div>
         <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
           {title}
         </h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-foreground/85">
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-foreground/90">
           {copy}
         </p>
       </div>
