@@ -425,11 +425,13 @@ export async function fetchInterviewPrep(slug: string): Promise<{
   cached: boolean;
   gate: InterviewGate;
 }> {
+  // Cold-cache generation is an LLM call producing ~3500 tokens — easily 20-40s.
+  // Override the 15s axios default for this request only.
   const { data } = await api.get<{
     prep: InterviewPrep;
     cached: boolean;
     gate: InterviewGate;
-  }>(`/domains/${slug}/interview`);
+  }>(`/domains/${slug}/interview`, { timeout: 90_000 });
   return data;
 }
 
@@ -439,7 +441,10 @@ export async function fetchTopic(id: string): Promise<TopicView> {
 }
 
 export async function explainTopic(id: string): Promise<ExplainResponse> {
-  const { data } = await api.post<ExplainResponse>(`/topics/${id}/explain`);
+  // Cold-cache topic explainers can be ~2200 tokens — bump timeout per call.
+  const { data } = await api.post<ExplainResponse>(`/topics/${id}/explain`, undefined, {
+    timeout: 60_000,
+  });
   return data;
 }
 

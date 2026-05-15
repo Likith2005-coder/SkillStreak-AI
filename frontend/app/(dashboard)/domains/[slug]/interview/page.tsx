@@ -102,10 +102,13 @@ export default function InterviewPrepPage() {
   const [error, setError] = useState<string | null>(null);
   const [cached, setCached] = useState(false);
   const [adminOverride, setAdminOverride] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
+    setError(null);
+    setData(null);
     fetchInterviewPrep(slug)
       .then((r) => {
         if (cancelled) return;
@@ -119,14 +122,37 @@ export default function InterviewPrepPage() {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, reloadKey]);
 
   if (error) {
+    const isTimeout = /timeout|timed out|15000ms/i.test(error);
     return (
       <main className="container px-4 py-10">
         <BackLink slug={slug ?? ""} />
-        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
+        <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-5">
+          <div className="flex items-start gap-3">
+            <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <div className="flex-1">
+              <p className="font-medium text-destructive">
+                {isTimeout
+                  ? "The AI took longer than expected on the first generation."
+                  : "Couldn't load interview prep."}
+              </p>
+              <p className="mt-1 text-sm text-destructive/85">
+                {isTimeout
+                  ? "Cold-cache generation can spike to 30-60s on a busy day. Try again — most retries return a cached copy in under a second."
+                  : error}
+              </p>
+              <button
+                type="button"
+                onClick={() => setReloadKey((k) => k + 1)}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/15 px-3 py-1.5 text-sm font-medium text-destructive transition hover:bg-destructive/25"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Try again
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     );
