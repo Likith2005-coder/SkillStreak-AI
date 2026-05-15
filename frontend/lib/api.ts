@@ -162,9 +162,30 @@ export type EmailSendResult =
   | { sent: true; id: string }
   | { sent: false; reason: "no_api_key" | "send_error"; error?: string };
 
-export async function adminListTopics(): Promise<AdminTopic[]> {
-  const { data } = await api.get<{ topics: AdminTopic[] }>("/admin/topics");
+export async function adminListTopics(filters?: {
+  domainSlug?: string;
+  phase?: "foundations" | "core" | "advanced";
+  search?: string;
+}): Promise<AdminTopic[]> {
+  const { data } = await api.get<{ topics: AdminTopic[] }>("/admin/topics", {
+    params: filters,
+  });
   return data.topics;
+}
+
+export type AdminTopicCreate = {
+  domainSlug: string;
+  title: string;
+  summary: string;
+  difficulty: "easy" | "standard" | "hard";
+  phase: "foundations" | "core" | "advanced";
+};
+
+export async function adminCreateTopic(
+  payload: AdminTopicCreate
+): Promise<{ topic: AdminTopic }> {
+  const { data } = await api.post<{ topic: AdminTopic }>("/admin/topics", payload);
+  return data;
 }
 
 export async function adminUpdateTopic(
@@ -177,6 +198,51 @@ export async function adminUpdateTopic(
 
 export async function adminDeleteTopic(id: string): Promise<void> {
   await api.delete(`/admin/topics/${id}`);
+}
+
+// ─── Admin · Users ──────────────────────────────────────
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: "user" | "admin";
+  level: number;
+  xp: number;
+  createdAt: string;
+  topicsCompleted: number;
+  quizAttempts: number;
+  currentStreak: number;
+  longestStreak: number;
+};
+
+export async function adminListUsers(): Promise<AdminUser[]> {
+  const { data } = await api.get<{ users: AdminUser[] }>("/admin/users");
+  return data.users;
+}
+
+export async function adminUpdateUser(
+  id: string,
+  patch: { role?: "user" | "admin"; name?: string }
+): Promise<{ user: AdminUser }> {
+  const { data } = await api.patch<{ user: AdminUser }>(`/admin/users/${id}`, patch);
+  return data;
+}
+
+export async function adminDeleteUser(id: string): Promise<void> {
+  await api.delete(`/admin/users/${id}`);
+}
+
+export async function adminResetUserProgress(id: string): Promise<{ reset: true }> {
+  const { data } = await api.post<{ reset: true }>(`/admin/users/${id}/reset-progress`);
+  return data;
+}
+
+// ─── Admin · Interview regen ────────────────────────────
+
+export async function adminRegenerateInterview(slug: string): Promise<{ cleared: true }> {
+  const { data } = await api.post<{ cleared: true }>(`/admin/interview/${slug}/regenerate`);
+  return data;
 }
 
 export async function adminMetrics(): Promise<AdminMetrics> {
