@@ -7,8 +7,11 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  Briefcase,
   Loader2,
+  Lock,
   MessageCircle,
+  Sparkles,
 } from "lucide-react";
 
 import { apiErrorMessage, fetchRoadmap, type RoadmapTopic, type RoadmapView } from "@/lib/api";
@@ -121,6 +124,12 @@ export default function RoadmapPage() {
         data={data}
         colorStyle={s}
         progress={{ completed: completedCount, total, percent }}
+      />
+
+      <InterviewUnlockCTA
+        slug={data.slug}
+        completed={completedCount}
+        total={total}
       />
 
       <div className="mt-10 space-y-12">
@@ -245,4 +254,82 @@ function groupTopics(topics: RoadmapTopic[]): Record<RoadmapTopic["phase"], Road
   };
   for (const t of topics) out[t.phase].push(t);
   return out;
+}
+
+function InterviewUnlockCTA({
+  slug,
+  completed,
+  total,
+}: {
+  slug: string;
+  completed: number;
+  total: number;
+}) {
+  const unlocked = total > 0 && completed >= total;
+  const left = Math.max(0, total - completed);
+
+  if (unlocked) {
+    return (
+      <Link
+        href={`/domains/${slug}/interview`}
+        className="group relative mt-8 block overflow-hidden rounded-2xl border border-fuchsia-400/30 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 shadow-2xl shadow-fuchsia-500/20 transition-all hover:-translate-y-0.5 hover:shadow-fuchsia-500/40"
+      >
+        {/* shimmer sweep on hover */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+        />
+        {/* gold star pulse */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl animate-cta-breathe"
+        />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/30">
+            <Briefcase className="h-6 w-6 text-white" />
+          </div>
+          <div className="flex-1 text-white">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-amber-200">
+              <Sparkles className="h-3 w-3" />
+              Unlocked · Interview prep
+            </div>
+            <h3 className="mt-1 text-xl font-bold tracking-tight">
+              You finished the roadmap. Now nail the interview.
+            </h3>
+            <p className="mt-1 max-w-2xl text-sm text-white/85">
+              15 senior-level questions, 2 system-design scenarios, behavioral STAR
+              templates, common traps, and a 7-day cram plan — calibrated to your level.
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-bold text-violet-700 shadow-lg transition-transform group-hover:translate-x-1 sm:self-center">
+            Open prep
+            <ArrowRight className="h-4 w-4" />
+          </span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 backdrop-blur-sm sm:flex-row sm:items-center">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/40">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <Briefcase className="h-3 w-3" />
+          Interview prep · Locked
+        </div>
+        <p className="mt-1 text-sm text-foreground/85">
+          Complete every topic in this roadmap to unlock a hand-tuned interview
+          prep brief — questions, system design, behavioral, the lot.
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {left === 0
+            ? "Almost there — finish your last topic to unlock."
+            : `${left} ${left === 1 ? "topic" : "topics"} to go.`}
+        </p>
+      </div>
+    </div>
+  );
 }

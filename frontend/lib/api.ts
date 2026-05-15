@@ -317,6 +317,54 @@ export async function fetchRoadmap(slug: string): Promise<RoadmapView> {
   return data.domain;
 }
 
+// ─── Interview prep ─────────────────────────────────────
+
+export type InterviewGate = {
+  eligible: boolean;
+  completed: number;
+  total: number;
+};
+
+export type InterviewQuestion = {
+  q: string;
+  category: "concept" | "system-design" | "behavioral" | "code" | "trap";
+  difficulty: "easy" | "medium" | "hard";
+  answer: string;
+  whyAsked: string;
+  starAnswer?: string;
+};
+
+export type InterviewPrep = {
+  domainSlug: string;
+  domainName: string;
+  level: "beginner" | "intermediate" | "advanced";
+  pillars: Array<{ title: string; oneLiner: string }>;
+  pitfalls: string[];
+  differentiators: string[];
+  questions: InterviewQuestion[];
+  systemDesign: Array<{ scenario: string; solutionOutline: string; followUps: string[] }>;
+  weekPlan: Array<{ day: number; focus: string; deliverable: string }>;
+  resources: Array<{ title: string; type: "book" | "talk" | "repo" | "blog" | "docs"; url?: string }>;
+};
+
+export async function fetchInterviewStatus(slug: string): Promise<InterviewGate> {
+  const { data } = await api.get<InterviewGate>(`/domains/${slug}/interview/status`);
+  return data;
+}
+
+export async function fetchInterviewPrep(slug: string): Promise<{
+  prep: InterviewPrep;
+  cached: boolean;
+  gate: InterviewGate;
+}> {
+  const { data } = await api.get<{
+    prep: InterviewPrep;
+    cached: boolean;
+    gate: InterviewGate;
+  }>(`/domains/${slug}/interview`);
+  return data;
+}
+
 export async function fetchTopic(id: string): Promise<TopicView> {
   const { data } = await api.get<{ topic: TopicView }>(`/topics/${id}`);
   return data.topic;
