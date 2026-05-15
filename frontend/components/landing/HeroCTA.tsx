@@ -17,13 +17,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import { Magnetic } from "./Magnetic";
 
 export function HeroCTA() {
   const reduce = useReducedMotion();
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-      {/* Primary */}
+      {/* Primary — wrapped in Magnetic so it gently pulls toward the cursor */}
+      <Magnetic strength={10} className="inline-block">
       <Link href="/register" className="group/cta relative inline-block">
         {/* Subtle halo — slow breath, low opacity, never strobing */}
         <span
@@ -62,6 +64,7 @@ export function HeroCTA() {
           </motion.span>
         </motion.span>
       </Link>
+      </Magnetic>
 
       {/* Secondary — outlined, hover reveals arrow */}
       <Link

@@ -11,7 +11,7 @@ import {
   Flame,
   ListChecks,
   ShieldCheck,
-  Sparkles,
+  Sparkles as SparklesIcon,
   Trophy,
   TrendingUp,
 } from "lucide-react";
@@ -24,6 +24,9 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 import { Spotlight } from "@/components/landing/Spotlight";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
+import { CursorFollower } from "@/components/landing/CursorFollower";
+import { RotatingWord } from "@/components/landing/RotatingWord";
+import { Sparkles } from "@/components/landing/Sparkles";
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -38,7 +41,7 @@ const DOMAIN_TICKER = [
   { icon: TrendingUp, name: "Machine Learning", color: "text-emerald-400" },
   { icon: Database, name: "Data Science", color: "text-cyan-400" },
   { icon: Cloud, name: "Cloud Computing", color: "text-sky-400" },
-  { icon: Sparkles, name: "+ 3 more via AI", color: "text-fuchsia-400" },
+  { icon: SparklesIcon, name: "+ 3 more via AI", color: "text-fuchsia-400" },
 ];
 
 export default function LandingPage() {
@@ -46,15 +49,17 @@ export default function LandingPage() {
     <main className="relative overflow-x-hidden bg-background">
       <ScrollProgress />
       <SmoothScroll />
+      <CursorFollower />
       {/* Aurora drifts behind everything */}
       <div className="aurora-bg" aria-hidden />
 
       {/* ── Section 1 — Hero with prominent 3D robot ─────────── */}
       <section className="relative grid min-h-screen grid-cols-1 items-center gap-8 px-4 pb-12 pt-12 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-12 lg:pt-20">
+        <Sparkles count={14} />
         {/* Text column */}
         <div className="relative z-10 text-center lg:text-left">
           <div className="mb-5 inline-flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <SparklesIcon className="h-5 w-5 text-primary" />
             <span className="text-2xl font-bold tracking-tight">
               <span className="gradient-text">SkillStreak</span>
               <span className="text-foreground"> AI</span>
@@ -62,12 +67,29 @@ export default function LandingPage() {
           </div>
 
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <SparklesIcon className="h-3.5 w-3.5 text-primary" />
             AI-powered learning, reimagined
           </div>
 
           <h1 className="text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl xl:text-7xl">
-            <span className="block">Master tech</span>
+            <span className="block">
+              Master{" "}
+              <RotatingWord
+                className="gradient-text animate-gradient"
+                words={[
+                  "tech",
+                  "Cybersecurity",
+                  "Web Dev",
+                  "AI",
+                  "Machine Learning",
+                  "Data Science",
+                  "Cloud",
+                  "DevOps",
+                  "Blockchain",
+                  "IoT",
+                ]}
+              />
+            </span>
             <span className="block">
               with an{" "}
               <span className="gradient-text animate-gradient">AI tutor</span>
@@ -214,7 +236,7 @@ export default function LandingPage() {
       <footer className="border-t border-border/40 px-4 py-8 text-center text-xs text-muted-foreground/60 lg:px-12">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <SparklesIcon className="h-3.5 w-3.5 text-primary" />
             <span>
               <span className="gradient-text font-semibold">SkillStreak</span>{" "}
               AI · v0.7.0
