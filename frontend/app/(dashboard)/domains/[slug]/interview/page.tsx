@@ -81,6 +81,7 @@ export default function InterviewPrepPage() {
   const [data, setData] = useState<InterviewPrep | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cached, setCached] = useState(false);
+  const [adminOverride, setAdminOverride] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -90,6 +91,7 @@ export default function InterviewPrepPage() {
         if (cancelled) return;
         setData(r.prep);
         setCached(r.cached);
+        setAdminOverride(!!r.gate.adminOverride);
       })
       .catch((err) => {
         if (!cancelled) setError(apiErrorMessage(err, "Could not load interview prep"));
@@ -127,7 +129,7 @@ export default function InterviewPrepPage() {
   return (
     <main className="container px-4 py-10">
       <BackLink slug={slug ?? ""} />
-      <Hero prep={data} cached={cached} />
+      <Hero prep={data} cached={cached} adminOverride={adminOverride} />
 
       {/* Pillars · Pitfalls · Differentiators */}
       <section className="mt-10 grid gap-4 lg:grid-cols-3">
@@ -244,7 +246,15 @@ function BackLink({ slug }: { slug: string }) {
   );
 }
 
-function Hero({ prep, cached }: { prep: InterviewPrep; cached: boolean }) {
+function Hero({
+  prep,
+  cached,
+  adminOverride,
+}: {
+  prep: InterviewPrep;
+  cached: boolean;
+  adminOverride?: boolean;
+}) {
   return (
     <motion.header
       initial={{ opacity: 0, y: 12 }}
@@ -255,6 +265,11 @@ function Hero({ prep, cached }: { prep: InterviewPrep; cached: boolean }) {
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-amber-200">
         <Briefcase className="h-3.5 w-3.5" />
         Interview prep · {prep.domainName}
+        {adminOverride && (
+          <span className="ml-2 rounded-full border border-amber-300/40 bg-amber-300/10 px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-amber-100">
+            Admin override
+          </span>
+        )}
       </div>
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
         Walk in like you've done this 10 times.

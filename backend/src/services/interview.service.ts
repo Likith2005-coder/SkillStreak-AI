@@ -123,33 +123,56 @@ function priorLevelToSkillLevel(priorLevel: string | undefined | null): SkillLev
   return "beginner";
 }
 
-/**
- * Returns true iff the user has marked every topic in the curated roadmap
- * for this domain as completed. Non-curated domains always return false.
- */
-export async function isDomainCompleted(slug: string, userId: string): Promise<{
+export type InterviewGate = {
   eligible: boolean;
   completed: number;
   total: number;
-}> {
-  const domain = await prisma.domain.findUnique({
-    where: { slug },
-    select: { id: true, isCurated: true, roadmap: { select: { id: true, totalTopics: true, topics: { select: { id: true } } } } },
-  });
+  /** True when admin role grants access regardless of completion. */
+  adminOverride?: boolean;
+};
+
+/**
+ * Returns true iff the user has marked every topic in the curated roadmap
+ * for this domain as completed. Non-curated domains always return false.
+ * Admins are always eligible (bypass) — the UI surfaces this with an
+ * "Admin override" hint.
+ */
+export async function isDomainCompleted(slug: string, userId: string): Promise<InterviewGate> {
+  const [domain, user] = await Promise.all([
+    prisma.domain.findUnique({
+      where: { slug },
+      select: { id: true, isCurated: true, roadmap: { select: { id: true, totalTopics: true, topics: { select: { id: true } } } } },
+    }),
+    prisma.user.findUnique({ where: { id: userId }, select: { role: true } }),
+  ]);
   if (!domain) throw new ApiError(404, "Domain not found");
-  if (!domain.isCurated || !domain.roadmap) return { eligible: false, completed: 0, total: 0 };
+  const isAdmin = user?.role === "admin";
+
+  if (!domain.isCurated || !domain.roadmap) {
+    // Even admins need a curated roadmap to generate prep from — for now
+    // we just report no-roadmap.
+    return { eligible: false, completed: 0, total: 0, ...(isAdmin && { adminOverride: true }) };
+  }
   const topicIds = domain.roadmap.topics.map((t) => t.id);
-  if (topicIds.length === 0) return { eligible: false, completed: 0, total: 0 };
+  if (topicIds.length === 0) {
+    return { eligible: false, completed: 0, total: 0, ...(isAdmin && { adminOverride: true }) };
+  }
   const completed = await prisma.userProgress.count({
     where: { userId, topicId: { in: topicIds }, status: "completed" },
   });
-  return { eligible: completed >= topicIds.length, completed, total: topicIds.length };
+  const earned = completed >= topicIds.length;
+  return {
+    eligible: earned || isAdmin,
+    completed,
+    total: topicIds.length,
+    ...(isAdmin && !earned && { adminOverride: true }),
+  };
 }
 
 export async function getInterviewPrep(
   slug: string,
   userId: string
-): Promise<{ prep: InterviewPrep; cached: boolean; gate: { eligible: boolean; completed: number; total: number } }> {
+): Promise<{ prep: InterviewPrep; cached: boolean; gate: InterviewGate }> {
   const gate = await isDomainCompleted(slug, userId);
   if (!gate.eligible) {
     throw new ApiError(403, "Complete every topic in this domain to unlock interview prep");

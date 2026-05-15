@@ -389,6 +389,8 @@ export type InterviewGate = {
   eligible: boolean;
   completed: number;
   total: number;
+  /** Set when admin role unlocks access regardless of completion. */
+  adminOverride?: boolean;
 };
 
 export type InterviewQuestion = {

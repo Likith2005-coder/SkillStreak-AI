@@ -14,7 +14,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { apiErrorMessage, fetchRoadmap, type RoadmapTopic, type RoadmapView } from "@/lib/api";
+import { apiErrorMessage, fetchInterviewStatus, fetchRoadmap, type RoadmapTopic, type RoadmapView } from "@/lib/api";
+import { useUserStore } from "@/store/userStore";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { WindingRoadmap } from "@/components/roadmap/WindingRoadmap";
@@ -265,7 +266,25 @@ function InterviewUnlockCTA({
   completed: number;
   total: number;
 }) {
-  const unlocked = total > 0 && completed >= total;
+  const user = useUserStore((s) => s.user);
+  const isAdmin = user?.role === "admin";
+
+  // Server-authoritative eligibility: hits /interview/status which respects
+  // admin override. Falls back to local progress count if the call fails.
+  const [serverEligible, setServerEligible] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+    fetchInterviewStatus(slug)
+      .then((g) => !cancelled && setServerEligible(g.eligible))
+      .catch(() => !cancelled && setServerEligible(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  const completionUnlocked = total > 0 && completed >= total;
+  const unlocked = serverEligible ?? (completionUnlocked || isAdmin);
   const left = Math.max(0, total - completed);
 
   if (unlocked) {
@@ -291,10 +310,14 @@ function InterviewUnlockCTA({
           <div className="flex-1 text-white">
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-amber-200">
               <Sparkles className="h-3 w-3" />
-              Unlocked · Interview prep
+              {isAdmin && !completionUnlocked
+                ? "Admin override · Interview prep"
+                : "Unlocked · Interview prep"}
             </div>
             <h3 className="mt-1 text-xl font-bold tracking-tight">
-              You finished the roadmap. Now nail the interview.
+              {isAdmin && !completionUnlocked
+                ? "Admin access — full interview prep available."
+                : "You finished the roadmap. Now nail the interview."}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-white/85">
               15 senior-level questions, 2 system-design scenarios, behavioral STAR
