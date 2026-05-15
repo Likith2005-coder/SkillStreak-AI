@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ResourceList } from "@/components/resources/ResourceList";
+import { surfaceGamification } from "@/lib/gamification-toasts";
 
 import {
   apiErrorMessage,
@@ -91,7 +92,6 @@ export default function TopicPage() {
     try {
       const { gamification } = await completeTopic(id);
       setCompleteState("done");
-      const { surfaceGamification } = await import("@/lib/gamification-toasts");
       surfaceGamification(gamification);
     } catch (err) {
       setCompleteState("idle");

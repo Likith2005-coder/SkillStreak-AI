@@ -338,7 +338,7 @@ function DomainMarquee() {
           const Icon = d.icon;
           return (
             <div
-              key={i}
+              key={`${d.name}-${i}`}
               className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm text-muted-foreground"
             >
               <Icon className={`h-4 w-4 ${d.color}`} />

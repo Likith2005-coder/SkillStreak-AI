@@ -18,6 +18,12 @@ type Props = {
 export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props) {
   const [remaining, setRemaining] = useState(seconds);
   const expiredRef = useRef(false);
+  // Hold onExpire in a ref so the tick effect doesn't recreate the interval
+  // when the parent re-renders with a new closure for the callback.
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  }, [onExpire]);
 
   useEffect(() => {
     setRemaining(seconds);
@@ -32,7 +38,7 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
           clearInterval(id);
           if (!expiredRef.current) {
             expiredRef.current = true;
-            onExpire();
+            onExpireRef.current();
           }
           return 0;
         }
@@ -40,7 +46,7 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [paused, onExpire, resetKey]);
+  }, [paused, resetKey]);
 
   const pct = Math.max(0, Math.min(100, (remaining / seconds) * 100));
   const danger = remaining <= 10;

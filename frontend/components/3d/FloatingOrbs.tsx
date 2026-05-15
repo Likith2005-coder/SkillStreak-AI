@@ -19,6 +19,8 @@ type Props = {
 export function FloatingOrbs({ className, active = true }: Props) {
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [inView, setInView] = useState(true);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   // Don't render the canvas during SSR — three has a non-trivial setup cost
   // and we don't need it for the initial paint.
@@ -26,10 +28,25 @@ export function FloatingOrbs({ className, active = true }: Props) {
     setMounted(true);
   }, []);
 
+  // Pause the render loop when the orbs scroll off-screen — otherwise R3F
+  // keeps ticking the GPU at 60fps forever, draining battery for nothing.
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const obs = new IntersectionObserver(
+      (entries) => entries[0] && setInView(entries[0].isIntersecting),
+      { rootMargin: "100px 0px" }
+    );
+    obs.observe(wrapperRef.current);
+    return () => obs.disconnect();
+  }, [mounted]);
+
   if (!mounted) return null;
+
+  const paused = reduce || !active || !inView;
 
   return (
     <div
+      ref={wrapperRef}
       className={className}
       style={{ pointerEvents: "none" }}
       aria-hidden
@@ -39,6 +56,9 @@ export function FloatingOrbs({ className, active = true }: Props) {
         camera={{ position: [0, 0, 7], fov: 45 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         style={{ background: "transparent" }}
+        // Render only when in view (or on reduced motion the first frame is
+        // enough). Stops the constant draw call on scroll-out.
+        frameloop={paused ? "never" : "always"}
       >
         <Suspense fallback={null}>
           <ambientLight intensity={0.6} />
@@ -46,7 +66,7 @@ export function FloatingOrbs({ className, active = true }: Props) {
           <pointLight position={[-5, -3, 3]} intensity={1} color="#22d3ee" />
           <pointLight position={[0, 4, -4]} intensity={0.8} color="#f472b6" />
 
-          <Scene paused={reduce || !active} />
+          <Scene paused={paused} />
         </Suspense>
       </Canvas>
     </div>

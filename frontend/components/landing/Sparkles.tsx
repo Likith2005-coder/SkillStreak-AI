@@ -20,7 +20,9 @@ export function Sparkles({ count = 18, className }: SparklesProps) {
 
   const particles = useMemo(
     () =>
-      Array.from({ length: count }, () => ({
+      Array.from({ length: count }, (_, i) => ({
+        // Stable id derived from index — survives renders, never collides.
+        id: `sp-${i}`,
         left: Math.random() * 100,
         delay: Math.random() * 6,
         duration: 6 + Math.random() * 6,
@@ -37,9 +39,9 @@ export function Sparkles({ count = 18, className }: SparklesProps) {
       aria-hidden
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`}
     >
-      {particles.map((p, idx) => (
+      {particles.map((p) => (
         <motion.span
-          key={idx}
+          key={p.id}
           className="absolute bottom-0 rounded-full bg-white"
           style={{
             left: `${p.left}%`,
