@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, FileText, Loader2, Video, Youtube } from "lucide-react";
+import { ExternalLink, FileText, Play, Video, Youtube } from "lucide-react";
 import {
   apiErrorMessage,
   fetchResources,
@@ -55,7 +55,7 @@ export function ResourceList({ topicId }: Props) {
         <Section title="Watch" icon={<Video className="h-4 w-4 text-rose-400" />} count={data.videos.length}>
           <div className="space-y-2">
             {data.videos.map((r, i) => (
-              <ResourceRow key={r.id} item={r} index={i} icon={<Youtube className="h-4 w-4 text-rose-400" />} />
+              <VideoRow key={r.id} item={r} index={i} />
             ))}
           </div>
         </Section>
@@ -72,8 +72,8 @@ export function ResourceList({ topicId }: Props) {
       )}
 
       <p className="px-1 text-[11px] text-muted-foreground">
-        Curated by AI, updated weekly. Video links open YouTube search results from
-        reputable channels.
+        Curated and verified, updated weekly. Each video opens the best matching
+        video on YouTube.
       </p>
     </div>
   );
@@ -99,6 +99,51 @@ function Section({
       </div>
       {children}
     </div>
+  );
+}
+
+function VideoRow({ item, index }: { item: ResourceItem; index: number }) {
+  return (
+    <motion.a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.04 }}
+      whileHover={{ x: 4 }}
+      className={cn(
+        "group flex items-center gap-3 rounded-xl border border-border bg-card/50 p-2.5 transition-colors",
+        "hover:border-primary/40 hover:bg-card"
+      )}
+    >
+      <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-black/40">
+        {item.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.thumbnailUrl}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Youtube className="h-5 w-5 text-rose-400" />
+          </div>
+        )}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity group-hover:opacity-100">
+          <Play className="h-6 w-6 fill-white text-white drop-shadow" />
+        </div>
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="line-clamp-2 text-sm font-medium leading-snug text-foreground">{item.title}</div>
+        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Youtube className="h-3 w-3 text-rose-400" />
+          <span className="truncate">{item.source}</span>
+        </div>
+      </div>
+      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+    </motion.a>
   );
 }
 

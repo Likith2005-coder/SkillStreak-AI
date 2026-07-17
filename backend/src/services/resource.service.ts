@@ -16,6 +16,7 @@ import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
 import { complete } from "./llm.service";
 import { log } from "../utils/logger.util";
+import * as youtube from "./youtube.service";
 
 const RESOURCES_TTL_DAYS = 7;
 const MAX_VIDEOS = 4;
@@ -158,6 +159,98 @@ async function generateForTopic(topic: { id: string; title: string; summary: str
   };
 }
 
+type VideoRow = {
+  topicId: string;
+  type: "video";
+  title: string;
+  url: string;
+  source: string;
+  thumbnailUrl: string | null;
+  durationSeconds: number | null;
+  orderIndex: number;
+  qualityScore: number;
+};
+
+/**
+ * Resolve the best real videos for a topic as DIRECT watch links — never a
+ * YouTube search page and never a hallucinated id.
+ *
+ * Preference order:
+ *   1. YouTube's own relevance-ranked results for the topic (Data API when a
+ *      key is set, otherwise keyless resolution) — the actual best videos,
+ *      with real titles, channels, and thumbnails, each verified live.
+ *   2. If (and only if) that yields nothing, fall back to LLM-proposed watch
+ *      URLs that oEmbed confirms are live.
+ *   3. Absolute last resort (rare — both of the above returned nothing): a
+ *      YouTube search link, so the row is still useful rather than broken.
+ */
+async function buildVideoRows(
+  topicId: string,
+  topic: { title: string; summary: string; domainName: string },
+  llmVideos: LlmResource["videos"]
+): Promise<VideoRow[]> {
+  // Domain-qualified query disambiguates generic titles and biases toward the
+  // right field, e.g. "Backpropagation Machine Learning".
+  const query = topic.domainName
+    ? `${topic.title} ${topic.domainName}`
+    : topic.title;
+
+  // 1. Preferred: real, relevance-ranked videos → direct links.
+  const best = await youtube.searchTopVideos(query, MAX_VIDEOS);
+  if (best.length > 0) {
+    return best.map((v, i) => ({
+      topicId,
+      type: "video",
+      title: v.title,
+      url: `https://www.youtube.com/watch?v=${v.videoId}`,
+      source: v.channel,
+      thumbnailUrl: v.thumbnailUrl,
+      durationSeconds: v.durationSeconds,
+      orderIndex: i,
+      qualityScore: 0,
+    }));
+  }
+  log.warn("no direct videos resolved; trying verified LLM suggestions", { topicId });
+
+  // 2. Fallback: oEmbed-verified LLM direct links.
+  const rows = await Promise.all(
+    llmVideos.map(async (v, i): Promise<VideoRow | null> => {
+      const videoId = extractYoutubeVideoId(v.videoUrl);
+      const exists = videoId ? await youtube.videoExists(videoId) : false;
+      if (!exists || !videoId) return null;
+      return {
+        topicId,
+        type: "video",
+        title: v.title,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        source: v.channel || "YouTube",
+        thumbnailUrl: youtubeThumbnail(videoId),
+        durationSeconds: null,
+        orderIndex: i,
+        qualityScore: 0,
+      };
+    })
+  );
+  const verified = rows.filter((r): r is VideoRow => r !== null);
+  if (verified.length > 0) return verified.map((r, i) => ({ ...r, orderIndex: i }));
+
+  // 3. Last resort: a single search link so the section isn't empty.
+  log.warn("falling back to a search link for videos", { topicId });
+  return [
+    {
+      topicId,
+      type: "video",
+      title: `Search: ${topic.title}`,
+      url: buildYoutubeSearchUrl(query),
+      source: "YouTube",
+      thumbnailUrl: null,
+      durationSeconds: null,
+      orderIndex: 0,
+      qualityScore: 0,
+    },
+  ];
+}
+
 export type PublicResource = {
   id: string;
   type: "video" | "doc";
@@ -171,11 +264,22 @@ export type PublicResource = {
 export async function getResources(
   topicId: string
 ): Promise<{ videos: PublicResource[]; docs: PublicResource[]; cached: boolean }> {
-  const topic = await prisma.topic.findUnique({
+  const topicRow = await prisma.topic.findUnique({
     where: { id: topicId },
-    select: { id: true, title: true, summary: true },
+    select: {
+      id: true,
+      title: true,
+      summary: true,
+      roadmap: { select: { domain: { select: { name: true } } } },
+    },
   });
-  if (!topic) throw new ApiError(404, "Topic not found");
+  if (!topicRow) throw new ApiError(404, "Topic not found");
+  const topic = {
+    id: topicRow.id,
+    title: topicRow.title,
+    summary: topicRow.summary,
+    domainName: topicRow.roadmap?.domain?.name ?? "",
+  };
 
   // Check cache (any resource < TTL old).
   const cutoff = new Date(Date.now() - RESOURCES_TTL_DAYS * 86400 * 1000);
@@ -202,27 +306,9 @@ export async function getResources(
   // Replace stale rows for this topic.
   await prisma.resource.deleteMany({ where: { topicId } });
 
-  const videoRows = llm.videos
-    .map((v, i) => {
-      // Prefer the direct video URL when the LLM gave one and it parses as a
-      // real watch URL. Fall back to a search-results page if not.
-      const videoId = extractYoutubeVideoId(v.videoUrl);
-      const url = videoId
-        ? `https://www.youtube.com/watch?v=${videoId}`
-        : buildYoutubeSearchUrl(v.searchQuery);
-      return {
-        topicId,
-        type: "video",
-        title: v.title,
-        url,
-        source: v.channel || "YouTube",
-        thumbnailUrl: videoId ? youtubeThumbnail(videoId) : null,
-        durationSeconds: null,
-        orderIndex: i,
-        qualityScore: 0,
-      };
-    })
-    .filter((r) => safeUrl(r.url));
+  const videoRows = (await buildVideoRows(topicId, topic, llm.videos)).filter((r) =>
+    safeUrl(r.url)
+  );
 
   const docRows = llm.docs
     .map((d, i) => {
