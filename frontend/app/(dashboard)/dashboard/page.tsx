@@ -11,6 +11,7 @@ import {
   ListChecks,
   Sparkles,
   Target,
+  Terminal,
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,60 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* Featured: Ethical Hacking Arsenal */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05 }}
+        className="mt-6"
+      >
+        <Link
+          href="/toolkit"
+          className="group relative block overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card/60 to-card/60 p-6 backdrop-blur transition-all hover:border-emerald-400/60 hover:shadow-[0_0_40px_-12px_rgba(16,185,129,0.5)]"
+        >
+          {/* faint code-grid accent on the right */}
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-1/2 opacity-[0.15]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(16,185,129,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.5) 1px, transparent 1px)",
+              backgroundSize: "26px 26px",
+              maskImage: "linear-gradient(to left, #000, transparent)",
+              WebkitMaskImage: "linear-gradient(to left, #000, transparent)",
+            }}
+            aria-hidden
+          />
+          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10">
+                <Terminal className="h-6 w-6 text-emerald-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold tracking-tight">Ethical Hacking Arsenal</h2>
+                  <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                    New
+                  </span>
+                </div>
+                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                  Every phase of a penetration test — recon, scanning, exploitation, post-exploitation
+                  — with the real tools and AI-generated, command-packed guides for each. Full hacker
+                  terminal inside.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="lg"
+              className="shrink-0 border-emerald-500/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25"
+              variant="outline"
+            >
+              Enter the Arsenal
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+          </div>
+        </Link>
+      </motion.section>
 
       {error && (
         <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">

@@ -12,6 +12,7 @@ import {
   ListChecks,
   ShieldCheck,
   Sparkles as SparklesIcon,
+  Terminal,
   Trophy,
   TrendingUp,
 } from "lucide-react";
@@ -27,6 +28,8 @@ import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { CursorFollower } from "@/components/landing/CursorFollower";
 import { RotatingWord } from "@/components/landing/RotatingWord";
 import { Sparkles } from "@/components/landing/Sparkles";
+import { Reveal } from "@/components/landing/Reveal";
+import { TiltCard } from "@/components/landing/TiltCard";
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -175,7 +178,7 @@ export default function LandingPage() {
         />
 
         <div className="relative mx-auto max-w-6xl">
-          <div className="text-center">
+          <Reveal className="text-center">
             <p className="text-xs uppercase tracking-[0.25em] text-primary">
               Everything in one place
             </p>
@@ -186,7 +189,7 @@ export default function LandingPage() {
               Five tightly-integrated systems that work together so you don't
               just consume content — you actually learn it.
             </p>
-          </div>
+          </Reveal>
 
           <Spotlight className="mt-12 grid gap-4 md:grid-cols-3 lg:grid-cols-4 lg:grid-rows-2">
             <BentoCard
@@ -226,6 +229,92 @@ export default function LandingPage() {
               accent="bg-cyan-500/20"
             />
           </Spotlight>
+        </div>
+      </section>
+
+      {/* ── Section 6.5 — Ethical Hacking Arsenal spotlight ────── */}
+      <section className="relative px-4 py-20 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid items-center gap-10 rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-card/40 to-card/40 p-8 backdrop-blur-sm lg:grid-cols-2 lg:p-12">
+            {/* Copy */}
+            <Reveal>
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-300">
+                <Terminal className="h-3.5 w-3.5" />
+                New · Hands-on hacking
+              </div>
+              <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+                The Ethical Hacking{" "}
+                <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                  Arsenal
+                </span>
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+                Every phase of a real penetration test — reconnaissance, scanning, gaining access,
+                post-exploitation, reporting — with the actual tools used at each step and an
+                AI-generated, command-packed field guide for every one. Nmap, Metasploit, Burp,
+                sqlmap, Hydra, Hashcat and 30+ more, inside a full hacker terminal.
+              </p>
+              <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                <Pill icon={<ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />}>
+                  5 attack phases
+                </Pill>
+                <Pill icon={<Terminal className="h-3.5 w-3.5 text-emerald-400" />}>
+                  37+ real tools
+                </Pill>
+                <Pill icon={<Bot className="h-3.5 w-3.5 text-emerald-400" />}>
+                  AI step-by-step guides
+                </Pill>
+              </ul>
+              <div className="mt-8">
+                <Button asChild size="lg" className="bg-emerald-500 text-white hover:bg-emerald-400">
+                  <Link href="/register">
+                    Explore the Arsenal <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </Reveal>
+
+            {/* Faux terminal preview */}
+            <Reveal delay={0.15}>
+              <TiltCard
+                glare
+                max={7}
+                className="group relative overflow-hidden rounded-xl border border-emerald-500/25 bg-black/70 font-mono text-[13px] shadow-[0_0_50px_-12px_rgba(16,185,129,0.4)]"
+              >
+              <div className="flex items-center gap-2 border-b border-emerald-500/20 bg-emerald-500/[0.05] px-4 py-2.5">
+                <span className="h-3 w-3 rounded-full bg-red-500/80" />
+                <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
+                <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
+                <span className="ml-2 text-xs text-emerald-300/70">root💀skillstreak: ~/arsenal</span>
+              </div>
+              <div className="space-y-1.5 p-5 leading-relaxed">
+                <p className="text-emerald-400/70">┌──(root💀skillstreak)-[~/arsenal]</p>
+                <p className="text-emerald-400/70">
+                  └─<span className="text-emerald-300">$</span>{" "}
+                  <span className="text-emerald-100">nmap -sV -sC -A 10.10.10.5</span>
+                </p>
+                <p className="text-emerald-200/60">Starting Nmap scan…</p>
+                <p className="text-emerald-200/80">
+                  22/tcp <span className="text-emerald-400">open</span> ssh OpenSSH 8.2p1
+                </p>
+                <p className="text-emerald-200/80">
+                  80/tcp <span className="text-emerald-400">open</span> http Apache 2.4.41
+                </p>
+                <p className="text-emerald-200/80">
+                  443/tcp <span className="text-emerald-400">open</span> ssl/http nginx
+                </p>
+                <p className="text-emerald-300/90">
+                  <span className="text-teal-300">→</span> AI guide: every flag, every NSE script,
+                  explained.
+                </p>
+                <p className="text-emerald-400/70">
+                  └─<span className="text-emerald-300">$</span>{" "}
+                  <span className="inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-emerald-400" />
+                </p>
+              </div>
+              </TiltCard>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -281,8 +370,9 @@ function BentoCard({
   accent: string;
 }) {
   return (
-    <div
-      className={`bento-card group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
+    <TiltCard
+      glare={false}
+      className={`bento-card group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
     >
       {/* Decorative diagonal gradient — visible always, brighter on hover */}
       <div
@@ -301,7 +391,7 @@ function BentoCard({
         }}
       />
 
-      <div className="relative">
+      <div className="relative [transform:translateZ(40px)]">
         <div
           className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-white/5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 ${accent}`}
         >
@@ -314,7 +404,7 @@ function BentoCard({
           {copy}
         </p>
       </div>
-    </div>
+    </TiltCard>
   );
 }
 
