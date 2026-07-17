@@ -10,6 +10,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Terminal,
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,12 @@ export function Navbar() {
             <Link href="/domains">
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Domains</span>
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm" aria-label="Ethical hacking arsenal">
+            <Link href="/toolkit">
+              <Terminal className="h-4 w-4" />
+              <span className="hidden sm:inline">Arsenal</span>
             </Link>
           </Button>
           <Button asChild variant="ghost" size="sm" aria-label="Leaderboard">

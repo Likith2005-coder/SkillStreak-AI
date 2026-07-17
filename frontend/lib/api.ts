@@ -458,6 +458,61 @@ export async function completeTopic(id: string): Promise<CompleteTopicResponse> 
   return data;
 }
 
+// ─── Ethical Hacking Arsenal (toolkit) ──────────────────
+
+export type ToolDifficulty = "beginner" | "intermediate" | "advanced";
+
+export type ArsenalTool = {
+  slug: string;
+  name: string;
+  phase: string;
+  category: string;
+  tagline: string;
+  difficulty: ToolDifficulty;
+  officialUrl: string;
+  tags: string[];
+};
+
+export type ArsenalPhase = {
+  slug: string;
+  order: number;
+  name: string;
+  icon: string;
+  color: string;
+  summary: string;
+  objective: string;
+  tools: ArsenalTool[];
+};
+
+export type ToolGuideResponse = {
+  tool: ArsenalTool;
+  phase: Omit<ArsenalPhase, "tools"> | null;
+  guide: string;
+  cached: boolean;
+};
+
+export async function fetchArsenal(): Promise<ArsenalPhase[]> {
+  const { data } = await api.get<{ phases: ArsenalPhase[] }>("/toolkit");
+  return data.phases;
+}
+
+export async function fetchTool(
+  slug: string
+): Promise<{ tool: ArsenalTool; phase: Omit<ArsenalPhase, "tools"> | null }> {
+  const { data } = await api.get<{ tool: ArsenalTool; phase: Omit<ArsenalPhase, "tools"> | null }>(
+    `/toolkit/tools/${slug}`
+  );
+  return data;
+}
+
+export async function fetchToolGuide(slug: string): Promise<ToolGuideResponse> {
+  // Cold-cache guides can be ~2200 tokens — bump timeout per call.
+  const { data } = await api.post<ToolGuideResponse>(`/toolkit/tools/${slug}/guide`, undefined, {
+    timeout: 60_000,
+  });
+  return data;
+}
+
 // ─── Chat (Phase 3) ─────────────────────────────────────
 
 export type Intent =

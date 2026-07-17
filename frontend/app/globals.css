@@ -200,6 +200,97 @@
     pointer-events: none;
   }
 
+  /* ── Hacker terminal theme (scoped to .hacker) ───────────────
+     Applied only on the Ethical Hacking Arsenal pages. Near-black
+     background with a green phosphor grid + scanlines, monospace
+     type, and green-recoloured prose for the AI guides. */
+  .hacker {
+    font-family: ui-monospace, "JetBrains Mono", "Fira Code", "Cascadia Code", "Courier New", monospace;
+  }
+  .hacker-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+      radial-gradient(60vmax 55vmax at 50% -12%, hsl(140 90% 45% / 0.10), transparent 70%),
+      #04070a;
+  }
+  .hacker-bg::before {
+    /* phosphor grid, faded toward the bottom */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(hsl(140 90% 50% / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(140 90% 50% / 0.06) 1px, transparent 1px);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 35%, transparent 85%);
+            mask-image: radial-gradient(ellipse at 50% 0%, #000 35%, transparent 85%);
+  }
+  .hacker-bg::after {
+    /* CRT scanlines */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 0, 0, 0.28) 3px
+    );
+    opacity: 0.5;
+    animation: scanline-move 8s linear infinite;
+  }
+  @keyframes scanline-move {
+    from { background-position: 0 0; }
+    to   { background-position: 0 120px; }
+  }
+  .term-glow {
+    text-shadow: 0 0 8px hsl(140 90% 55% / 0.55);
+  }
+  .term-cursor::after {
+    content: "▋";
+    margin-left: 3px;
+    color: hsl(140 90% 55%);
+    animation: term-blink 1.1s steps(2, start) infinite;
+  }
+  @keyframes term-blink {
+    50% { opacity: 0; }
+  }
+  /* Green-recolour the AI guide prose inside the hacker scope. */
+  .hacker .prose :where(h2):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 90% 62%);
+    text-shadow: 0 0 8px hsl(140 90% 55% / 0.35);
+  }
+  .hacker .prose :where(h3, h4):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 80% 72%);
+  }
+  .hacker .prose :where(strong):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 85% 78%);
+  }
+  .hacker .prose :where(p, li):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 25% 80%);
+  }
+  .hacker .prose :where(a):not(:where([class~="not-prose"] *)) {
+    color: hsl(160 85% 60%);
+  }
+  .hacker .prose :where(code):not(:where(pre *)):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 90% 75%);
+    background: hsl(140 90% 30% / 0.14);
+  }
+  .hacker .prose :where(th):not(:where([class~="not-prose"] *)) {
+    color: hsl(140 85% 72%);
+  }
+  .hacker .prose :where(h2):not(:where([class~="not-prose"] *))::before {
+    background: linear-gradient(to right, hsl(140 90% 55%), hsl(160 90% 45%)) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hacker-bg::after { animation: none; }
+    .term-cursor::after { animation: none; }
+  }
+
   /* Loader used by SplineScene's Suspense fallback. */
   .loader {
     display: inline-block;
