@@ -11,6 +11,8 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
 import { del as cacheDel } from "./cache.service";
+import { invalidateContentCache } from "./domain.service";
+import { invalidateTopicMeta } from "./topic.service";
 
 // ─── Topics ─────────────────────────────────────────────────
 
@@ -129,11 +131,15 @@ export async function createTopic(input: TopicCreate) {
     data: { totalTopics: { increment: 1 } },
   });
 
+  await invalidateContentCache(input.domainSlug);
   return created;
 }
 
 export async function updateTopic(id: string, input: TopicUpdate) {
-  const topic = await prisma.topic.findUnique({ where: { id } });
+  const topic = await prisma.topic.findUnique({
+    where: { id },
+    select: { id: true, roadmap: { select: { domain: { select: { slug: true } } } } },
+  });
   if (!topic) throw new ApiError(404, "Topic not found");
 
   const updated = await prisma.topic.update({
@@ -146,13 +152,22 @@ export async function updateTopic(id: string, input: TopicUpdate) {
     },
     select: { id: true, title: true, summary: true, difficulty: true, phase: true },
   });
+
+  await Promise.all([
+    invalidateTopicMeta(id),
+    invalidateContentCache(topic.roadmap.domain.slug),
+  ]);
   return updated;
 }
 
 export async function deleteTopic(id: string) {
   const topic = await prisma.topic.findUnique({
     where: { id },
-    select: { id: true, roadmapId: true },
+    select: {
+      id: true,
+      roadmapId: true,
+      roadmap: { select: { domain: { select: { slug: true } } } },
+    },
   });
   if (!topic) throw new ApiError(404, "Topic not found");
   await prisma.topic.delete({ where: { id } });
@@ -160,6 +175,11 @@ export async function deleteTopic(id: string) {
     where: { id: topic.roadmapId },
     data: { totalTopics: { decrement: 1 } },
   });
+
+  await Promise.all([
+    invalidateTopicMeta(id),
+    invalidateContentCache(topic.roadmap.domain.slug),
+  ]);
 }
 
 // ─── Users ──────────────────────────────────────────────────

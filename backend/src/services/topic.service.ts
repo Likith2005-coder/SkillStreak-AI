@@ -1,7 +1,7 @@
 import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
 import { complete } from "./llm.service";
-import { remember } from "./cache.service";
+import { remember, del } from "./cache.service";
 import { recordTopicComplete, type GamificationDelta } from "./gamification.service";
 
 export type SkillLevel = "beginner" | "intermediate" | "advanced";
@@ -65,22 +65,42 @@ function priorLevelToSkillLevel(priorLevel: string | undefined | null): SkillLev
   return "beginner";
 }
 
-export async function getTopicForUser(topicId: string, userId: string) {
-  const topic = await prisma.topic.findUnique({
-    where: { id: topicId },
-    select: TOPIC_PUBLIC,
-  });
-  if (!topic) throw new ApiError(404, "Topic not found");
+// Static topic metadata (title, summary, domain) — only changes on admin edit,
+// so it's cached. Invalidated by invalidateTopicMeta().
+const TOPIC_META_TTL_SECONDS = 300;
 
-  const progress = await prisma.userProgress.findUnique({
-    where: { userId_topicId: { userId, topicId } },
-    select: {
-      status: true,
-      bestScore: true,
-      completedAt: true,
-      timeSpentSeconds: true,
-    },
+async function getTopicMeta(topicId: string) {
+  const { value } = await remember(`topic:${topicId}:meta`, TOPIC_META_TTL_SECONDS, async () => {
+    const topic = await prisma.topic.findUnique({
+      where: { id: topicId },
+      select: TOPIC_PUBLIC,
+    });
+    if (!topic) throw new ApiError(404, "Topic not found");
+    return topic;
   });
+  return value;
+}
+
+/** Drop cached topic metadata after an admin edit/delete. */
+export async function invalidateTopicMeta(topicId: string): Promise<void> {
+  await del(`topic:${topicId}:meta`);
+}
+
+export async function getTopicForUser(topicId: string, userId: string) {
+  // Static metadata (cached) and per-user progress are independent — fetch both
+  // at once so a cache hit costs a single progress round-trip.
+  const [topic, progress] = await Promise.all([
+    getTopicMeta(topicId),
+    prisma.userProgress.findUnique({
+      where: { userId_topicId: { userId, topicId } },
+      select: {
+        status: true,
+        bestScore: true,
+        completedAt: true,
+        timeSpentSeconds: true,
+      },
+    }),
+  ]);
 
   return { ...topic, progress };
 }
