@@ -2,6 +2,36 @@ import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 import { env } from "../config/env";
 import { ApiError } from "../middleware/error.middleware";
 import { log } from "../utils/logger.util";
+import { BreakerRejection, CircuitBreaker } from "../utils/circuit-breaker";
+
+/**
+ * Breaker for text generation (chat / quiz / explanations / toolkit). A slow or
+ * failing Gemini trips it so those paths fast-fail instead of piling up. Free
+ * tier is ~15 req/min, so a low concurrency cap is also correct.
+ */
+const geminiBreaker = new CircuitBreaker({
+  name: "gemini",
+  timeoutMs: 30_000, // generation with large maxTokens can be slow
+  maxConcurrent: 6,
+  failureThreshold: 4,
+  resetTimeoutMs: 15_000,
+  successThreshold: 2,
+});
+
+/**
+ * SEPARATE breaker for embeddings. Embeddings are a distinct dependency
+ * (different model, non-critical background backfill) — bulkhead them so a
+ * broken/slow embedding model can never trip the breaker that guards chat,
+ * quizzes and explanations.
+ */
+const embedBreaker = new CircuitBreaker({
+  name: "gemini-embed",
+  timeoutMs: 15_000,
+  maxConcurrent: 4,
+  failureThreshold: 4,
+  resetTimeoutMs: 30_000,
+  successThreshold: 1,
+});
 
 export type CompletionOptions = {
   systemPrompt?: string;
@@ -46,7 +76,9 @@ async function completeGemini(opts: CompletionOptions): Promise<string> {
     },
   });
 
-  const result = await model.generateContent(opts.userPrompt);
+  const result = await geminiBreaker.execute((signal) =>
+    model.generateContent(opts.userPrompt, { signal })
+  );
   const text = result.response.text();
   if (!text) throw new ApiError(502, "LLM returned an empty response");
   return text;
@@ -81,6 +113,11 @@ export async function complete(opts: CompletionOptions): Promise<string> {
       lastError = err;
       // Don't retry on user-fixable errors (missing key, not implemented, validation).
       if (err instanceof ApiError && err.status < 500) throw err;
+      // Circuit open / load shed / timeout — the dependency is known-bad.
+      // Fast-fail without a retry so we don't add latency on top of a stall.
+      if (err instanceof BreakerRejection) {
+        throw new ApiError(503, "AI service is temporarily busy. Please try again shortly.");
+      }
       if (attempt < 2) {
         log.warn("LLM call failed, retrying", { provider, attempt });
         continue;
@@ -104,7 +141,9 @@ export async function complete(opts: CompletionOptions): Promise<string> {
  * Returns a number[] of length 1536.
  */
 const TARGET_EMBEDDING_DIM = 1536;
-const GEMINI_EMBEDDING_MODEL = "text-embedding-004";
+// gemini-embedding-001 (GA). Uses Matryoshka representation, so truncating its
+// 3072-dim output down to 1536 below yields a valid, usable embedding.
+const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
 
 export async function embedText(text: string): Promise<number[]> {
   if (env.LLM_PROVIDER !== "gemini") {
@@ -115,8 +154,11 @@ export async function embedText(text: string): Promise<number[]> {
   const trimmed = text.length > 8000 ? text.slice(0, 8000) : text;
   let result;
   try {
-    result = await model.embedContent(trimmed);
+    result = await embedBreaker.execute((signal) => model.embedContent(trimmed, { signal }));
   } catch (err) {
+    if (err instanceof BreakerRejection) {
+      throw new ApiError(503, "Embedding service is temporarily busy. Please try again shortly.");
+    }
     log.error("embedding call failed", { error: err instanceof Error ? err.message : String(err) });
     throw new ApiError(502, "Embedding generation failed");
   }
@@ -157,12 +199,20 @@ export async function* streamComplete(opts: StreamOptions): AsyncGenerator<strin
   const chat = model.startChat({ history });
 
   try {
-    const result = await chat.sendMessageStream(opts.userPrompt);
+    // Guard stream *initiation* (connection + first response) with the breaker:
+    // that's where a degraded Gemini hangs. The signal aborts the request if the
+    // timeout fires; once streaming starts we iterate outside the breaker.
+    const result = await geminiBreaker.execute((signal) =>
+      chat.sendMessageStream(opts.userPrompt, { signal })
+    );
     for await (const chunk of result.stream) {
       const text = chunk.text();
       if (text) yield text;
     }
   } catch (err) {
+    if (err instanceof BreakerRejection) {
+      throw new ApiError(503, "AI chat is temporarily busy. Please try again shortly.");
+    }
     log.error("LLM stream failed", {
       error: err instanceof Error ? err.message : String(err),
     });

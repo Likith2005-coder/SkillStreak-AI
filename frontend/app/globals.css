@@ -3,45 +3,48 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── "Signal" identity ────────────────────────────────────────
+     Deep-ink learning console. Electric cyan is the signal (primary),
+     violet the depth (secondary), lime the energy accent (streaks). */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 40% 99%;
+    --foreground: 214 60% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 243 75% 59%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 262 83% 58%;
+    --card-foreground: 214 60% 8%;
+    --primary: 189 94% 43%;
+    --primary-foreground: 200 80% 98%;
+    --secondary: 265 84% 60%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 205 30% 95%;
+    --muted-foreground: 210 12% 42%;
+    --accent: 205 30% 95%;
+    --accent-foreground: 214 47% 11%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 243 75% 59%;
-    --radius: 0.5rem;
+    --border: 210 25% 89%;
+    --input: 210 25% 89%;
+    --ring: 189 94% 43%;
+    --radius: 0.6rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 243 75% 59%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 262 83% 58%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 214 56% 4.5%;
+    --foreground: 195 30% 96%;
+    --card: 213 44% 7%;
+    --card-foreground: 195 30% 96%;
+    --primary: 187 92% 52%;
+    --primary-foreground: 205 90% 6%;
+    --secondary: 265 85% 68%;
+    --secondary-foreground: 195 30% 96%;
+    --muted: 213 32% 13%;
+    --muted-foreground: 205 16% 62%;
+    --accent: 213 32% 13%;
+    --accent-foreground: 195 30% 96%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 243 75% 59%;
+    --border: 205 32% 15%;
+    --input: 205 32% 15%;
+    --ring: 187 92% 52%;
   }
 }
 
@@ -56,18 +59,193 @@
 }
 
 @layer utilities {
+  /* Committed 2-stop signal→depth wordmark gradient. Two stops (cyan→violet)
+     read as an authored brand mark; the old lime→cyan→violet rainbow was the
+     generic-AI tell the detector flags. `bg-[length:200%_auto]` gives
+     `animate-gradient` room to flow. */
   .gradient-text {
-    @apply bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-cyan-300 to-violet-400 bg-clip-text text-transparent bg-[length:200%_auto];
   }
   .gradient-bg-animated {
     background: linear-gradient(
       135deg,
-      hsl(243 75% 59%) 0%,
-      hsl(262 83% 58%) 50%,
-      hsl(290 75% 60%) 100%
+      hsl(187 92% 52%) 0%,
+      hsl(214 90% 58%) 50%,
+      hsl(265 85% 68%) 100%
     );
     background-size: 200% 200%;
     animation: gradient-shift 8s ease infinite;
+  }
+
+  /* ── Cinematic studio kit (alche-inspired) ────────────────────
+     Chromatic glitch, kinetic ghost word, film grain, and hairline
+     studio chrome. All GPU-cheap, reduced-motion aware. */
+
+  /* Chromatic-aberration glitch text. Element must carry data-text. */
+  .glitch {
+    position: relative;
+    display: inline-block;
+    color: hsl(195 40% 97%);
+    z-index: 0;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: screen;
+  }
+  .glitch::before {
+    color: #22d3ee; /* cyan */
+    transform: translate3d(-0.045em, 0, 0);
+    animation: glitch-a 5.5s steps(1) infinite;
+  }
+  .glitch::after {
+    color: #b26bff; /* violet */
+    transform: translate3d(0.045em, 0, 0);
+    animation: glitch-b 5.5s steps(1) infinite;
+  }
+  /* Most of the loop the layers rest at the static offset; brief bursts jump
+     + clip for the "signal glitch" moment. */
+  @keyframes glitch-a {
+    0%, 92%, 100% { transform: translate3d(-0.045em, 0, 0); clip-path: none; }
+    93% { transform: translate3d(-0.14em, -0.02em, 0); clip-path: inset(0 0 62% 0); }
+    95% { transform: translate3d(0.1em, 0.02em, 0); clip-path: inset(58% 0 8% 0); }
+    97% { transform: translate3d(-0.08em, 0, 0); clip-path: inset(30% 0 40% 0); }
+  }
+  @keyframes glitch-b {
+    0%, 92%, 100% { transform: translate3d(0.045em, 0, 0); clip-path: none; }
+    93% { transform: translate3d(0.14em, 0.02em, 0); clip-path: inset(0 0 58% 0); }
+    95% { transform: translate3d(-0.1em, -0.02em, 0); clip-path: inset(52% 0 12% 0); }
+    97% { transform: translate3d(0.08em, 0, 0); clip-path: inset(24% 0 46% 0); }
+  }
+
+  /* Giant outlined "ghost" display word — the alche "WORK" motif. */
+  .ghost-word {
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 1px hsl(187 92% 60% / 0.18);
+    user-select: none;
+  }
+
+  /* Chromatic split on hover — for cards/images. */
+  .chromatic {
+    position: relative;
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .chromatic::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    box-shadow:
+      -3px 0 0 hsl(187 92% 55% / 0.5) inset,
+      3px 0 0 hsl(272 90% 65% / 0.5) inset;
+    mix-blend-mode: screen;
+  }
+  .chromatic:hover::after {
+    opacity: 1;
+  }
+
+  /* Cinematic film grain — subtle static noise over the page.
+     Deliberately NOT using mix-blend-mode or a per-frame transform: a
+     fixed, full-viewport blended/animated layer forces the browser to
+     recomposite the entire screen on every scroll frame, which was the
+     single biggest cause of scroll jank. A plain, static low-opacity
+     grain on its own GPU layer reads the same but costs nothing while
+     scrolling. */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    pointer-events: none;
+    opacity: 0.045;
+    isolation: isolate;
+    transform: translateZ(0);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  @keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-3%, 2%); }
+    40% { transform: translate(2%, -3%); }
+    60% { transform: translate(-2%, -2%); }
+    80% { transform: translate(3%, 2%); }
+  }
+
+  /* Rotating studio control-dial (decorative). */
+  .studio-dial {
+    animation: dial-spin 24s linear infinite;
+  }
+  @keyframes dial-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glitch::before, .glitch::after,
+    .noise-overlay, .studio-dial { animation: none; }
+  }
+
+  /* ── Signature: the knowledge grid ────────────────────────────
+     A neon perspective floor receding to a glowing horizon behind the
+     hero — the "ground" you build skills on. Pure CSS 3D, GPU-cheap. */
+  .grid-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    perspective: 340px;
+  }
+  .grid-scene::before {
+    /* the horizon: a bright cyan→lime seam with a soft bloom */
+    content: "";
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    bottom: 30%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(187 95% 62% / 0.9) 35%,
+      hsl(84 85% 62% / 0.7) 65%,
+      transparent
+    );
+    box-shadow: 0 0 70px 10px hsl(187 92% 55% / 0.4);
+    opacity: 0.85;
+  }
+  .grid-floor {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: -12%;
+    height: 62%;
+    transform: rotateX(74deg);
+    transform-origin: bottom center;
+    background-image:
+      linear-gradient(hsl(187 92% 60% / 0.32) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(187 92% 60% / 0.24) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: linear-gradient(to top, #000 4%, transparent 70%);
+            mask-image: linear-gradient(to top, #000 4%, transparent 70%);
+    animation: grid-run 4.5s linear infinite;
+    will-change: background-position;
+  }
+  @keyframes grid-run {
+    from { background-position: 0 0; }
+    to   { background-position: 0 46px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grid-floor { animation: none; }
   }
 
   /* Aurora background — soft, slow-moving color blooms behind the page.
@@ -95,13 +273,13 @@
     transform: translate3d(0, 0, 0);
   }
   .aurora-bg::before {
-    background: radial-gradient(closest-side, hsl(243 75% 59%), transparent 70%);
+    background: radial-gradient(closest-side, hsl(187 92% 52%), transparent 70%);
     top: -15vmax;
     left: -8vmax;
     animation: aurora-drift-a 24s ease-in-out infinite alternate;
   }
   .aurora-bg::after {
-    background: radial-gradient(closest-side, hsl(290 75% 60%), transparent 70%);
+    background: radial-gradient(closest-side, hsl(265 85% 68%), transparent 70%);
     bottom: -18vmax;
     right: -8vmax;
     animation: aurora-drift-b 30s ease-in-out infinite alternate;
@@ -193,10 +371,10 @@
     left: 0;
     right: 0;
     height: 2.5px;
-    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    background: linear-gradient(90deg, #22d3ee, #38bdf8, #a855f7);
     z-index: 100;
     transform-origin: left;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
     pointer-events: none;
   }
 

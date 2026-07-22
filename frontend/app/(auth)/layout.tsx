@@ -33,48 +33,67 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <AuthFormProvider>
       <main className="grid min-h-screen lg:grid-cols-2">
-        {/* Left side — animated characters on a brand-gradient panel.
+        {/* Left side — the Signal world: deep ink, neon grid floor, ghost
+            word, with the animated characters standing on the horizon.
             Hidden on mobile so the form has all the room. */}
-        <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-12 text-white lg:flex">
-          {/* Decorative background blobs + grid */}
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-background p-12 lg:flex">
+          {/* Ghost word behind everything */}
           <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_75%,rgba(255,255,255,0.18),transparent_55%)]"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+            aria-hidden
+          >
+            <span className="ghost-word text-[11vw] leading-none">STREAK</span>
+          </div>
+          {/* Neon perspective floor the characters stand on */}
+          <div className="grid-scene" aria-hidden>
+            <div className="grid-floor" />
+          </div>
+          {/* Cyan + violet blooms */}
+          <div
+            className="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/15 blur-3xl"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_25%,rgba(217,70,239,0.25),transparent_50%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.06]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
+            className="pointer-events-none absolute -right-20 top-8 h-72 w-72 rounded-full bg-violet-500/15 blur-3xl"
             aria-hidden
           />
 
           {/* Brand mark */}
           <Link
             href="/"
-            className="relative z-10 inline-flex items-center gap-2 text-lg font-semibold tracking-tight"
+            className="relative z-10 inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 backdrop-blur-sm">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/30 bg-primary/10">
+              <Sparkles className="h-4 w-4 text-primary" />
             </div>
-            <span>SkillStreak AI</span>
+            <span>
+              <span className="gradient-text">SkillStreak</span> AI
+            </span>
           </Link>
 
-          {/* Characters — anchored to the bottom-center of the panel */}
-          <div className="relative z-10 flex flex-1 items-end justify-center">
-            <AnimatedCharacters />
+          {/* Tagline + characters — the crew reacts while you type */}
+          <div className="relative z-10 flex flex-1 flex-col justify-end">
+            <div className="mb-6">
+              <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary">
+                System online
+              </p>
+              <h2 className="mt-2 max-w-sm font-display text-3xl font-semibold tracking-tight text-foreground [text-wrap:balance]">
+                Your streak is waiting.
+              </h2>
+              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                The crew watches you type. They look away for passwords —
+                promise.
+              </p>
+            </div>
+            <div className="flex items-end justify-center">
+              <AnimatedCharacters />
+            </div>
           </div>
 
           {/* Footer */}
-          <div className="relative z-10 flex items-center gap-6 text-xs text-white/60">
+          <div className="relative z-10 mt-8 flex items-center gap-6 text-xs text-muted-foreground">
             <span>© SkillStreak AI</span>
-            <Link href="/" className="transition hover:text-white">
+            <Link href="/" className="transition hover:text-foreground">
               Home
             </Link>
             <span>v0.7.0</span>

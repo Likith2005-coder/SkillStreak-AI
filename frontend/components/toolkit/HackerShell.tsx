@@ -7,6 +7,9 @@
  * theme (see globals.css).
  */
 
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+
 export function HackerShell({
   prompt,
   children,
@@ -35,8 +38,20 @@ export function HackerShell({
   );
 }
 
-/** A green shell prompt line, e.g. `┌──(root㉿skillstreak)-[~/arsenal]` */
-export function PromptLine({ path, command }: { path: string; command?: string }) {
+/** A green shell prompt line, e.g. `┌──(root㉿skillstreak)-[~/arsenal]`.
+ *  Pass `typed` to have the command type itself out with a trailing cursor. */
+export function PromptLine({
+  path,
+  command,
+  typed = false,
+}: {
+  path: string;
+  command?: string;
+  typed?: boolean;
+}) {
+  const shown = useTypewriter(typed && command ? command : null);
+  const isTyping = typed && command != null && shown.length < command.length;
+
   return (
     <div className="font-mono text-xs leading-relaxed">
       <div className="text-emerald-400/70">
@@ -45,11 +60,39 @@ export function PromptLine({ path, command }: { path: string; command?: string }
       <div className="text-emerald-400/70">
         └─<span className="text-emerald-300">$</span>{" "}
         {command ? (
-          <span className="text-emerald-100">{command}</span>
+          <span className="text-emerald-100">
+            {typed ? shown : command}
+            {isTyping && <span className="term-cursor" />}
+          </span>
         ) : (
           <span className="term-cursor" />
         )}
       </div>
     </div>
   );
+}
+
+/** Types `text` out one char at a time; returns the full string immediately
+ *  when null (disabled) or when the user prefers reduced motion. */
+function useTypewriter(text: string | null, charMs = 34): string {
+  const reduce = useReducedMotion();
+  const [shown, setShown] = useState(text ?? "");
+
+  useEffect(() => {
+    if (text == null) return;
+    if (reduce) {
+      setShown(text);
+      return;
+    }
+    setShown("");
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      setShown(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, charMs);
+    return () => clearInterval(id);
+  }, [text, reduce, charMs]);
+
+  return shown;
 }

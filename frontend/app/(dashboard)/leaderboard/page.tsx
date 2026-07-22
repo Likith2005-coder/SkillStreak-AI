@@ -10,6 +10,7 @@ import {
   type LeaderboardEntry,
 } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
+import { PageHero } from "@/components/shared/PageHero";
 import { cn } from "@/lib/utils";
 
 export default function LeaderboardPage() {
@@ -37,18 +38,14 @@ export default function LeaderboardPage() {
         Back to dashboard
       </Link>
 
-      <header className="mt-4">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          This week's top learners
-        </div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          <span className="gradient-text">Leaderboard</span>
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Ranked by XP earned since Monday (UTC). Resets every week.
-        </p>
-      </header>
+      <PageHero
+        className="mt-4"
+        eyebrow="This week's top learners"
+        icon={<Sparkles className="h-3.5 w-3.5 text-primary" />}
+        title={<span className="gradient-text">Leaderboard</span>}
+        subtitle="Ranked by XP earned since Monday (UTC). Resets every week."
+        ghost="RANK"
+      />
 
       {error && (
         <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -62,8 +59,21 @@ export default function LeaderboardPage() {
             <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         ) : entries.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center text-sm text-muted-foreground">
-            No XP earned yet this week. Be the first.
+          <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center">
+            <Trophy className="mx-auto h-8 w-8 text-amber-400/70" />
+            <p className="mt-3 text-sm font-medium text-foreground">
+              Nobody has scored this week — the crown is up for grabs.
+            </p>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Finish a topic (+10 XP) or ace a quiz (up to +25 XP) and you take
+              rank #1 instantly.
+            </p>
+            <Link
+              href="/domains"
+              className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
+            >
+              Start a topic
+            </Link>
           </div>
         ) : (
           <ul className="space-y-2">

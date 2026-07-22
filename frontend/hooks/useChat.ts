@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import {
   apiErrorMessage,
   createChatSession,
@@ -71,43 +72,61 @@ export function useStartSession() {
 }
 
 export function useRenameSession() {
-  const upsertSession = useChatStore((s) => s.upsertSession);
+  const renameSessionLocal = useChatStore((s) => s.renameSessionLocal);
   const setError = useChatStore((s) => s.setError);
   return useCallback(
     async (id: string, title: string) => {
+      const next = title.trim();
+      const prev = useChatStore.getState().sessions.find((s) => s.id === id)?.title;
+      if (!next || next === prev) return; // nothing to do
+
+      // Optimistic: show the new title instantly.
+      renameSessionLocal(id, next);
       try {
-        const session = await renameChatSession(id, title);
-        upsertSession({
-          ...session,
-          topicId: useChatStore.getState().sessions.find((s) => s.id === id)?.topicId ?? null,
-          topicTitle:
-            useChatStore.getState().sessions.find((s) => s.id === id)?.topicTitle ?? null,
-          messageCount:
-            useChatStore.getState().sessions.find((s) => s.id === id)?.messageCount ?? 0,
-          createdAt:
-            useChatStore.getState().sessions.find((s) => s.id === id)?.createdAt ?? session.updatedAt,
-        });
+        const session = await renameChatSession(id, next);
+        // Reconcile with the server's canonical (possibly normalized) title.
+        renameSessionLocal(id, session.title);
       } catch (err) {
-        setError(apiErrorMessage(err, "Couldn't rename"));
+        // Roll back to the previous title so the user isn't misled.
+        if (prev !== undefined) renameSessionLocal(id, prev);
+        const msg = apiErrorMessage(err, "Couldn't rename");
+        setError(msg);
+        toast.error("Rename failed", { description: `${msg} — reverted.` });
       }
     },
-    [setError, upsertSession]
+    [renameSessionLocal, setError]
   );
 }
 
 export function useDeleteSession() {
   const removeSession = useChatStore((s) => s.removeSession);
+  const insertSession = useChatStore((s) => s.insertSession);
+  const loadSession = useChatStore((s) => s.loadSession);
   const setError = useChatStore((s) => s.setError);
   return useCallback(
     async (id: string) => {
+      const state = useChatStore.getState();
+      const index = state.sessions.findIndex((s) => s.id === id);
+      if (index === -1) return;
+      const removed = state.sessions[index];
+      const wasActive = state.activeSessionId === id;
+      const activeDetail = wasActive ? state.activeSession : null;
+
+      // Optimistic: drop it from the list immediately (also clears the pane if active).
+      removeSession(id);
       try {
         await deleteChatSession(id);
-        removeSession(id);
       } catch (err) {
-        setError(apiErrorMessage(err, "Couldn't delete"));
+        // Roll back: restore the row at its original spot (and the open pane if
+        // it was the active conversation) so nothing is silently lost.
+        insertSession(removed, index);
+        if (activeDetail) loadSession(activeDetail);
+        const msg = apiErrorMessage(err, "Couldn't delete");
+        setError(msg);
+        toast.error("Delete failed", { description: `${msg} — conversation restored.` });
       }
     },
-    [removeSession, setError]
+    [insertSession, loadSession, removeSession, setError]
   );
 }
 

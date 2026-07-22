@@ -1,0 +1,6 @@
+{
+  "_comment": "Emails listed here are granted the admin role when you run `npm --workspace @skillstreak/admin run grant-admin`. The account must already be registered on the learner site. Prefer using the Access tab in the admin console for day-to-day changes; this file is for bootstrapping / version-controlled access.",
+  "admins": [
+    "0215likithbs@gmail.com"
+  ]
+}

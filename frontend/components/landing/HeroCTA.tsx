@@ -18,6 +18,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Magnetic } from "./Magnetic";
+import { EmojiBurst } from "./EmojiBurst";
 
 export function HeroCTA() {
   const reduce = useReducedMotion();
@@ -26,11 +27,12 @@ export function HeroCTA() {
     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
       {/* Primary — wrapped in Magnetic so it gently pulls toward the cursor */}
       <Magnetic strength={10} className="inline-block">
+      <EmojiBurst>
       <Link href="/register" className="group/cta relative inline-block">
         {/* Subtle halo — slow breath, low opacity, never strobing */}
         <span
           aria-hidden
-          className="pointer-events-none absolute -inset-1.5 rounded-full bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400 opacity-30 blur-md transition-opacity duration-500 animate-cta-breathe group-hover/cta:opacity-60"
+          className="pointer-events-none absolute -inset-1.5 rounded-full bg-gradient-to-r from-violet-400 via-violet-400 to-violet-400 opacity-30 blur-md transition-opacity duration-500 animate-cta-breathe group-hover/cta:opacity-60"
         />
 
         <motion.span
@@ -41,7 +43,7 @@ export function HeroCTA() {
               ? undefined
               : { duration: 3.6, ease: "easeInOut", repeat: Infinity }
           }
-          className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold tracking-wide text-violet-700 shadow-xl shadow-violet-900/20 ring-1 ring-violet-200/60 transition-all duration-300 group-hover/cta:shadow-2xl group-hover/cta:shadow-fuchsia-500/30 group-hover/cta:ring-violet-300 group-active/cta:scale-[0.98]"
+          className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold tracking-wide text-violet-700 shadow-xl shadow-violet-900/20 ring-1 ring-violet-200/60 transition-all duration-300 group-hover/cta:shadow-2xl group-hover/cta:shadow-violet-500/30 group-hover/cta:ring-violet-300 group-active/cta:scale-[0.98]"
         >
           {/* Shimmer — visible only on hover, single sweep */}
           <span
@@ -64,9 +66,11 @@ export function HeroCTA() {
           </motion.span>
         </motion.span>
       </Link>
+      </EmojiBurst>
       </Magnetic>
 
       {/* Secondary — outlined, hover reveals arrow */}
+      <EmojiBurst>
       <Link
         href="/login"
         className="group/sec relative inline-flex items-center justify-center gap-1 rounded-full border-2 border-white/60 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-white hover:bg-white/20"
@@ -74,6 +78,7 @@ export function HeroCTA() {
         <span className="relative">I already have an account</span>
         <ArrowRight className="ml-1 h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover/sec:translate-x-0 group-hover/sec:opacity-100" />
       </Link>
+      </EmojiBurst>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { PageHero } from "@/components/shared/PageHero";
 import {
   apiErrorMessage,
   fetchHeatmap,
@@ -80,20 +81,19 @@ export default function ProgressPage() {
         Back to dashboard
       </Link>
 
-      <header className="mt-4">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Your journey
-        </div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          {overview.totals.topicsCompleted} of {overview.totals.topicsAvailable} topics ·{" "}
-          <span className="gradient-text">{totalPct}%</span>
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Heatmap covers the last 90 days · {heatmap.totalActiveDays} active days ·{" "}
-          {heatmap.totalActions} total actions
-        </p>
-      </header>
+      <PageHero
+        className="mt-4"
+        eyebrow="Your journey"
+        icon={<Sparkles className="h-3.5 w-3.5 text-primary" />}
+        title={
+          <>
+            {overview.totals.topicsCompleted} of {overview.totals.topicsAvailable} topics ·{" "}
+            <span className="gradient-text">{totalPct}%</span>
+          </>
+        }
+        subtitle={`Heatmap covers the last 90 days · ${heatmap.totalActiveDays} active days · ${heatmap.totalActions} total actions`}
+        ghost="PROGRESS"
+      />
 
       <section className="mt-6">
         <Heatmap data={heatmap} />

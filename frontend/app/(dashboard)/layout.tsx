@@ -44,6 +44,8 @@ export default function DashboardLayout({
   return (
     <div className="relative min-h-screen bg-background">
       <div className="aurora-bg" aria-hidden />
+      {/* Cinematic film grain over the app, same as the landing page */}
+      <div className="noise-overlay" aria-hidden />
       {/* Skip link — only visible when focused via keyboard */}
       <a
         href="#main"

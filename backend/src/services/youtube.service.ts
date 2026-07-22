@@ -19,6 +19,7 @@
 
 import { env } from "../config/env";
 import { log } from "../utils/logger.util";
+import { CircuitBreaker } from "../utils/circuit-breaker";
 
 export type YtVideo = {
   videoId: string;
@@ -30,6 +31,30 @@ export type YtVideo = {
 
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+
+/**
+ * All YouTube traffic (Data API, search-page scrape, oEmbed) shares one breaker.
+ * YouTube isn't essential — when it's slow or down the breaker trips and every
+ * helper degrades to [] / null, so resource generation falls back to a plain
+ * search link instead of hanging on dozens of stalled fetches.
+ */
+const youtubeBreaker = new CircuitBreaker({
+  name: "youtube",
+  timeoutMs: 6_000,
+  maxConcurrent: 8,
+  failureThreshold: 5,
+  resetTimeoutMs: 20_000,
+  successThreshold: 2,
+});
+
+/** fetch() routed through the breaker: adds a timeout and counts 5xx as failures. */
+async function ytFetch(url: string, init?: RequestInit): Promise<Response> {
+  return youtubeBreaker.execute(async (signal) => {
+    const res = await fetch(url, { ...init, signal });
+    if (!res.ok) throw new Error(`youtube fetch failed: ${res.status}`);
+    return res;
+  });
+}
 
 /** Whether a real YouTube Data API key is configured. */
 export function hasYoutubeApi(): boolean {
@@ -78,11 +103,7 @@ async function searchViaApi(query: string, max: number): Promise<YtVideo[]> {
     key: env.YOUTUBE_API_KEY!.trim(),
   });
   try {
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
-    if (!res.ok) {
-      log.warn("youtube api search failed", { status: res.status });
-      return [];
-    }
+    const res = await ytFetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
     const data = (await res.json()) as {
       items?: Array<{
         id?: { videoId?: string };
@@ -114,17 +135,13 @@ async function searchViaApi(query: string, max: number): Promise<YtVideo[]> {
 async function scrapeVideoIds(query: string, limit: number): Promise<string[]> {
   const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&hl=en&gl=US`;
   try {
-    const res = await fetch(url, {
+    const res = await ytFetch(url, {
       headers: {
         "User-Agent": UA,
         "Accept-Language": "en-US,en;q=0.9",
         Cookie: "CONSENT=YES+1",
       },
     });
-    if (!res.ok) {
-      log.warn("youtube search page fetch failed", { status: res.status });
-      return [];
-    }
     const html = await res.text();
     const ids: string[] = [];
     const seen = new Set<string>();
@@ -149,10 +166,9 @@ async function fetchOembed(
 ): Promise<{ title: string; channel: string } | null> {
   try {
     const target = `https://www.youtube.com/watch?v=${videoId}`;
-    const res = await fetch(
+    const res = await ytFetch(
       `https://www.youtube.com/oembed?url=${encodeURIComponent(target)}&format=json`
     );
-    if (!res.ok) return null;
     const j = (await res.json()) as { title?: string; author_name?: string };
     return { title: j.title ?? "Video", channel: j.author_name ?? "YouTube" };
   } catch {

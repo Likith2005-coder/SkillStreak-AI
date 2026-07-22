@@ -20,19 +20,15 @@ import {
   ListChecks,
   Search,
   Settings,
-  ShieldCheck,
   Sparkles,
   Trophy,
 } from "lucide-react";
 import { fetchDomains, type Domain } from "@/lib/api";
-import { useUserStore } from "@/store/userStore";
 
 export function CommandPalette() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [domains, setDomains] = useState<Domain[]>([]);
-  const user = useUserStore((s) => s.user);
-  const isAdmin = user?.role === "admin";
 
   // Cmd+K / Ctrl+K toggles the palette. Esc closes (handled by cmdk itself).
   useEffect(() => {
@@ -98,9 +94,6 @@ export function CommandPalette() {
             <Item icon={<ChartLine className="h-4 w-4" />} label="Progress" onSelect={() => go("/progress")} />
             <Item icon={<Trophy className="h-4 w-4" />} label="Leaderboard" onSelect={() => go("/leaderboard")} />
             <Item icon={<Settings className="h-4 w-4" />} label="Settings" onSelect={() => go("/settings")} />
-            {isAdmin && (
-              <Item icon={<ShieldCheck className="h-4 w-4" />} label="Admin" onSelect={() => go("/admin")} />
-            )}
           </Command.Group>
 
           {domains.length > 0 && (

@@ -2,18 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
   BookOpen,
   Bot,
+  Flame,
   ListChecks,
   Sparkles,
   Target,
   Terminal,
   Trophy,
 } from "lucide-react";
+import { TiltCard } from "@/components/landing/TiltCard";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/userStore";
 import {
@@ -28,10 +30,11 @@ import {
 } from "@/lib/api";
 import dynamic from "next/dynamic";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
+import { MagneticDomainDock } from "@/components/progress/MagneticDomainDock";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
 import { StreakBanner } from "@/components/gamification/StreakBanner";
 import { XpBar } from "@/components/gamification/XpBar";
-import { BadgeGallery } from "@/components/gamification/BadgeGallery";
+import { BadgeCoverflow } from "@/components/gamification/BadgeCoverflow";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
 import { useCountUp } from "@/hooks/useCountUp";
 
@@ -46,6 +49,7 @@ import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const user = useUserStore((s) => s.user);
+  const reduce = useReducedMotion();
   const [overview, setOverview] = useState<ProgressOverview | null>(null);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [badges, setBadges] = useState<Badge[] | null>(null);
@@ -76,20 +80,58 @@ export default function DashboardPage() {
     <main className="container px-4 py-10">
       {/* Hero with 3D floating orbs */}
       <section className="relative overflow-hidden rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
+        {/* Signature neon knowledge-grid horizon, same motif as the landing */}
+        <div className="grid-scene opacity-60" aria-hidden>
+          <div className="grid-floor" />
+        </div>
         {/* 3D scene fills the right ~half, fades into the card */}
         <FloatingOrbs className="pointer-events-none absolute inset-0 opacity-90" />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card/95 via-card/70 to-transparent"
           aria-hidden
         />
+        {/* Giant ghost word for that cinematic depth */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 flex items-center overflow-hidden opacity-40"
+        >
+          <span className="ghost-word text-[15vw] leading-none lg:text-[8vw]">STREAK</span>
+        </div>
 
-        <div className="relative">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+        {/* Floating holo-chips drifting over the orbs — the hero's right half
+            was dead space; now your live stats hover in it like HUD elements. */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-1/2 lg:block" aria-hidden>
+          <FloatChip
+            className="right-[30%] top-[16%]"
+            delay={0}
+            icon={<Trophy className="h-3.5 w-3.5 text-amber-300" />}
+            label="Level"
+            value={`${user.level}`}
+          />
+          <FloatChip
+            className="right-[8%] top-[42%]"
+            delay={1.2}
+            icon={<Sparkles className="h-3.5 w-3.5 text-violet-300" />}
+            label="Total XP"
+            value={`${user.xp}`}
+          />
+          <FloatChip
+            className="right-[34%] top-[66%]"
+            delay={0.6}
+            icon={<Flame className="h-3.5 w-3.5 text-orange-300" />}
+            label="Streak"
+            value={`${streak?.currentStreak ?? 0}d`}
+          />
+        </div>
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            Phase 5 · Progress live
+            Mission control
           </div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-            Welcome back, {user.name.split(" ")[0]}.
+          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">
+            Welcome back,{" "}
+            <span className="gradient-text">{user.name.split(" ")[0]}</span>.
           </h1>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
             {overview?.recommended
@@ -188,26 +230,47 @@ export default function DashboardPage() {
         <XpBar level={user.level} xp={user.xp} />
       </section>
 
-      {/* Stat tiles */}
+      {/* Stat tiles — big accent-lit numerals, same treatment as the landing */}
       <section className="mt-6 grid gap-4 sm:grid-cols-3">
         <NumberTile
-          icon={<Target className="h-4 w-4 text-primary" />}
+          icon={<Target className="h-4 w-4" />}
           label="Topics completed"
           target={overview?.totals.topicsCompleted ?? 0}
           hint={overview ? `of ${overview.totals.topicsAvailable} · ${totalPct}%` : "loading…"}
+          accent={{
+            text: "text-cyan-300",
+            glow: "0 0 32px rgba(34,211,238,0.45)",
+            bg: "from-cyan-500/10",
+            chip: "bg-cyan-500/15 text-cyan-300",
+          }}
         />
         <NumberTile
-          icon={<ListChecks className="h-4 w-4 text-emerald-400" />}
+          icon={<ListChecks className="h-4 w-4" />}
           label="Recent quiz attempts"
           target={overview?.totals.attempts ?? 0}
           hint="last 5 shown below"
+          accent={{
+            text: "text-emerald-300",
+            glow: "0 0 32px rgba(52,211,153,0.45)",
+            bg: "from-emerald-500/10",
+            chip: "bg-emerald-500/15 text-emerald-300",
+          }}
         />
         <Link href="/leaderboard" className="block">
           <StatTile
-            icon={<Trophy className="h-4 w-4 text-amber-400" />}
+            icon={<Trophy className="h-4 w-4" />}
             label="Weekly leaderboard"
             value="View →"
             hint="Top 10 by XP this week"
+            /* It's a link, not a metric — keep it a step smaller than the
+               numeral tiles so the row reads as one calm hierarchy. */
+            valueClassName="text-2xl"
+            accent={{
+              text: "text-amber-300",
+              glow: "0 0 24px rgba(251,191,36,0.4)",
+              bg: "from-amber-500/10",
+              chip: "bg-amber-500/15 text-amber-300",
+            }}
           />
         </Link>
       </section>
@@ -233,11 +296,28 @@ export default function DashboardPage() {
           </Link>
         </div>
         {overview ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {overview.perDomain.map((tile, i) => (
-              <DomainProgressRing key={tile.slug} tile={tile} index={i} />
-            ))}
-          </div>
+          reduce ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {overview.perDomain.map((tile, i) => (
+                <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* Desktop: magnetic dock — bars magnify near the cursor,
+                  click one to expand its detail card. */}
+              <div className="hidden lg:block">
+                <MagneticDomainDock tiles={overview.perDomain} />
+              </div>
+              {/* Small screens: the classic ring grid (the dock needs a
+                  cursor + horizontal room to shine). */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
+                {overview.perDomain.map((tile, i) => (
+                  <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+                ))}
+              </div>
+            </>
+          )
         ) : (
           <SkeletonGrid />
         )}
@@ -265,44 +345,117 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Badges */}
+      {/* Badges — 3D coverflow trophy case */}
       {badges && (
         <section className="mt-8">
           <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
             Badges
           </h2>
-          <BadgeGallery badges={badges} />
+          <BadgeCoverflow badges={badges} />
         </section>
       )}
     </main>
   );
 }
 
+/** Glassy HUD chip that drifts gently over the hero's 3D orbs. */
+function FloatChip({
+  className,
+  delay,
+  icon,
+  label,
+  value,
+}: {
+  className: string;
+  delay: number;
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <motion.div
+      animate={{ y: [0, -12, 0] }}
+      transition={{ duration: 5.5, ease: "easeInOut", repeat: Infinity, delay }}
+      className={cn(
+        "absolute flex items-center gap-2.5 rounded-xl border border-white/10 bg-card/60 px-3.5 py-2.5 shadow-xl shadow-black/30 backdrop-blur-md",
+        className
+      )}
+    >
+      {icon}
+      <div>
+        <div className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+          {label}
+        </div>
+        <div className="text-sm font-bold tabular-nums text-foreground">{value}</div>
+      </div>
+    </motion.div>
+  );
+}
+
+type TileAccent = {
+  /** numeral color class */
+  text: string;
+  /** numeral text-shadow */
+  glow: string;
+  /** gradient-from class for the card wash */
+  bg: string;
+  /** icon chip classes */
+  chip: string;
+};
+
 function StatTile({
   icon,
   label,
   value,
   hint,
+  accent,
+  valueClassName = "text-4xl",
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   hint: string;
+  accent: TileAccent;
+  valueClassName?: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ y: -3 }}
-      className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur transition-shadow hover:shadow-lg"
     >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-        {icon}
-        {label}
-      </div>
-      <div className="mt-3 text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
-      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+      {/* Pointer-reactive 3D tilt + cursor glare — same tactile feel as the
+          landing's bento cards. */}
+      <TiltCard
+        max={7}
+        className={cn(
+          "group relative rounded-2xl border border-border bg-gradient-to-br via-card/50 to-card/50 p-5 backdrop-blur transition-shadow hover:shadow-lg hover:shadow-primary/10",
+          accent.bg
+        )}
+      >
+        <div className="flex items-center gap-2.5 text-xs uppercase tracking-wider text-muted-foreground">
+          <span
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-lg",
+              accent.chip
+            )}
+          >
+            {icon}
+          </span>
+          {label}
+        </div>
+        <div
+          className={cn(
+            "mt-3 font-bold tracking-tight tabular-nums",
+            valueClassName,
+            accent.text
+          )}
+          style={{ textShadow: accent.glow }}
+        >
+          {value}
+        </div>
+        <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
+      </TiltCard>
     </motion.div>
   );
 }
@@ -312,14 +465,18 @@ function NumberTile({
   label,
   target,
   hint,
+  accent,
 }: {
   icon: React.ReactNode;
   label: string;
   target: number;
   hint: string;
+  accent: TileAccent;
 }) {
   const display = useCountUp(target, 1100);
-  return <StatTile icon={icon} label={label} value={`${display}`} hint={hint} />;
+  return (
+    <StatTile icon={icon} label={label} value={`${display}`} hint={hint} accent={accent} />
+  );
 }
 
 function SkeletonGrid() {

@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   // Note: bouncy press uses CSS transform-gpu + transition-transform with a custom cubic-bezier for spring-y feel.
-  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 ease-[cubic-bezier(.34,1.56,.64,1)] transform-gpu focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.94] hover:-translate-y-px disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0",
+  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.94] hover:-translate-y-px disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-indigo-500 to-violet-500 text-primary-foreground shadow-lg shadow-indigo-500/25 hover:shadow-violet-500/40",
+          "bg-gradient-to-r from-cyan-400 to-teal-300 text-primary-foreground font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/50",
         outline:
           "border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
         ghost: "text-foreground hover:bg-accent hover:text-accent-foreground",

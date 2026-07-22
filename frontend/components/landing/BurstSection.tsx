@@ -38,6 +38,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { HeroCTA } from "./HeroCTA";
+import { MeshText } from "./MeshText";
 
 export function BurstSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -123,7 +124,7 @@ export function BurstSection() {
           duration: reduced ? 0 : 0.8,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="pointer-events-none absolute z-0 rounded-full bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 will-change-transform"
+        className="pointer-events-none absolute z-0 rounded-full will-change-transform"
         style={{
           width: "140vmax",
           height: "140vmax",
@@ -131,6 +132,10 @@ export function BurstSection() {
           top: `calc(${origin.y}% - 70vmax)`,
           transformOrigin: "center",
           contain: "paint",
+          // Soft ambient bloom instead of a solid disc — the section stays dark
+          // and cinematic; the glow just emanates from the "a".
+          background:
+            "radial-gradient(circle, hsl(265 85% 60% / 0.30) 0%, hsl(190 92% 52% / 0.12) 30%, transparent 60%)",
         }}
         aria-hidden
       />
@@ -151,30 +156,15 @@ export function BurstSection() {
           <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white/80 drop-shadow">
             Ready when you are
           </p>
-          <h2 className="text-[14vw] font-black leading-none tracking-tighter drop-shadow-lg sm:text-[12vw] lg:text-[10vw]">
-            <span className="text-white">Skill</span>
-            <span className="text-white">Stre</span>
-            <span className="relative inline-block">
-              <span
-                className="pointer-events-none absolute -inset-3 -z-10 rounded-full bg-fuchsia-300/40 blur-2xl"
-                aria-hidden
-              />
-              <motion.span
-                ref={aRef}
-                className="inline-block text-white"
-                animate={animate ? { scale: [1, 1.18, 1] } : { scale: 1 }}
-                transition={{
-                  delay: reduced ? 0 : 0.5,
-                  duration: reduced ? 0 : 0.5,
-                  ease: "easeInOut",
-                }}
-              >
-                a
-              </motion.span>
-            </span>
-            <span className="text-white">k</span>
-            <span className="text-white"> AI</span>
-          </h2>
+          {/* WebGL mesh wordmark — glyphs are a fine mesh the cursor drags
+              through, springing back with a cyan/violet chromatic fringe. The
+              aRef sits on it so the burst glow still emanates from the mark. */}
+          <span
+            ref={aRef}
+            className="block h-[18vw] w-full max-w-[1500px] drop-shadow-lg sm:h-[15vw] lg:h-[13vw]"
+          >
+            <MeshText text="SkillStreak AI" />
+          </span>
           <p className="mt-3 text-sm text-white/85 sm:text-base">
             Free forever · Built for students · Pick up where you left off
           </p>
@@ -195,7 +185,7 @@ export function BurstSection() {
           className="flex w-full max-w-2xl flex-col items-center text-white"
         >
           <Sparkles className="h-8 w-8 drop-shadow-lg" />
-          <h3 className="mt-3 text-2xl font-bold tracking-tight drop-shadow-lg sm:text-3xl lg:text-4xl">
+          <h3 className="mt-3 font-display text-2xl font-bold tracking-tight drop-shadow-lg sm:text-3xl lg:text-4xl">
             Start learning, the smart way.
           </h3>
           <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base">

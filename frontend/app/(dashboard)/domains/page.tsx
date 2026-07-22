@@ -46,14 +46,26 @@ export default function DomainsPage() {
 
   return (
     <main className="container px-4 py-10">
-      <header className="grid items-center gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl border border-border/50 bg-card/20 px-6 py-8 backdrop-blur-sm lg:grid-cols-[1fr_360px] lg:px-8">
+        {/* Neon knowledge-grid horizon — same signature as the landing hero */}
+        <div className="grid-scene" aria-hidden>
+          <div className="grid-floor" />
+        </div>
+        {/* Giant ghost word behind the header */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 flex items-center overflow-hidden opacity-[0.6]"
+        >
+          <span className="ghost-word pl-4 text-[16vw] leading-none lg:text-[9vw]">PATHS</span>
+        </div>
+
+        <div className="relative z-10 max-w-2xl">
+          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             Pick your domain
           </div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-            9 paths into modern tech
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            9 paths into <span className="gradient-text">modern tech</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Five domains have full curated roadmaps. The other four are served
@@ -66,14 +78,14 @@ export default function DomainsPage() {
             the dark page; the radial mask softens the rectangular canvas into
             a vignette. The watermark cover sits OUTSIDE the masked layer so
             it stays solid and reliably hides the "Built with Spline" pill. */}
-        <div className="relative h-[260px] w-full sm:h-[280px] lg:h-[300px]">
+        <div className="relative z-10 h-[260px] w-full sm:h-[280px] lg:h-[300px]">
           <div
             className="absolute inset-0 overflow-hidden"
             style={{
               WebkitMaskImage:
-                "radial-gradient(ellipse 65% 75% at 55% 45%, black 35%, transparent 85%)",
+                "radial-gradient(ellipse 54% 56% at 54% 32%, black 44%, transparent 72%)",
               maskImage:
-                "radial-gradient(ellipse 65% 75% at 55% 45%, black 35%, transparent 85%)",
+                "radial-gradient(ellipse 54% 56% at 54% 32%, black 44%, transparent 72%)",
             }}
           >
             <div

@@ -13,6 +13,7 @@
  *   computed by summing xp_events.created_at in the current week.
  */
 
+import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
@@ -156,27 +157,22 @@ const BADGE_CATALOGUE: Array<{
 let badgesEnsured = false;
 export async function ensureBadgesSeeded(): Promise<void> {
   if (badgesEnsured) return;
-  for (let i = 0; i < BADGE_CATALOGUE.length; i++) {
-    const b = BADGE_CATALOGUE[i];
-    await prisma.badge.upsert({
-      where: { slug: b.slug },
-      create: {
-        slug: b.slug,
-        name: b.name,
-        description: b.description,
-        icon: b.icon,
-        criteria: b.criteria as unknown as Prisma.InputJsonValue,
-        orderIndex: i,
-      },
-      update: {
-        name: b.name,
-        description: b.description,
-        icon: b.icon,
-        criteria: b.criteria as unknown as Prisma.InputJsonValue,
-        orderIndex: i,
-      },
-    });
-  }
+  // One multi-row `INSERT ... ON CONFLICT DO UPDATE` for the whole catalogue —
+  // a single round trip instead of one upsert per badge. `id` is only used on
+  // insert; `created_at` uses its DB default.
+  const rows = BADGE_CATALOGUE.map((b, i) =>
+    Prisma.sql`(${randomUUID()}, ${b.slug}, ${b.name}, ${b.description}, ${b.icon}, ${JSON.stringify(b.criteria)}::jsonb, ${i})`
+  );
+  await prisma.$executeRaw`
+    INSERT INTO badges (id, slug, name, description, icon, criteria, order_index)
+    VALUES ${Prisma.join(rows)}
+    ON CONFLICT (slug) DO UPDATE SET
+      name = EXCLUDED.name,
+      description = EXCLUDED.description,
+      icon = EXCLUDED.icon,
+      criteria = EXCLUDED.criteria,
+      order_index = EXCLUDED.order_index
+  `;
   badgesEnsured = true;
 }
 

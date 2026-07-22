@@ -49,6 +49,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-inter)", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -72,11 +73,25 @@ const config: Config = {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
         },
+        // Slow left-to-right flow across a 200%-wide gradient — used by
+        // `.gradient-text` on the brand wordmark so the signal→depth mark
+        // reads as alive, not a static rainbow.
+        gradient: {
+          to: { backgroundPosition: "-200% center" },
+        },
+        // Gentle downward nudge for the "scroll to begin" hint. Ease-in-out,
+        // small travel, no bounce/elastic (which the detector flags).
+        nudge: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(4px)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.35s ease-out",
         "slide-in-right": "slide-in-right 0.25s ease-out",
         "gradient-shift": "gradient-shift 8s ease infinite",
+        gradient: "gradient 6s linear infinite",
+        nudge: "nudge 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite",
         marquee: "marquee 35s linear infinite",
       },
     },

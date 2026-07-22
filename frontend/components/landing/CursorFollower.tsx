@@ -42,9 +42,13 @@ export function CursorFollower() {
         y: sy,
         width: SIZE,
         height: SIZE,
+        // The radial gradient is already soft (transparent falloff at 70%),
+        // so no CSS blur filter is needed. A `filter: blur()` on a fixed,
+        // continuously-moving 320px layer forces a per-frame repaint that
+        // competes with scroll — dropping it keeps the same soft look for free.
+        willChange: "transform",
         background:
-          "radial-gradient(closest-side, hsl(290 75% 60% / 0.25), hsl(243 75% 59% / 0.12) 40%, transparent 70%)",
-        filter: "blur(8px)",
+          "radial-gradient(closest-side, hsl(290 75% 60% / 0.22), hsl(243 75% 59% / 0.11) 40%, transparent 70%)",
       }}
     />
   );

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { apiErrorMessage, fetchArsenal, type ArsenalPhase, type ArsenalTool } from "@/lib/api";
 import { HackerShell, PromptLine } from "@/components/toolkit/HackerShell";
+import { BootSequence } from "@/components/toolkit/BootSequence";
 import { cn } from "@/lib/utils";
 
 const PHASE_ICONS: Record<string, LucideIcon> = {
@@ -49,8 +50,9 @@ export default function ToolkitPage() {
 
   return (
     <HackerShell prompt="root💀skillstreak: ~/arsenal">
+      <BootSequence>
       <header>
-        <PromptLine path="~/arsenal" command="./list-tools --by-phase" />
+        <PromptLine path="~/arsenal" command="./list-tools --by-phase" typed />
         <h1 className="mt-4 font-mono text-2xl font-bold tracking-tight text-emerald-300 term-glow sm:text-3xl">
           &gt; THE_ARSENAL
         </h1>
@@ -90,6 +92,7 @@ export default function ToolkitPage() {
           ))}
         </div>
       )}
+      </BootSequence>
     </HackerShell>
   );
 }
@@ -98,7 +101,7 @@ function PhaseSection({ phase }: { phase: ArsenalPhase }) {
   const Icon = PHASE_ICONS[phase.icon] ?? Terminal;
   return (
     <section>
-      <div className="flex items-start gap-3 border-l-2 border-emerald-500/40 pl-4">
+      <div className="flex items-start gap-3 border-b border-emerald-500/15 pb-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/[0.06]">
           <Icon className="h-5 w-5 text-emerald-400" />
         </div>

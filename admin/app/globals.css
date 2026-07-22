@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Same "Signal" identity as the main app — cyan on deep ink. */
+    --background: 214 56% 4.5%;
+    --foreground: 195 30% 96%;
+    --card: 213 44% 8%;
+    --card-foreground: 195 30% 96%;
+    --primary: 187 92% 52%;
+    --primary-foreground: 205 90% 6%;
+    --muted: 213 32% 13%;
+    --muted-foreground: 205 16% 62%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 205 32% 15%;
+    --input: 205 32% 15%;
+    --ring: 187 92% 52%;
+    --radius: 0.6rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  /* Committed 2-stop cyan→violet wordmark mark — matches the learner site's
+     refined gradient (the old 3-stop sky→cyan→violet read as a generic AI
+     rainbow). Reserved for the SkillStreak wordmark, not section headings. */
+  .gradient-text {
+    background-image: linear-gradient(to right, #22d3ee, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(187 92% 55% / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(187 92% 55% / 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  /* Soft signal glow behind the sign-in card — the one signature moment the
+     admin threshold earns. Faded cyan bloom top, violet bloom bottom. */
+  .signal-vignette {
+    background:
+      radial-gradient(60vmax 40vmax at 50% -8%, hsl(187 92% 52% / 0.12), transparent 62%),
+      radial-gradient(50vmax 40vmax at 50% 108%, hsl(265 85% 60% / 0.10), transparent 60%);
+  }
+  /* Live-status pulse dot. */
+  .live-dot {
+    animation: live-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes live-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 hsl(140 80% 50% / 0.5); }
+    50% { opacity: 0.75; box-shadow: 0 0 0 4px hsl(140 80% 50% / 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+  }
+}

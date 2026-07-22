@@ -4,7 +4,6 @@ import {
   BookOpen,
   Bot,
   Brain,
-  ChevronDown,
   Cloud,
   Code2,
   Database,
@@ -13,23 +12,30 @@ import {
   ShieldCheck,
   Sparkles as SparklesIcon,
   Terminal,
-  Trophy,
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SplineScene } from "@/components/3d/SplineScene";
 import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
-import { HowItWorks } from "@/components/landing/HowItWorks";
+import { ScrollStory } from "@/components/landing/ScrollStory";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 import { Spotlight } from "@/components/landing/Spotlight";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { CursorFollower } from "@/components/landing/CursorFollower";
-import { RotatingWord } from "@/components/landing/RotatingWord";
 import { Sparkles } from "@/components/landing/Sparkles";
 import { Reveal } from "@/components/landing/Reveal";
 import { TiltCard } from "@/components/landing/TiltCard";
+import { HeroContent } from "@/components/landing/HeroContent";
+import { TutorPreview } from "@/components/landing/TutorPreview";
+
+// Marketing landing page: identical for every (logged-out) visitor and changes
+// infrequently. Serve the pre-rendered HTML from cache and regenerate at most
+// hourly (and on every redeploy / on-demand revalidate) rather than rendering
+// per request. All interactive/animated regions are client components that
+// hydrate on top of this static shell.
+export const revalidate = 3600;
 
 // Whobee Spline scene — swap via NEXT_PUBLIC_SPLINE_SCENE in frontend/.env.local.
 const DEFAULT_SPLINE_SCENE =
@@ -44,99 +50,97 @@ const DOMAIN_TICKER = [
   { icon: TrendingUp, name: "Machine Learning", color: "text-emerald-400" },
   { icon: Database, name: "Data Science", color: "text-cyan-400" },
   { icon: Cloud, name: "Cloud Computing", color: "text-sky-400" },
-  { icon: SparklesIcon, name: "+ 3 more via AI", color: "text-fuchsia-400" },
+  { icon: SparklesIcon, name: "+ 3 more via AI", color: "text-violet-400" },
 ];
 
 export default function LandingPage() {
   return (
-    <main className="relative overflow-x-hidden bg-background">
+    <main className="relative overflow-x-clip bg-background">
       <ScrollProgress />
       <SmoothScroll />
       <CursorFollower />
       {/* Aurora drifts behind everything */}
       <div className="aurora-bg" aria-hidden />
+      {/* Cinematic film grain over the whole page */}
+      <div className="noise-overlay" aria-hidden />
 
       {/* ── Section 1 — Hero with prominent 3D robot ─────────── */}
       <section className="relative grid min-h-screen grid-cols-1 items-center gap-8 px-4 pb-12 pt-12 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-12 lg:pt-20">
-        <Sparkles count={14} />
-        {/* Text column */}
-        <div className="relative z-10 text-center lg:text-left">
-          <div className="mb-5 inline-flex items-center gap-2">
-            <SparklesIcon className="h-5 w-5 text-primary" />
-            <span className="text-2xl font-bold tracking-tight">
-              <span className="gradient-text">SkillStreak</span>
-              <span className="text-foreground"> AI</span>
-            </span>
-          </div>
+        {/* Signature: neon knowledge-grid horizon receding behind the hero */}
+        <div className="grid-scene" aria-hidden>
+          <div className="grid-floor" />
+        </div>
 
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
-            <SparklesIcon className="h-3.5 w-3.5 text-primary" />
-            AI-powered learning, reimagined
-          </div>
+        {/* Giant kinetic ghost word — the studio "WORK" motif */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden opacity-50"
+        >
+          <span className="ghost-word text-[24vw] leading-none">MASTERY</span>
+        </div>
 
-          <h1 className="text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl xl:text-7xl">
-            <span className="block">
-              Master{" "}
-              <RotatingWord
-                className="gradient-text animate-gradient"
-                words={[
-                  "tech",
-                  "Cybersecurity",
-                  "Web Dev",
-                  "AI",
-                  "Machine Learning",
-                  "Data Science",
-                  "Cloud",
-                  "DevOps",
-                  "Blockchain",
-                  "IoT",
-                ]}
-              />
-            </span>
-            <span className="block">
-              with an{" "}
-              <span className="gradient-text animate-gradient">AI tutor</span>
-            </span>
-            <span className="block">that knows you.</span>
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg lg:mx-0">
-            9 domains, 5 deep curated roadmaps, a streaming AI chatbot,
-            AI-generated quizzes, and gamified daily streaks — all in one
-            platform.
-          </p>
-
-          <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground lg:justify-start">
-            <Pill icon={<Bot className="h-3.5 w-3.5 text-primary" />}>AI chatbot</Pill>
-            <Pill icon={<ListChecks className="h-3.5 w-3.5 text-emerald-400" />}>
-              MCQ quizzes
-            </Pill>
-            <Pill icon={<Flame className="h-3.5 w-3.5 text-orange-400" />}>
-              Daily streaks
-            </Pill>
-            <Pill icon={<Trophy className="h-3.5 w-3.5 text-amber-400" />}>
-              Leaderboard
-            </Pill>
-          </ul>
-
-          <div className="mt-10 flex items-center justify-center gap-3 text-sm text-muted-foreground lg:justify-start">
-            <ChevronDown className="h-4 w-4 animate-bounce" />
-            <span>Scroll to begin</span>
+        {/* Studio chrome — vertical side-rail label (far left edge, clears the hero text) */}
+        <div className="pointer-events-none absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 lg:block">
+          <div
+            className="glitch font-mono text-[10px] uppercase tracking-[0.4em] text-primary/50 [writing-mode:vertical-rl]"
+            data-text="SKILLSTREAK · STUDIO // SYSTEM ONLINE"
+          >
+            SKILLSTREAK · STUDIO // SYSTEM ONLINE
           </div>
         </div>
 
+        {/* Studio chrome — rotating control dial (top-right corner) */}
+        <div className="pointer-events-none absolute right-6 top-6 z-10 hidden lg:block lg:right-10">
+          <ControlDial />
+        </div>
+
+        <Sparkles count={14} />
+        {/* Text column — animated hero */}
+        <HeroContent />
+
         {/* Robot column — full Spline scene, no frame */}
-        <div className="relative h-[420px] w-full lg:h-[600px]">
-          <SplineScene scene={SPLINE_SCENE} className="h-full w-full" />
-          {/* Watermark cover */}
+        <div className="relative z-10 h-[420px] w-full lg:h-[600px]">
+          {/* soft cyan core glow so the robot reads as lit from within */}
           <div
-            className="pointer-events-none absolute bottom-3 right-3 h-10 w-44 rounded-lg bg-background"
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_44%,hsl(187_92%_52%/0.16),transparent_58%)]"
+          />
+          {/* Spline scene with its edges feathered so the 3D podium melts into
+              the page instead of ending on a hard rectangle. The mask is purely
+              visual — the robot and its drag interaction are untouched. It also
+              fades out the Spline watermark corner, so no cover rect is needed. */}
+          <div
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              // Radial feather softens the canvas edges into the page. The real
+              // pedestal-removal is done by the inner scale below (cropping the
+              // plate off the bottom), so this mask only needs to dissolve the
+              // outer rectangle. Visual only — drag interaction intact.
+              WebkitMaskImage:
+                "radial-gradient(48% 58% at 50% 30%, #000 60%, transparent 82%)",
+              maskImage:
+                "radial-gradient(48% 58% at 50% 30%, #000 60%, transparent 82%)",
+            }}
+          >
+            {/* Scale the scene up from its TOP edge: the robot grows to fill the
+                column (no more floating-small-in-empty-space) and the flat
+                pedestal plate is pushed off the bottom of the frame, where
+                overflow-hidden + the bottom fade erase it. The head stays in
+                view. */}
+            <div className="absolute inset-0 origin-top scale-[1.5]">
+              <SplineScene scene={SPLINE_SCENE} className="h-full w-full" />
+            </div>
+          </div>
+          {/* Bottom fade — soft feather that catches whatever sliver of the
+              plate survives the crop and sinks it into the page with no seam. */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-background from-42% to-transparent"
             aria-hidden
           />
-          {/* Bottom fade-into-page */}
+          {/* Hide the Spline watermark in the bottom-right corner, blended */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent"
             aria-hidden
+            className="pointer-events-none absolute bottom-0 right-0 h-24 w-60 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--background))_38%,transparent_78%)]"
           />
           {/* Drag hint */}
           <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-card/70 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur-sm">
@@ -154,16 +158,22 @@ export default function LandingPage() {
       </section>
 
       {/* ── Section 3 — Stats banner with animated counters ────── */}
-      <StatsBanner />
+      <Reveal>
+        <StatsBanner />
+      </Reveal>
 
       {/* ── Section 4 — Wordmark pops up, CTA bursts from the "a" ──── */}
       <BurstSection />
 
-      {/* ── Section 5 — How it works (3 steps) ─────────────────── */}
-      <HowItWorks />
+      {/* ── Section 5 — Pinned scroll-story (StringTune-style) ──── */}
+      <ScrollStory />
 
       {/* ── Section 6 — Features bento ───────────────────────── */}
-      <section className="relative px-4 py-24 lg:px-12">
+      {/* content-visibility:auto lets the browser skip layout+paint for this
+          section until it's scrolled near, so it costs nothing per frame while
+          the hero is on screen. The intrinsic-size hint keeps the scrollbar
+          stable so there's no jump when it materialises. */}
+      <section className="relative px-4 py-24 [content-visibility:auto] [contain-intrinsic-size:auto_820px] lg:px-12">
         {/* Subtle dotted grid under the section — pure CSS, very cheap. */}
         <div
           aria-hidden
@@ -182,8 +192,12 @@ export default function LandingPage() {
             <p className="text-xs uppercase tracking-[0.25em] text-primary">
               Everything in one place
             </p>
-            <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-5xl">
-              Built like a learning <span className="gradient-text">superpower</span>.
+            <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
+              Built like a learning{" "}
+              <span className="text-cyan-300 [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">
+                superpower
+              </span>
+              .
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
               Five tightly-integrated systems that work together so you don't
@@ -191,15 +205,18 @@ export default function LandingPage() {
             </p>
           </Reveal>
 
-          <Spotlight className="mt-12 grid gap-4 md:grid-cols-3 lg:grid-cols-4 lg:grid-rows-2">
+          <Reveal className="mt-12">
+          <Spotlight className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 lg:grid-rows-2">
             <BentoCard
               span="md:col-span-2 md:row-span-2"
               icon={<Bot className="h-6 w-6 text-violet-300" />}
               title="Streaming AI tutor"
               copy="Topic-aware, level-aware. Asks intent-classified follow-ups. Persists every conversation. Code blocks render with copy buttons."
-              gradient="from-indigo-500/15 via-violet-500/10 to-fuchsia-500/15"
+              gradient="from-cyan-500/15 via-violet-500/10 to-violet-500/15"
               accent="bg-violet-500/20"
-            />
+            >
+              <TutorPreview />
+            </BentoCard>
             <BentoCard
               icon={<BookOpen className="h-6 w-6 text-rose-300" />}
               title="Curated roadmaps"
@@ -229,11 +246,12 @@ export default function LandingPage() {
               accent="bg-cyan-500/20"
             />
           </Spotlight>
+          </Reveal>
         </div>
       </section>
 
       {/* ── Section 6.5 — Ethical Hacking Arsenal spotlight ────── */}
-      <section className="relative px-4 py-20 lg:px-12">
+      <section className="relative px-4 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12">
         <div className="mx-auto max-w-6xl">
           <div className="grid items-center gap-10 rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-card/40 to-card/40 p-8 backdrop-blur-sm lg:grid-cols-2 lg:p-12">
             {/* Copy */}
@@ -242,9 +260,9 @@ export default function LandingPage() {
                 <Terminal className="h-3.5 w-3.5" />
                 New · Hands-on hacking
               </div>
-              <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+              <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
                 The Ethical Hacking{" "}
-                <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                <span className="text-emerald-300 [text-shadow:0_0_28px_hsl(152_76%_45%/0.5)]">
                   Arsenal
                 </span>
               </h2>
@@ -345,6 +363,33 @@ export default function LandingPage() {
   );
 }
 
+function ControlDial() {
+  // Decorative studio widget — concentric rings, ticks, and orbiting nodes.
+  return (
+    <svg width="76" height="76" viewBox="0 0 76 76" fill="none" className="studio-dial opacity-70">
+      <circle cx="38" cy="38" r="35" stroke="hsl(187 92% 55% / 0.35)" strokeWidth="1" />
+      <circle cx="38" cy="38" r="26" stroke="hsl(265 85% 68% / 0.3)" strokeWidth="1" strokeDasharray="3 5" />
+      <circle cx="38" cy="38" r="4" fill="hsl(187 92% 55% / 0.9)" />
+      {Array.from({ length: 12 }).map((_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        return (
+          <line
+            key={i}
+            x1={38 + Math.cos(a) * 31}
+            y1={38 + Math.sin(a) * 31}
+            x2={38 + Math.cos(a) * 35}
+            y2={38 + Math.sin(a) * 35}
+            stroke="hsl(195 40% 90% / 0.4)"
+            strokeWidth="1"
+          />
+        );
+      })}
+      <circle cx="38" cy="3" r="2.5" fill="hsl(84 85% 62%)" />
+      <circle cx="73" cy="38" r="2.5" fill="hsl(265 85% 70%)" />
+    </svg>
+  );
+}
+
 function Pill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 backdrop-blur-sm">
@@ -361,6 +406,7 @@ function BentoCard({
   copy,
   gradient,
   accent,
+  children,
 }: {
   span?: string;
   icon: React.ReactNode;
@@ -368,11 +414,12 @@ function BentoCard({
   copy: string;
   gradient: string;
   accent: string;
+  children?: React.ReactNode;
 }) {
   return (
     <TiltCard
       glare={false}
-      className={`bento-card group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
+      className={`bento-card chromatic group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 ${span}`}
     >
       {/* Decorative diagonal gradient — visible always, brighter on hover */}
       <div
@@ -403,6 +450,7 @@ function BentoCard({
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-foreground/90">
           {copy}
         </p>
+        {children}
       </div>
     </TiltCard>
   );

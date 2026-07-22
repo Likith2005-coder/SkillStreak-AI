@@ -9,6 +9,7 @@ import progressRoutes from "./progress.routes";
 import gamificationRoutes from "./gamification.routes";
 import resourceRoutes from "./resource.routes";
 import toolkitRoutes from "./toolkit.routes";
+import careerRoutes from "./career.routes";
 import adminRoutes from "./admin.routes";
 
 const router = Router();
@@ -23,6 +24,7 @@ router.use("/quiz", quizRoutes);
 router.use("/progress", progressRoutes);
 router.use("/resources", resourceRoutes);
 router.use("/toolkit", toolkitRoutes);
+router.use("/career", careerRoutes);
 router.use("/admin", adminRoutes);
 router.use("/", gamificationRoutes);
 

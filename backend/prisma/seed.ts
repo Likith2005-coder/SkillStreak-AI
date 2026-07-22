@@ -13,7 +13,8 @@
  * of orderIndex.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { randomUUID } from "node:crypto";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -823,6 +824,19 @@ async function upsertDomain(d: SeedDomain): Promise<string> {
   return domain.id;
 }
 
+/** Split an array into fixed-size chunks. */
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+// Cap rows per multi-row INSERT so a large roadmap can't build one oversized
+// statement (Postgres caps parameters at 65535; 7 params/row) or hold a long
+// write lock. Roadmaps top out around 60 topics today, so this is a single
+// round trip in practice, with headroom to chunk anything larger.
+const TOPIC_BATCH_SIZE = 100;
+
 async function upsertRoadmap(domainId: string, d: SeedDomain): Promise<void> {
   if (!d.roadmap) return;
 
@@ -846,30 +860,25 @@ async function upsertRoadmap(domainId: string, d: SeedDomain): Promise<void> {
   // Upsert topics by (roadmapId, orderIndex). Don't delete existing topics —
   // user_progress rows reference them via FK with cascade, but rows on a
   // user's account would be lost. Adding new topics is safe.
-  for (let i = 0; i < d.roadmap.topics.length; i++) {
-    const t = d.roadmap.topics[i];
-    const orderIndex = i + 1;
-    const difficulty = DIFFICULTY_BY_PHASE[t.phase];
+  //
+  // One multi-row `INSERT ... ON CONFLICT DO UPDATE` per chunk — a single
+  // round trip for the whole chunk instead of one per topic. `id` is only
+  // consumed on insert (kept as-is on conflict); `created_at` uses its DB
+  // default.
+  const rows = d.roadmap.topics.map((t, i) =>
+    Prisma.sql`(${randomUUID()}, ${roadmap.id}, ${i + 1}, ${t.title}, ${t.summary}, ${DIFFICULTY_BY_PHASE[t.phase]}, ${t.phase})`
+  );
 
-    await prisma.topic.upsert({
-      where: {
-        roadmapId_orderIndex: { roadmapId: roadmap.id, orderIndex },
-      },
-      create: {
-        roadmapId: roadmap.id,
-        orderIndex,
-        title: t.title,
-        summary: t.summary,
-        difficulty,
-        phase: t.phase,
-      },
-      update: {
-        title: t.title,
-        summary: t.summary,
-        difficulty,
-        phase: t.phase,
-      },
-    });
+  for (const batch of chunk(rows, TOPIC_BATCH_SIZE)) {
+    await prisma.$executeRaw`
+      INSERT INTO topics (id, roadmap_id, order_index, title, summary, difficulty, phase)
+      VALUES ${Prisma.join(batch)}
+      ON CONFLICT (roadmap_id, order_index) DO UPDATE SET
+        title = EXCLUDED.title,
+        summary = EXCLUDED.summary,
+        difficulty = EXCLUDED.difficulty,
+        phase = EXCLUDED.phase
+    `;
   }
 }
 

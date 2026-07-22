@@ -122,3 +122,22 @@ const FALLBACK = STYLES.indigo;
 export function styleFor(color: string): DomainStyle {
   return STYLES[color as DomainColor] ?? FALLBACK;
 }
+
+// Literal hex stops per accent, for inline styles (glows, gradients) that
+// can't use Tailwind classes. Matches DomainProgressRing's SVG stops.
+const HEX_STOPS: Record<DomainColor, [string, string]> = {
+  rose: ["#f43f5e", "#ec4899"],
+  blue: ["#3b82f6", "#6366f1"],
+  violet: ["#8b5cf6", "#d946ef"],
+  emerald: ["#10b981", "#14b8a6"],
+  cyan: ["#06b6d4", "#0ea5e9"],
+  sky: ["#0ea5e9", "#3b82f6"],
+  orange: ["#f97316", "#f59e0b"],
+  amber: ["#f59e0b", "#eab308"],
+  teal: ["#14b8a6", "#10b981"],
+  indigo: ["#6366f1", "#8b5cf6"],
+};
+
+export function hexFor(color: string): [string, string] {
+  return HEX_STOPS[color as DomainColor] ?? HEX_STOPS.indigo;
+}

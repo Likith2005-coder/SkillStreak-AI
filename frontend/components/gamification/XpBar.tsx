@@ -52,27 +52,62 @@ export function XpBar({ level, xp }: Props) {
   }, [xp]);
 
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
-      <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
-        <span className="flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-amber-400" />
-          Level {level}
-        </span>
-        <span className="tabular-nums text-foreground">{displayXp} XP</span>
+    <div className="relative overflow-hidden rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/10 via-card/40 to-card/40 p-6 backdrop-blur">
+      {/* violet bloom behind the level numeral */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-12 -top-12 h-52 w-52 rounded-full bg-violet-500/20 blur-3xl"
+      />
+
+      <div className="relative flex items-end justify-between">
+        <div>
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <Trophy className="h-4 w-4 text-amber-300 [filter:drop-shadow(0_0_8px_rgba(251,191,36,0.5))]" />
+            Level
+          </div>
+          <div
+            className="mt-1 text-5xl font-bold tabular-nums tracking-tight text-violet-300"
+            style={{ textShadow: "0 0 36px rgba(167,139,250,0.5)" }}
+          >
+            {level}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-xl font-bold tabular-nums text-foreground">
+            {displayXp}
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Total XP
+          </div>
+        </div>
       </div>
 
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted/40">
+      {/* power meter — thicker bar, glowing head, shimmer along the fill */}
+      <div className="relative mt-4 h-3 overflow-hidden rounded-full bg-muted/40">
         <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500"
+          className="relative h-full overflow-hidden rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500"
+          style={{ boxShadow: "0 0 16px rgba(167,139,250,0.55)" }}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: reduce ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
-        />
+        >
+          {/* slow shimmer sweep across the filled portion */}
+          {!reduce && pct > 0 && (
+            <motion.span
+              aria-hidden
+              className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              animate={{ x: ["-4rem", "110%"] }}
+              transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.4, ease: "easeInOut" }}
+            />
+          )}
+        </motion.div>
       </div>
 
-      <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
-        <span>{into} / {span} to level {level + 1}</span>
-        <span>{pct}%</span>
+      <div className="relative mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+        <span>
+          {into} / {span} to level {level + 1}
+        </span>
+        <span className="tabular-nums">{pct}%</span>
       </div>
     </div>
   );

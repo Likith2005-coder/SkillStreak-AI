@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PageHero } from "@/components/shared/PageHero";
 import { Label } from "@/components/ui/label";
 import {
   apiErrorMessage,
@@ -180,16 +181,14 @@ export default function SettingsPage() {
         Back to dashboard
       </Link>
 
-      <header className="mt-4">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          Account
-        </div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Profile, preferences, notifications, and account actions.
-        </p>
-      </header>
+      <PageHero
+        className="mt-4"
+        eyebrow="Account"
+        icon={<Sparkles className="h-3.5 w-3.5 text-primary" />}
+        title="Settings"
+        subtitle="Profile, preferences, notifications, and account actions."
+        ghost="CONFIG"
+      />
 
       <section className="mt-8 space-y-6">
         {/* ── Account info (read-only) ─────────────────────── */}

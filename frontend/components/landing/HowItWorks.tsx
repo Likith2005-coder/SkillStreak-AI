@@ -31,7 +31,7 @@ const STEPS = [
     title: "Learn with the AI tutor",
     body:
       "Open any topic for an instant AI-generated explanation tailored to your level. Ask follow-ups in the streaming chatbot.",
-    accent: "from-indigo-500/15 via-violet-500/10 to-fuchsia-500/15",
+    accent: "from-cyan-500/15 via-violet-500/10 to-violet-500/15",
     badge: "bg-violet-500/15 text-violet-300 border-violet-500/30",
   },
   {
@@ -53,7 +53,7 @@ export function HowItWorks() {
           <p className="text-xs uppercase tracking-[0.25em] text-primary">
             How it works
           </p>
-          <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-5xl">
+          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
             From <span className="gradient-text">curious</span> to{" "}
             <span className="gradient-text">consistent</span> in three steps.
           </h2>

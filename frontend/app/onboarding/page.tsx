@@ -88,7 +88,8 @@ export default function OnboardingPage() {
         Let&apos;s tune SkillStreak to you
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Three quick questions. We use this to set your starting level and pace.
+        Three quick questions. We use this to set your starting level and pace
+        — and to personalize the career map you unlock by finishing a roadmap.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-8" noValidate>
@@ -163,12 +164,14 @@ type ChoiceOption<T extends string> = {
 
 function ChoiceGroup<T extends string>({
   legend,
+  hint,
   name,
   value,
   onChange,
   options,
 }: {
   legend: string;
+  hint?: string;
   name: string;
   value: T | undefined;
   onChange: (val: T) => void;
@@ -177,6 +180,7 @@ function ChoiceGroup<T extends string>({
   return (
     <fieldset>
       <legend className="text-sm font-medium text-foreground">{legend}</legend>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         {options.map((opt) => {
           const selected = value === opt.value;

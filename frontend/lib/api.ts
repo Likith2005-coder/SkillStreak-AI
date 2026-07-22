@@ -122,179 +122,6 @@ export async function updateSettings(payload: SettingsPayload): Promise<{ profil
   return data;
 }
 
-// ─── Phase 8 Admin ──────────────────────────────────────
-
-export type AdminTopic = {
-  id: string;
-  title: string;
-  summary: string;
-  difficulty: "easy" | "standard" | "hard";
-  phase: "foundations" | "core" | "advanced";
-  orderIndex: number;
-  domain: { slug: string; name: string; color: string };
-  completedBy: number;
-  quizAttempts: number;
-};
-
-export type AdminMetrics = {
-  users: {
-    total: number;
-    newLast24h: number;
-    newLast30d: number;
-    activeLast24h: number;
-    activeLast30d: number;
-  };
-  learning: {
-    topicsCompleted: number;
-    topicsCompletedLast24h: number;
-    quizAttempts: number;
-    quizAttemptsLast24h: number;
-  };
-  popular: Array<{
-    topicId: string;
-    title: string;
-    domain: { name: string; color: string };
-    completions: number;
-  }>;
-};
-
-export type EmailSendResult =
-  | { sent: true; id: string }
-  | { sent: false; reason: "no_api_key" | "send_error"; error?: string };
-
-export async function adminListTopics(filters?: {
-  domainSlug?: string;
-  phase?: "foundations" | "core" | "advanced";
-  search?: string;
-}): Promise<AdminTopic[]> {
-  const { data } = await api.get<{ topics: AdminTopic[] }>("/admin/topics", {
-    params: filters,
-  });
-  return data.topics;
-}
-
-export type AdminTopicCreate = {
-  domainSlug: string;
-  title: string;
-  summary: string;
-  difficulty: "easy" | "standard" | "hard";
-  phase: "foundations" | "core" | "advanced";
-};
-
-export async function adminCreateTopic(
-  payload: AdminTopicCreate
-): Promise<{ topic: AdminTopic }> {
-  const { data } = await api.post<{ topic: AdminTopic }>("/admin/topics", payload);
-  return data;
-}
-
-export async function adminUpdateTopic(
-  id: string,
-  patch: Partial<Pick<AdminTopic, "title" | "summary" | "difficulty" | "phase">>
-): Promise<{ topic: AdminTopic }> {
-  const { data } = await api.patch<{ topic: AdminTopic }>(`/admin/topics/${id}`, patch);
-  return data;
-}
-
-export async function adminDeleteTopic(id: string): Promise<void> {
-  await api.delete(`/admin/topics/${id}`);
-}
-
-// ─── Admin · Users ──────────────────────────────────────
-
-export type AdminUser = {
-  id: string;
-  email: string;
-  name: string;
-  role: "user" | "admin";
-  level: number;
-  xp: number;
-  createdAt: string;
-  topicsCompleted: number;
-  quizAttempts: number;
-  currentStreak: number;
-  longestStreak: number;
-};
-
-export async function adminListUsers(): Promise<AdminUser[]> {
-  const { data } = await api.get<{ users: AdminUser[] }>("/admin/users");
-  return data.users;
-}
-
-export async function adminUpdateUser(
-  id: string,
-  patch: { role?: "user" | "admin"; name?: string }
-): Promise<{ user: AdminUser }> {
-  const { data } = await api.patch<{ user: AdminUser }>(`/admin/users/${id}`, patch);
-  return data;
-}
-
-export async function adminDeleteUser(id: string): Promise<void> {
-  await api.delete(`/admin/users/${id}`);
-}
-
-export async function adminResetUserProgress(id: string): Promise<{ reset: true }> {
-  const { data } = await api.post<{ reset: true }>(`/admin/users/${id}/reset-progress`);
-  return data;
-}
-
-// ─── Admin · Interview regen ────────────────────────────
-
-export async function adminRegenerateInterview(slug: string): Promise<{ cleared: true }> {
-  const { data } = await api.post<{ cleared: true }>(`/admin/interview/${slug}/regenerate`);
-  return data;
-}
-
-export async function adminMetrics(): Promise<AdminMetrics> {
-  const { data } = await api.get<AdminMetrics>("/admin/metrics");
-  return data;
-}
-
-export async function adminEmailStatus(): Promise<{ configured: boolean }> {
-  const { data } = await api.get<{ configured: boolean }>("/admin/email/status");
-  return data;
-}
-
-export async function adminSendTestStreak(): Promise<EmailSendResult> {
-  const { data } = await api.post<EmailSendResult>("/admin/email/test/streak");
-  return data;
-}
-
-export async function adminSendTestDigest(): Promise<EmailSendResult> {
-  const { data } = await api.post<EmailSendResult>("/admin/email/test/digest");
-  return data;
-}
-
-export async function adminDispatchStreaks(): Promise<{
-  attempted: number;
-  sent: number;
-  skipped: number;
-  failed: number;
-}> {
-  const { data } = await api.post<{
-    attempted: number;
-    sent: number;
-    skipped: number;
-    failed: number;
-  }>("/admin/email/dispatch/streaks");
-  return data;
-}
-
-export async function adminDispatchDigests(): Promise<{
-  attempted: number;
-  sent: number;
-  skipped: number;
-  failed: number;
-}> {
-  const { data } = await api.post<{
-    attempted: number;
-    sent: number;
-    skipped: number;
-    failed: number;
-  }>("/admin/email/dispatch/digests");
-  return data;
-}
-
 export async function logoutUser(): Promise<void> {
   try {
     await api.post("/auth/logout");
@@ -414,6 +241,68 @@ export type InterviewPrep = {
   weekPlan: Array<{ day: number; focus: string; deliverable: string }>;
   resources: Array<{ title: string; type: "book" | "talk" | "repo" | "blog" | "docs"; url?: string }>;
 };
+
+// ─── Career path ────────────────────────────────────────
+
+export type CareerStage = {
+  phase: number;
+  title: string;
+  timeframe: string;
+  focus: string;
+  skills: string[];
+  milestone: string;
+};
+
+export type CareerCertification = {
+  name: string;
+  org: string;
+  level: "foundation" | "intermediate" | "advanced" | "expert";
+  whenToTake: string;
+  cost: string;
+  whyItMatters: string;
+};
+
+export type CareerRole = {
+  title: string;
+  seniority: "entry" | "mid" | "senior" | "lead";
+  salaryRange: string;
+  whenReady: string;
+};
+
+export type CareerProject = {
+  title: string;
+  description: string;
+  skills: string[];
+};
+
+export type CareerPath = {
+  domainSlug: string;
+  domainName: string;
+  persona: { level: string; goal: string; pace: string };
+  headline: string;
+  summary: string;
+  stages: CareerStage[];
+  certifications: CareerCertification[];
+  roles: CareerRole[];
+  projects: CareerProject[];
+  firstSteps: string[];
+};
+
+export async function fetchCareerPath(slug: string): Promise<{
+  career: CareerPath;
+  cached: boolean;
+  gate: InterviewGate;
+}> {
+  // Cold-cache generation is an LLM call producing ~3000 tokens — can take
+  // 20-40s. Override the axios default timeout for this request only.
+  // 403 = roadmap not fully completed yet (same gate as interview prep).
+  const { data } = await api.get<{
+    career: CareerPath;
+    cached: boolean;
+    gate: InterviewGate;
+  }>(`/career/${slug}`, { timeout: 90_000 });
+  return data;
+}
 
 export async function fetchInterviewStatus(slug: string): Promise<InterviewGate> {
   const { data } = await api.get<InterviewGate>(`/domains/${slug}/interview/status`);

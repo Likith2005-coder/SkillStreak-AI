@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { TiltCard } from "@/components/landing/TiltCard";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
@@ -27,8 +28,13 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur"
     >
+      {/* Pointer-reactive tilt + glare — entrance stays on the outer motion
+          wrapper so the two transforms never fight. */}
+      <TiltCard
+        max={7}
+        className="group relative rounded-2xl border border-border bg-card/50 p-5 backdrop-blur transition-colors hover:border-primary/30"
+      >
       <Link href={`/domains/${tile.slug}`} className="flex items-center gap-4">
         <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
           <svg width={SIZE} height={SIZE} className="-rotate-90">
@@ -83,6 +89,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
           )}
         </div>
       </Link>
+      </TiltCard>
     </motion.div>
   );
 }

@@ -23,6 +23,10 @@ type ChatState = {
   setSessions: (sessions: ChatSessionSummary[]) => void;
   upsertSession: (session: ChatSessionSummary) => void;
   removeSession: (id: string) => void;
+  /** Re-insert a session at a given index (used to roll back an optimistic delete). */
+  insertSession: (session: ChatSessionSummary, index: number) => void;
+  /** Patch just a session's title in place (optimistic rename + reconcile). */
+  renameSessionLocal: (id: string, title: string) => void;
 
   loadSession: (session: ChatSessionDetail) => void;
   clearActiveSession: () => void;
@@ -73,6 +77,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }),
       };
     }),
+
+  insertSession: (session, index) =>
+    set((s) => {
+      if (s.sessions.some((x) => x.id === session.id)) return {};
+      const next = s.sessions.slice();
+      next.splice(Math.max(0, Math.min(index, next.length)), 0, session);
+      return { sessions: next };
+    }),
+
+  renameSessionLocal: (id, title) =>
+    set((s) => ({
+      sessions: s.sessions.map((x) => (x.id === id ? { ...x, title } : x)),
+      activeSession:
+        s.activeSession && s.activeSession.id === id
+          ? { ...s.activeSession, title }
+          : s.activeSession,
+    })),
 
   loadSession: (session) =>
     set({
