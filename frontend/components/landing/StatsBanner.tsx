@@ -32,8 +32,8 @@ const STATS: Stat[] = [
     value: 9,
     label: "Tech domains",
     hint: "Cybersecurity to Cloud",
-    accent: "text-rose-300",
-    glow: "0 0 48px rgba(251,113,133,0.45)",
+    accent: "text-cyan-300",
+    glow: "0 0 48px rgba(34,211,238,0.45)",
   },
   {
     icon: <Layers className="h-4 w-4" />,
@@ -57,8 +57,8 @@ const STATS: Stat[] = [
     value: 8,
     label: "Unlockable badges",
     hint: "Streaks, perfect quizzes, more",
-    accent: "text-amber-300",
-    glow: "0 0 48px rgba(251,191,36,0.45)",
+    accent: "text-lime-300",
+    glow: "0 0 48px rgba(163,230,53,0.45)",
   },
 ];
 

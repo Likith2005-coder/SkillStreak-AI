@@ -24,7 +24,6 @@ import {
   ChevronDown,
   Flame,
   ListChecks,
-  Sparkles as SparklesIcon,
   Trophy,
 } from "lucide-react";
 import { RotatingWord } from "./RotatingWord";
@@ -57,14 +56,6 @@ export function HeroContent() {
       className="relative z-10 text-center lg:text-left"
     >
       <motion.div variants={container} initial="hidden" animate="show">
-        <motion.div variants={item} className="mb-5 inline-flex items-center gap-2">
-          <SparklesIcon className="h-5 w-5 text-primary" />
-          <span className="text-2xl font-bold tracking-tight">
-            <span className="gradient-text">SkillStreak</span>
-            <span className="text-foreground"> AI</span>
-          </span>
-        </motion.div>
-
         <motion.div
           variants={item}
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm"

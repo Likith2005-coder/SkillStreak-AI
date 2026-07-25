@@ -27,6 +27,8 @@ import {
   ListChecks,
   Lock,
   Play,
+  TrendingDown,
+  TrendingUp,
   Trophy,
   Zap,
   type LucideIcon,
@@ -59,7 +61,7 @@ const STEPS: Step[] = [
   {
     k: "02",
     title: "Learn with an AI tutor",
-    copy: "A streaming tutor that knows your level and current topic. Ask for analogies, deeper dives, or a quick quiz — it adapts to you.",
+    copy: "A streaming tutor that knows your level and current topic. Ask for analogies, deeper dives or a quick quiz — every conversation saved, every code block copy-ready.",
     icon: Bot,
     from: "from-violet-500",
     to: "to-violet-500",
@@ -69,7 +71,7 @@ const STEPS: Step[] = [
   {
     k: "03",
     title: "Prove it",
-    copy: "AI-generated quizzes and a hands-on Ethical Hacking Arsenal turn passive reading into real, tested understanding.",
+    copy: "5 AI-generated MCQs per topic, validated by a second LLM pass — score 3/5 to complete it. Plus a hands-on Ethical Hacking Arsenal for real practice.",
     icon: ListChecks,
     from: "from-emerald-500",
     to: "to-teal-500",
@@ -79,12 +81,22 @@ const STEPS: Step[] = [
   {
     k: "04",
     title: "Build the habit",
-    copy: "Daily streaks, XP, levels, badges and a weekly leaderboard keep you coming back — momentum you can feel.",
+    copy: "Daily streaks with auto-spent freezes, XP and levels, 8 unlockable badges and a weekly leaderboard — momentum you can feel.",
     icon: Trophy,
     from: "from-amber-500",
     to: "to-orange-500",
     text: "text-amber-300",
     glowHex: "#f59e0b",
+  },
+  {
+    k: "05",
+    title: "Watch yourself level up",
+    copy: "A GitHub-style 90-day heatmap, per-domain progress rings, weak-area detection and score trends — visible proof you're actually improving.",
+    icon: TrendingUp,
+    from: "from-cyan-500",
+    to: "to-sky-500",
+    text: "text-cyan-300",
+    glowHex: "#22d3ee",
   },
 ];
 
@@ -117,6 +129,25 @@ export function ScrollStory() {
           />
         </div>
 
+        {/* Giant ghost step number — outlined, crossfades with the step */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-[-1%] top-1/2 z-0 hidden -translate-y-1/2 select-none lg:block"
+        >
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={step.k}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 0.5, y: 0 }}
+              exit={{ opacity: 0, y: -60 }}
+              transition={{ duration: 0.55, ease: EASE }}
+              className="ghost-word block font-display text-[36vh] font-bold leading-none"
+            >
+              {step.k}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+
         <div className="container relative z-10 px-4 lg:px-12">
           <p className="text-center text-xs uppercase tracking-[0.3em] text-primary">
             How it works
@@ -125,6 +156,10 @@ export function ScrollStory() {
             From curious to{" "}
             <span className="gradient-text">capable</span>, step by step.
           </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-muted-foreground md:text-base">
+            Five tightly-integrated systems working as one loop — so you don&apos;t
+            just consume content, you actually learn it.
+          </p>
 
           <div className="mx-auto mt-12 grid max-w-6xl grid-cols-[auto_1fr] items-center gap-6 sm:gap-12">
             {/* Progress rail + step dots */}
@@ -213,6 +248,7 @@ export function ScrollStory() {
                     {active === 1 && <TutorVignette />}
                     {active === 2 && <QuizVignette />}
                     {active === 3 && <HabitVignette />}
+                    {active === 4 && <AnalyticsVignette />}
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -511,6 +547,96 @@ function HabitVignette() {
         </span>
         <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold text-amber-300">
           #2 ↑
+        </span>
+      </motion.div>
+    </div>
+  );
+}
+
+/** 05 — analytics: heatmap cells cascade in, trend line draws, weak area flagged. */
+function AnalyticsVignette() {
+  const COLS = 13;
+  const ROWS = 7;
+  // Deterministic pseudo-random intensity 0–4 per cell (stable across remounts).
+  const level = (i: number) => {
+    const h = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+    return h < 0.3 ? 0 : h < 0.5 ? 1 : h < 0.7 ? 2 : h < 0.88 ? 3 : 4;
+  };
+  const CELL_BG = [
+    "bg-muted/40",
+    "bg-cyan-500/20",
+    "bg-cyan-500/40",
+    "bg-cyan-400/70",
+    "bg-cyan-300",
+  ];
+  return (
+    <div className="absolute inset-0 flex flex-col p-5">
+      <motion.div {...rise(0.15)} className="flex items-center justify-between">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-300">
+          Progress · last 90 days
+        </span>
+        <span className="rounded-full border border-border bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground">
+          all domains
+        </span>
+      </motion.div>
+
+      {/* heatmap — columns sweep in left → right like data loading */}
+      <div
+        className="mt-3 grid gap-1"
+        style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
+      >
+        {Array.from({ length: COLS * ROWS }, (_, i) => {
+          const col = i % COLS;
+          const row = Math.floor(i / COLS);
+          const idx = col * ROWS + row; // column-major index for the sweep
+          return (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 + col * 0.05 + row * 0.012, ease: EASE }}
+              className={`aspect-square w-full rounded-[3px] ${CELL_BG[level(idx)]}`}
+            />
+          );
+        })}
+      </div>
+
+      {/* score trend — draws itself once the heatmap lands */}
+      <motion.div {...rise(1.0)} className="relative mt-3 h-12">
+        <svg viewBox="0 0 320 48" className="h-full w-full" fill="none" aria-hidden>
+          <motion.path
+            d="M 4 40 C 40 38, 60 30, 92 32 S 150 20, 184 22 S 250 10, 316 6"
+            stroke="#22d3ee"
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.1, delay: 1.15, ease: "easeInOut" }}
+            style={{ filter: "drop-shadow(0 0 6px rgba(34,211,238,0.6))" }}
+          />
+        </svg>
+        <motion.span
+          {...pop(2.1)}
+          className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-200"
+        >
+          <TrendingUp className="h-3 w-3" />
+          quiz scores ↑ 12%
+        </motion.span>
+      </motion.div>
+
+      {/* weak-area callout — the "it watches your gaps" moment */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.3, duration: 0.4, ease: EASE }}
+        className="mt-auto flex items-center justify-between rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2"
+      >
+        <span className="flex items-center gap-2 text-[11px] text-rose-200">
+          <TrendingDown className="h-3.5 w-3.5 text-rose-300" />
+          Weak area detected: SQL injection
+        </span>
+        <span className="rounded-full bg-rose-400/15 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+          review →
         </span>
       </motion.div>
     </div>

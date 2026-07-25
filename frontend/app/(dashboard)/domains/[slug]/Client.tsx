@@ -15,11 +15,21 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { apiErrorMessage, fetchInterviewStatus, fetchRoadmap, type RoadmapTopic, type RoadmapView } from "@/lib/api";
+import {
+  apiErrorMessage,
+  fetchAssessmentQuestions,
+  fetchInterviewStatus,
+  fetchPersonalizedPlan,
+  fetchRoadmap,
+  type AssessmentQuestion,
+  type RoadmapTopic,
+  type RoadmapView,
+} from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { WindingRoadmap } from "@/components/roadmap/WindingRoadmap";
+import { AssessmentIntro, AssessmentWizard } from "@/components/domains/AssessmentWizard";
 import { cn } from "@/lib/utils";
 
 type ProgressStatus = "not_started" | "in_progress" | "completed";
@@ -41,9 +51,21 @@ export default function RoadmapPage() {
   const [data, setData] = useState<RoadmapView | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Personalized-onboarding gate: null = still checking, false = no plan yet
+  // (show the AI-mentor assessment first), true = plan exists.
+  const [hasPlan, setHasPlan] = useState<boolean | null>(null);
+  const [skippedAssessment, setSkippedAssessment] = useState(false);
+  const [assessStage, setAssessStage] = useState<"intro" | "chat">("intro");
+  const [questions, setQuestions] = useState<AssessmentQuestion[] | null>(null);
+
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
+    // ?assess=1 (retake from the plan page) forces the wizard even with a plan.
+    const forceAssess =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("assess") === "1";
+
     fetchRoadmap(slug)
       .then((d) => {
         if (!cancelled) setData(d);
@@ -51,10 +73,29 @@ export default function RoadmapPage() {
       .catch((err) => {
         if (!cancelled) setError(apiErrorMessage(err, "Could not load roadmap"));
       });
+
+    fetchPersonalizedPlan(slug)
+      .then((p) => {
+        if (cancelled) return;
+        setHasPlan(forceAssess ? false : p.exists);
+      })
+      .catch(() => {
+        // Never let the gate block learning — fall through to the trail.
+        if (!cancelled) setHasPlan(true);
+      });
     return () => {
       cancelled = true;
     };
   }, [slug]);
+
+  const startAssessmentChat = () => {
+    setAssessStage("chat");
+    if (!questions && slug) {
+      fetchAssessmentQuestions(slug)
+        .then((q) => setQuestions(q.questions))
+        .catch(() => setSkippedAssessment(true));
+    }
+  };
 
   const progressByTopic = useMemo(() => {
     const map = new Map<string, ProgressStatus>();
@@ -82,6 +123,47 @@ export default function RoadmapPage() {
   }
 
   const s = styleFor(data.color);
+
+  // ── Personalized-onboarding gate ─────────────────────────────────────
+  // First visit to a domain: no roadmap yet — a short AI-mentor chat first,
+  // then a personalized plan. The learner can always skip to the trail.
+  if (hasPlan === null && !skippedAssessment) {
+    return (
+      <main className="container flex min-h-[60vh] items-center justify-center px-4 py-10 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </main>
+    );
+  }
+  if (hasPlan === false && !skippedAssessment) {
+    return (
+      <main className="container px-4 py-10">
+        <BackToDomains />
+        <div className="mt-10 sm:mt-14">
+          {assessStage === "intro" ? (
+            <AssessmentIntro
+              domainName={data.name}
+              onStart={startAssessmentChat}
+              onSkip={() => setSkippedAssessment(true)}
+            />
+          ) : questions ? (
+            <AssessmentWizard
+              slug={data.slug}
+              domainName={data.name}
+              questions={questions}
+              onDone={() => {
+                window.location.href = `/domains/${data.slug}/plan`;
+              }}
+              onSkip={() => setSkippedAssessment(true)}
+            />
+          ) : (
+            <div className="flex items-center justify-center gap-3 py-16 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" /> Preparing your questions…
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   // Non-curated domains: friendly placeholder pointing to the chatbot.
   if (!data.roadmap) {
@@ -127,6 +209,24 @@ export default function RoadmapPage() {
         colorStyle={s}
         progress={{ completed: completedCount, total, percent }}
       />
+
+      {/* Personal plan strip — jump back into the AI-designed plan */}
+      {hasPlan && (
+        <Link
+          href={`/domains/${data.slug}/plan`}
+          className="mt-6 flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-5 py-3.5 transition-colors hover:border-violet-400/45 hover:bg-violet-500/[0.12]"
+        >
+          <Sparkles className="h-4 w-4 shrink-0 text-violet-300" />
+          <span className="flex-1 text-sm text-foreground/90">
+            <span className="font-semibold">Your personalized plan</span>
+            <span className="text-muted-foreground">
+              {" "}
+              — phases, resources, projects and your capstone build.
+            </span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-violet-300" />
+        </Link>
+      )}
 
       <InterviewUnlockCTA
         slug={data.slug}

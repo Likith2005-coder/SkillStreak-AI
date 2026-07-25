@@ -37,6 +37,7 @@ model User {
   streak       Streak?
   badges       UserBadge[]
   xpEvents     XpEvent[]
+  assessments  DomainAssessment[]
 
   @@map("users")
 }
@@ -70,8 +71,30 @@ model Domain {
   createdAt   DateTime @default(now()) @map("created_at")
 
   roadmap     Roadmap?
+  assessments DomainAssessment[]
 
   @@map("domains")
+}
+
+// Personalized onboarding: one row per (user, domain). Stores the raw wizard
+// answers, the AI-built learner profile, and the generated phased plan
+// (phases + capstone + week-1 daily schedule). Regenerated on retake.
+model DomainAssessment {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  domainId    String   @map("domain_id")
+  answers     Json                                    // raw wizard answers
+  profile     Json                                    // AI learner profile summary
+  plan        Json                                    // { phases[], capstone, week1[] }
+  planVersion Int      @default(1) @map("plan_version")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain Domain @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, domainId])
+  @@map("domain_assessments")
 }
 
 model Roadmap {

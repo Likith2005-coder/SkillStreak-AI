@@ -210,6 +210,132 @@ export async function fetchRoadmap(slug: string): Promise<RoadmapView> {
   return data.domain;
 }
 
+// ─── Personalized onboarding (assessment + AI plan) ─────
+
+export type AssessmentQuestion = {
+  id: string;
+  prompt: string;
+  type: "single" | "multi" | "boolean";
+  options: Array<{ value: string; label: string; hint?: string }>;
+  dependsOn?: { id: string; value: unknown };
+};
+
+export type AssessmentAnswers = {
+  why: string;
+  level: "beginner" | "basic" | "intermediate" | "advanced";
+  learnedBefore: boolean;
+  knownTopics: string[];
+  dailyMinutes: number;
+  style: string;
+  mode: string;
+  endGoal: string;
+  wantsCert: boolean;
+  certification: string | null;
+  languages: string[];
+  os: "windows" | "linux" | "macos";
+};
+
+export type LearnerProfile = {
+  level: string;
+  goal: string;
+  dailyMinutes: number;
+  style: string;
+  mode: string;
+  os: string;
+  languages: string[];
+  certification: string | null;
+  strengths: string[];
+  weaknesses: string[];
+  estimatedWeeks: number;
+  pace: "relaxed" | "moderate" | "aggressive";
+  summary: string;
+};
+
+export type PlanResource = { title: string; url?: string; query?: string };
+
+export type PlanPhase = {
+  n: number;
+  title: string;
+  objective: string;
+  days: number;
+  topics: string[];
+  why: string;
+  resources: {
+    videos: PlanResource[];
+    docs: PlanResource[];
+    courses: PlanResource[];
+    practice: PlanResource[];
+  };
+  exercises: string[];
+  miniProject: { title: string; brief: string; steps: string[] };
+  milestone: string;
+};
+
+export type CapstoneProject = {
+  title: string;
+  brief: string;
+  steps: string[];
+  deliverables: string[];
+  showoff: string;
+};
+
+export type Week1Day = {
+  day: number;
+  focus: string;
+  watch: string;
+  read: string;
+  practice: string;
+  quiz: string;
+};
+
+export type PersonalizedPlan = {
+  phases: PlanPhase[];
+  capstone: CapstoneProject;
+  week1: Week1Day[];
+};
+
+export type AdaptiveTips = {
+  weakTopics: Array<{ title: string; bestScore: number }>;
+  strongTopics: string[];
+  advice: string | null;
+};
+
+export type PlanResponse =
+  | { exists: false; domain: { name: string; slug: string } }
+  | {
+      exists: true;
+      domain: { name: string; slug: string };
+      profile: LearnerProfile;
+      plan: PersonalizedPlan;
+      planVersion: number;
+      generatedAt: string;
+      adaptive: AdaptiveTips;
+    };
+
+export async function fetchAssessmentQuestions(slug: string): Promise<{
+  domain: { name: string; slug: string };
+  questions: AssessmentQuestion[];
+}> {
+  const { data } = await api.get(`/domains/${slug}/assessment`);
+  return data;
+}
+
+export async function submitAssessment(
+  slug: string,
+  answers: AssessmentAnswers
+): Promise<{ profile: LearnerProfile; plan: PersonalizedPlan; planVersion: number }> {
+  // One large LLM generation — allow well beyond the default 15s timeout.
+  const { data } = await api.post(`/domains/${slug}/assessment`, answers, {
+    timeout: 120_000,
+  });
+  return data;
+}
+
+export async function fetchPersonalizedPlan(slug: string): Promise<PlanResponse> {
+  const { data } = await api.get<PlanResponse>(`/domains/${slug}/plan`);
+  return data;
+}
+
 // ─── Interview prep ─────────────────────────────────────
 
 export type InterviewGate = {
