@@ -1,0 +1,57 @@
+name: Bug report
+description: Something isn't working the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a report. The more precise the repro, the faster it gets fixed.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the app is affected?
+      options:
+        - Frontend (learner app)
+        - Backend (API)
+        - Admin console
+        - AI (tutor, quizzes, assessment, plans)
+        - Database / migrations
+        - Build / CI
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click '...'
+        3. See the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Console output, server logs, or a screenshot. Redact any keys or tokens.
+      render: shell
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Windows 11, Node 20.11, Chrome 130"
+    validations:
+      required: true
