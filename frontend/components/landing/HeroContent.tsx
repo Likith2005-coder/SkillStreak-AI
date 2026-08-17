@@ -27,6 +27,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { RotatingWord } from "./RotatingWord";
+import { useIntroDone } from "./introBus";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -41,6 +42,9 @@ const item: Variants = {
 
 export function HeroContent() {
   const reduce = useReducedMotion();
+  // Hold the entrance until the boot intro starts lifting its curtain, so
+  // the choreography plays in view instead of hidden behind the overlay.
+  const introDone = useIntroDone();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -55,7 +59,11 @@ export function HeroContent() {
       style={reduce ? undefined : { y, opacity }}
       className="relative z-10 text-center lg:text-left"
     >
-      <motion.div variants={container} initial="hidden" animate="show">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate={introDone || reduce ? "show" : "hidden"}
+      >
         <motion.div
           variants={item}
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm"

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignalBotLazy } from "@/components/3d/SignalBotLazy";
+import { LandingIntro } from "@/components/landing/LandingIntro";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
@@ -46,6 +47,8 @@ const DOMAIN_TICKER = [
 export default function LandingPage() {
   return (
     <main className="relative overflow-x-clip bg-background">
+      {/* "Signal Boot" cinematic intro — once per session, click to skip */}
+      <LandingIntro />
       <LandingNav />
       <ScrollProgress />
       <SmoothScroll />
@@ -309,3 +312,4 @@ function DomainMarquee() {
     </div>
   );
 }
+

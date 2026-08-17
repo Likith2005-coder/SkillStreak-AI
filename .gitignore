@@ -49,3 +49,6 @@ backend/prisma/migrations/dev.db*
 
 # Claude Code (per-machine local settings)
 **/.claude/settings.local.json
+
+# Reference videos (not part of the app)
+*.mp4

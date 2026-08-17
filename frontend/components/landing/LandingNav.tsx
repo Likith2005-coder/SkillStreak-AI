@@ -12,6 +12,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Sparkles as SparklesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIntroDone } from "./introBus";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -22,6 +23,8 @@ const LINKS = [
 
 export function LandingNav() {
   const reduce = useReducedMotion();
+  // Drop in only once the boot intro starts revealing the page.
+  const introDone = useIntroDone();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export function LandingNav() {
   return (
     <motion.header
       initial={reduce ? false : { y: -24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={introDone || reduce ? { y: 0, opacity: 1 } : { y: -24, opacity: 0 }}
       transition={{ duration: 0.6, ease: EASE }}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled

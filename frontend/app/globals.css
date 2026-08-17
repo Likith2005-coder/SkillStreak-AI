@@ -194,6 +194,20 @@
     .noise-overlay, .studio-dial { animation: none; }
   }
 
+  /* ── "Signal Boot" intro safety nets ──────────────────────────
+     The overlay is driven by LandingIntro.tsx; these rules guarantee it
+     can never trap the page: reduced-motion users never see it (even
+     pre-hydration), and without JS it clears itself after 7s. */
+  .landing-intro {
+    animation: intro-auto-clear 0.5s ease 7s forwards;
+  }
+  @keyframes intro-auto-clear {
+    to { opacity: 0; visibility: hidden; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .landing-intro { display: none; }
+  }
+
   /* ── Signature: the knowledge grid ────────────────────────────
      A neon perspective floor receding to a glowing horizon behind the
      hero — the "ground" you build skills on. Pure CSS 3D, GPU-cheap. */
