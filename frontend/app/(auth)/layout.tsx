@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
-import { useAuthStatus, useBootstrapUser } from "@/hooks/useUser";
-import { useUserStore } from "@/store/userStore";
+import { useBootstrapUser } from "@/hooks/useUser";
 import { AuthFormProvider } from "./auth-form-context";
 
 // Animated cartoon characters — listen to window mousemove, so client-only.
@@ -20,15 +17,6 @@ const AnimatedCharacters = dynamic(
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   useBootstrapUser();
-  const status = useAuthStatus();
-  const user = useUserStore((s) => s.user);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "ready" && user) {
-      router.replace("/dashboard");
-    }
-  }, [status, user, router]);
 
   return (
     <AuthFormProvider>
