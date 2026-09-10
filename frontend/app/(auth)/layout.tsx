@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (status === "ready" && user) {
-      router.replace(user.profile ? "/dashboard" : "/onboarding");
+      router.replace("/dashboard");
     }
   }, [status, user, router]);
 

@@ -90,7 +90,7 @@ export default function RegisterPage() {
     try {
       const { user, token } = await registerUser(values);
       setAuth(user, token);
-      router.replace("/onboarding");
+      router.replace("/dashboard");
     } catch (err) {
       const msg = apiErrorMessage(err, "We couldn't create your account.");
       // The backend uses 409 with "An account with that email already exists".

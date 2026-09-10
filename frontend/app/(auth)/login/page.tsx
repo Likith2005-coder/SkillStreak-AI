@@ -88,7 +88,7 @@ export default function LoginPage() {
       setAuth(user, token);
       const me = await fetchMe();
       setMe(me);
-      router.replace(me.user.profile ? "/dashboard" : "/onboarding");
+      router.replace("/dashboard");
     } catch (err) {
       // 401 from /auth/login is an EXPECTED outcome (wrong credentials), not
       // a programming bug. Surface the message inline; don't let it bubble up

@@ -28,12 +28,9 @@ export default function DashboardLayout({
       router.replace("/login");
       return;
     }
-    if (status === "ready" && user && !user.profile) {
-      router.replace("/onboarding");
-    }
   }, [status, user, router]);
 
-  if (status !== "ready" || !user || !user.profile) {
+  if (status !== "ready" || !user) {
     return (
       <div className="flex min-h-[100svh] items-center justify-center text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />

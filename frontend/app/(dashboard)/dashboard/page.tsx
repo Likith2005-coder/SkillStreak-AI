@@ -70,7 +70,7 @@ export default function DashboardPage() {
     };
   }, []);
 
-  if (!user || !user.profile) return null;
+  if (!user) return null;
 
   const totalPct = overview && overview.totals.topicsAvailable > 0
     ? Math.round((overview.totals.topicsCompleted / overview.totals.topicsAvailable) * 100)

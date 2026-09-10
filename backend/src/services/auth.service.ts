@@ -50,8 +50,24 @@ export async function register(input: RegisterInput) {
   }
 
   const passwordHash = await hashPassword(input.password);
+  // A profile is created up front with neutral defaults. There is no longer a
+  // generic onboarding questionnaire — the real personalisation happens per
+  // domain in the assessment wizard, which asks the same things with far more
+  // context. These defaults keep settings, career paths and the tutor's level
+  // hints working, and the learner can change them in Settings at any time.
   const user = await prisma.user.create({
-    data: { email, passwordHash, name: input.name.trim() },
+    data: {
+      email,
+      passwordHash,
+      name: input.name.trim(),
+      profile: {
+        create: {
+          priorLevel: "some",
+          goal: "curiosity",
+          pace: "standard",
+        },
+      },
+    },
     select: PUBLIC_USER_FIELDS,
   });
 
@@ -78,6 +94,18 @@ export async function getMe(userId: string) {
     select: { ...PUBLIC_USER_FIELDS, profile: { select: PROFILE_FIELDS } },
   });
   if (!user) throw new ApiError(404, "User not found");
+
+  // Backfill for accounts created before the onboarding questionnaire was
+  // removed: they may have signed up and never completed it, which would
+  // otherwise leave them with no profile and a dead dashboard.
+  if (!user.profile) {
+    const profile = await prisma.userProfile.create({
+      data: { userId, priorLevel: "some", goal: "curiosity", pace: "standard" },
+      select: PROFILE_FIELDS,
+    });
+    return { ...user, profile };
+  }
+
   return user;
 }
 
