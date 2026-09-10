@@ -131,14 +131,14 @@ export default function InterviewPrepPage() {
         <BackLink slug={slug ?? ""} />
         <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-5">
           <div className="flex items-start gap-3">
-            <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive-text" />
             <div className="flex-1">
-              <p className="font-medium text-destructive">
+              <p className="font-medium text-destructive-text">
                 {isTimeout
                   ? "The AI took longer than expected on the first generation."
                   : "Couldn't load interview prep."}
               </p>
-              <p className="mt-1 text-sm text-destructive/85">
+              <p className="mt-1 text-sm text-destructive-text">
                 {isTimeout
                   ? "Cold-cache generation can spike to 30-60s on a busy day. Try again — most retries return a cached copy in under a second."
                   : error}
@@ -146,7 +146,7 @@ export default function InterviewPrepPage() {
               <button
                 type="button"
                 onClick={() => setReloadKey((k) => k + 1)}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/15 px-3 py-1.5 text-sm font-medium text-destructive transition hover:bg-destructive/25"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/15 px-3 py-1.5 text-sm font-medium text-destructive-text transition hover:bg-destructive/25"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Try again
@@ -162,7 +162,7 @@ export default function InterviewPrepPage() {
     return (
       <main className="container flex min-h-[60vh] items-center justify-center px-4 py-10 text-muted-foreground">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <Loader2 className="h-6 w-6 animate-spin motion-reduce:animate-none text-primary" />
           <p className="text-sm">Composing your interview prep…</p>
           <p className="text-xs text-muted-foreground">
             First load takes ~15 seconds. After that it's instant.

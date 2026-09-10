@@ -107,7 +107,7 @@ export default function TopicPage() {
   if (topicError) {
     return (
       <main className="container px-4 py-10">
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
           {topicError}
         </div>
         <div className="mt-4">
@@ -122,7 +122,7 @@ export default function TopicPage() {
   if (!topic) {
     return (
       <main className="container flex items-center justify-center px-4 py-10 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
       </main>
     );
   }
@@ -179,7 +179,7 @@ export default function TopicPage() {
                   className={cn(
                     "h-4 w-4",
                     s.text,
-                    explainState.kind === "loading" && "animate-pulse"
+                    explainState.kind === "loading" && "animate-pulse motion-reduce:animate-none"
                   )}
                 />
                 AI explanation
@@ -211,7 +211,7 @@ export default function TopicPage() {
               {explainState.kind === "loading" && <ExplanationSkeleton />}
 
               {explainState.kind === "error" && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-text">
                   <p className="font-medium">Couldn&apos;t generate the explanation.</p>
                   <p className="mt-1 opacity-90">{explainState.message}</p>
                   <Button
@@ -257,7 +257,7 @@ export default function TopicPage() {
               onClick={handleMarkComplete}
               disabled={completeState !== "idle"}
             >
-              {completeState === "saving" && <Loader2 className="h-4 w-4 animate-spin" />}
+              {completeState === "saving" && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {completeState === "done" && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
               {completeState === "done"
                 ? "Completed"
@@ -378,11 +378,11 @@ function ExplanationSkeleton() {
         ["w-2/5", ["w-5/6", "w-full", "w-3/4"]],
       ].map(([h, lines], i) => (
         <div key={i} className="space-y-3">
-          <div className={`h-5 ${h} animate-pulse rounded bg-muted/60`} />
+          <div className={`h-5 ${h} animate-pulse motion-reduce:animate-none rounded bg-muted/60`} />
           {(lines as string[]).map((w, j) => (
             <div
               key={j}
-              className={`h-3.5 ${w} animate-pulse rounded bg-muted/30`}
+              className={`h-3.5 ${w} animate-pulse motion-reduce:animate-none rounded bg-muted/30`}
               style={{ animationDelay: `${(i * 4 + j) * 60}ms` }}
             />
           ))}

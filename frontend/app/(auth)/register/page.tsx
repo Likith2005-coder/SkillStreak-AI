@@ -240,7 +240,7 @@ export default function RegisterPage() {
           <motion.div
             initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive-text"
             role="alert"
             aria-live="polite"
           >
@@ -268,7 +268,7 @@ export default function RegisterPage() {
             // submittable — no chance of "Creating account…" with a bad email.
             disabled={isSubmitting || !isValid}
           >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
             {isSubmitting ? "Creating account…" : "Create account"}
           </Button>
           {/* Tell the user WHY the button is grey — top-site UX pattern */}

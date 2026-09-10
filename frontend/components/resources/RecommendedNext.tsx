@@ -61,10 +61,10 @@ export function RecommendedNext() {
 
       {!items ? (
         <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr]">
-          <div className="h-56 animate-pulse rounded-xl border border-border bg-card/30" />
+          <div className="h-56 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
           <div className="grid gap-2.5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-16 animate-pulse rounded-xl border border-border bg-card/30" />
+              <div key={i} className="h-16 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
             ))}
           </div>
         </div>
@@ -122,7 +122,7 @@ function HeroPick({ item }: { item: RecommendedTopic }) {
           <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <span className="relative flex h-2 w-2">
               <span
-                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+                className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-full opacity-60"
                 style={{ background: hexFrom }}
               />
               <span

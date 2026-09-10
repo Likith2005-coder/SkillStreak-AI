@@ -11,7 +11,7 @@ export function TypingIndicator() {
 function Dot({ delay }: { delay: string }) {
   return (
     <span
-      className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/70"
+      className="h-1.5 w-1.5 animate-bounce motion-reduce:animate-none rounded-full bg-muted-foreground/70"
       style={{ animationDelay: delay }}
     />
   );

@@ -40,10 +40,20 @@
     --muted-foreground: 205 16% 62%;
     --accent: 213 32% 13%;
     --accent-foreground: 195 30% 96%;
+    /* --destructive is a FILL colour: white on it reads 6.17:1, which is why
+       the destructive button is fine. As TEXT on the deep-ink ground it only
+       reaches 2.9:1, so error copy needs its own lighter token. */
     --destructive: 0 72% 42%;
     --destructive-foreground: 210 40% 98%;
+    --destructive-text: 0 84% 68%;
+    /* Lime = streak / progress energy. DESIGN.md has always specified it;
+       it had no token, so every progress surface invented its own hue. */
+    --energy: 84 85% 62%;
     --border: 205 32% 15%;
-    --input: 205 32% 15%;
+    /* Form controls need a perceivable boundary (WCAG 1.4.11, 3:1). The
+       decorative hairline above is 1.26:1 — fine for card edges, not for
+       inputs, so --input is deliberately lighter than --border. */
+    --input: 205 32% 38%;
     --ring: 187 92% 52%;
   }
 }
@@ -59,6 +69,15 @@
 }
 
 @layer utilities {
+  /* One focus treatment for every interactive element that isn't a Button or
+     Input (those carry their own). Keyboard users must always be able to see
+     where they are — several controls previously set `outline-none` with no
+     replacement, or nothing at all. */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
   /* Committed 2-stop signal→depth wordmark gradient. Two stops (cyan→violet)
      read as an authored brand mark; the old lime→cyan→violet rainbow was the
      generic-AI tell the detector flags. `bg-[length:200%_auto]` gives
@@ -75,6 +94,14 @@
     );
     background-size: 200% 200%;
     animation: gradient-shift 8s ease infinite;
+  }
+  /* Defined here, not in tailwind.config.ts: Tailwind only emits a keyframe
+     when a matching `animate-*` utility appears in the content globs, and
+     `animate-gradient-shift` is used nowhere — so this animation was silently
+     dead and the onboarding backdrop rendered static. */
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 
   /* ── Cinematic studio kit (alche-inspired) ────────────────────
@@ -166,21 +193,15 @@
   .noise-overlay {
     position: fixed;
     inset: 0;
-    z-index: 55;
+    /* Below the navbar (30) and skip link (50): grain is atmosphere, it must
+       never composite over chrome the user interacts with. */
+    z-index: 25;
     pointer-events: none;
     opacity: 0.045;
     isolation: isolate;
     transform: translateZ(0);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
-  @keyframes grain {
-    0%, 100% { transform: translate(0, 0); }
-    20% { transform: translate(-3%, 2%); }
-    40% { transform: translate(2%, -3%); }
-    60% { transform: translate(-2%, -2%); }
-    80% { transform: translate(3%, 2%); }
-  }
-
   /* Rotating studio control-dial (decorative). */
   .studio-dial {
     animation: dial-spin 24s linear infinite;
@@ -497,5 +518,30 @@
     to {
       transform: rotate(360deg);
     }
+  }
+
+  /* ── Reduced motion: the catch-all ────────────────────────────
+     Every animation in the system must have a still fallback (DESIGN.md
+     invariant). The blocks above cover the effects defined next to them;
+     this one covers the rest, including the Tailwind-config keyframes
+     (marquee / gradient / fade-in / slide-in-right) which have no natural
+     home in this file. Loaders are slowed rather than stopped so they
+     still read as "busy". */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-cta-breathe,
+    .gradient-bg-animated,
+    .animate-marquee,
+    .animate-gradient,
+    .animate-fade-in,
+    .animate-slide-in-right,
+    .animate-nudge,
+    .animate-ping,
+    .animate-bounce,
+    .bento-card::before {
+      animation: none !important;
+    }
+    .gradient-bg-animated { background-position: 50% 50%; }
+    .bento-card::before { opacity: 0; }
+    .loader { animation-duration: 2.4s; }
   }
 }

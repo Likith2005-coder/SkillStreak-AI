@@ -70,11 +70,12 @@ export function CommandPalette() {
         label="Command palette"
         className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
       >
-        <div className="flex items-center gap-2 border-b border-border px-3">
+        <div className="flex items-center gap-2 border-b border-border px-3 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/40">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Command.Input
             placeholder="Jump to anywhere — try 'domains', 'leaderboard', or 'cybersecurity'…"
             className="flex-1 bg-transparent px-1 py-3 text-sm outline-none placeholder:text-muted-foreground"
+            aria-label="Search commands and destinations"
           />
           <kbd className="rounded border border-border bg-muted/40 px-1.5 py-0.5 text-[10px] text-muted-foreground">
             ESC
@@ -144,7 +145,7 @@ function Item({
   return (
     <Command.Item
       onSelect={onSelect}
-      className="flex cursor-pointer items-center justify-between rounded-md px-2 py-2 text-foreground aria-selected:bg-muted/60 aria-selected:text-foreground"
+      className="flex cursor-pointer items-center justify-between rounded-md px-2 py-2 text-foreground aria-selected:bg-primary/15 aria-selected:text-primary aria-selected:ring-1 aria-selected:ring-primary/40"
     >
       <div className="flex items-center gap-3">
         <span className="text-muted-foreground">{icon}</span>

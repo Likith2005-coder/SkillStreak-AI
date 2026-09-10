@@ -140,7 +140,7 @@ export default function OnboardingPage() {
 
         {formError && (
           <div
-            className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text"
             role="alert"
           >
             {formError}
@@ -148,7 +148,7 @@ export default function OnboardingPage() {
         )}
 
         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
           {isSubmitting ? "Saving…" : "Finish setup"}
         </Button>
       </form>

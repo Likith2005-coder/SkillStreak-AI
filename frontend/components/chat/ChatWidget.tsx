@@ -49,7 +49,7 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
       >
         {/* Pulse ring while idle */}
         {!open && !reduce && (
-          <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-indigo-500/30" />
+          <span className="pointer-events-none absolute inset-0 animate-ping motion-reduce:animate-none rounded-full bg-indigo-500/30" />
         )}
         <AnimatePresence mode="wait" initial={false}>
           {open ? (

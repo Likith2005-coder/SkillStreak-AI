@@ -130,7 +130,7 @@ export default function CareerPathPage() {
         <LockedState slug={slug} />
       ) : error ? (
         <div className="mt-16 flex flex-col items-center text-center">
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-sm text-destructive-text">{error}</p>
           <Button variant="outline" className="mt-4" onClick={() => slug && load(slug)}>
             <RefreshCcw className="h-4 w-4" /> Try again
           </Button>
@@ -179,7 +179,7 @@ function LoadingState() {
       <p className="mt-1.5 min-h-5 text-xs text-muted-foreground" aria-live="polite">
         {LOADING_LINES[i]}
       </p>
-      <p className="mt-6 max-w-sm text-xs text-muted-foreground/60">
+      <p className="mt-6 max-w-sm text-xs text-muted-foreground">
         First generation for a persona takes up to ~30 seconds. After that it
         loads instantly.
       </p>
@@ -433,7 +433,7 @@ function CareerView({
         </div>
       </Section>
 
-      <p className="mt-16 text-center text-xs text-muted-foreground/60">
+      <p className="mt-16 text-center text-xs text-muted-foreground">
         Generated from your onboarding answers — experience, goal and pace.
         Salary bands are indicative, not guarantees.
       </p>

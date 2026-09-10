@@ -42,8 +42,9 @@ export function ChatInput({
 
   return (
     <div className="border-t border-border bg-background/80 px-4 py-3 backdrop-blur">
-      <div className="flex items-end gap-2 rounded-xl border border-border bg-card/50 p-2">
+      <div className="flex items-end gap-2 rounded-xl border border-border bg-card/50 p-2 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring/40">
         <textarea
+          aria-label="Message the AI tutor"
           ref={ref}
           value={value}
           onChange={(e) => setValue(e.target.value.slice(0, MAX))}
@@ -56,7 +57,7 @@ export function ChatInput({
           rows={1}
           placeholder={placeholder}
           className={cn(
-            "min-h-[36px] w-full resize-none border-0 bg-transparent px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+            "min-h-[36px] w-full resize-none border-0 bg-transparent px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           )}
           disabled={disabled}
         />

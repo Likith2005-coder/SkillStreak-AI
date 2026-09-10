@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,14 +29,17 @@ export function QuestionCard({
   explanation,
   onSelect,
 }: Props) {
+  const reduce = useReducedMotion();
   return (
+    // A 500ms 90-degree card flip between questions was landing-page motion on
+    // the screen where the learner is thinking hardest. Product register: keep
+    // it quiet and short — a brief slide reads as "next question" just as well.
     <motion.div
       key={index}
-      initial={{ opacity: 0, rotateY: -90 }}
-      animate={{ opacity: 1, rotateY: 0 }}
-      exit={{ opacity: 0, rotateY: 90 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      style={{ transformPerspective: 1200 }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, x: 16 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
+      transition={{ duration: reduce ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-2xl border border-border bg-card/70 p-6 backdrop-blur-md sm:p-8"
     >
       <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
@@ -63,7 +66,7 @@ export function QuestionCard({
               disabled={revealed}
               whileHover={!revealed ? { x: 4 } : undefined}
               whileTap={!revealed ? { scale: 0.985 } : undefined}
-              animate={isWrongPick ? { x: [0, -8, 8, -6, 6, 0] } : { x: 0 }}
+              animate={isWrongPick && !reduce ? { x: [0, -8, 8, -6, 6, 0] } : { x: 0 }}
               transition={isWrongPick ? { duration: 0.4 } : { duration: 0.2 }}
               className={cn(
                 "group flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",

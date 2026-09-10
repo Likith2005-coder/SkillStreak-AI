@@ -148,7 +148,7 @@ export function SessionSidebar() {
                         if (confirm("Delete this conversation?")) remove(session.id);
                       }}
                       aria-label="Delete"
-                      className="opacity-0 transition group-hover:opacity-100 hover:text-destructive"
+                      className="opacity-0 transition group-hover:opacity-100 hover:text-destructive-text"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

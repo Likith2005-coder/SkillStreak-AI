@@ -154,7 +154,7 @@ export function ScrollStory() {
           </p>
           <h2 className="mx-auto mt-3 max-w-3xl text-center font-display text-3xl font-bold tracking-tight md:text-5xl">
             From curious to{" "}
-            <span className="gradient-text">capable</span>, step by step.
+            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">capable</span>, step by step.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-muted-foreground md:text-base">
             Five tightly-integrated systems working as one loop — so you don&apos;t
@@ -175,7 +175,7 @@ export function ScrollStory() {
                   <li
                     key={s.k}
                     className={`font-mono text-sm transition-colors duration-300 ${
-                      i === active ? s.text : "text-muted-foreground/40"
+                      i === active ? s.text : "text-muted-foreground"
                     }`}
                   >
                     {s.k}
@@ -255,7 +255,7 @@ export function ScrollStory() {
             </div>
           </div>
 
-          <p className="mt-10 text-center text-xs text-muted-foreground/60">
+          <p className="mt-10 text-center text-xs text-muted-foreground">
             ↓ keep scrolling
           </p>
         </div>
@@ -337,7 +337,7 @@ function TrailVignette() {
 
       <motion.span
         {...pop(0.7)}
-        className="absolute rounded-full bg-rose-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white"
+        className="absolute rounded-full bg-rose-700 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white"
         style={{ left: nodes[0].x + 26, top: nodes[0].y + 8 }}
       >
         Start
@@ -357,7 +357,7 @@ function TutorVignette() {
         <span className="text-xs font-medium text-foreground">AI tutor</span>
         <span className="ml-auto flex items-center gap-1.5 text-[10px] text-emerald-300">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="absolute h-full w-full animate-ping motion-reduce:animate-none rounded-full bg-emerald-400 opacity-60" />
             <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
           </span>
           streaming
@@ -509,7 +509,7 @@ function HabitVignette() {
             className={`flex h-10 w-9 flex-col items-center justify-center gap-0.5 rounded-lg border text-[9px] ${
               i < litCount
                 ? "border-orange-400/40 bg-orange-500/15 text-orange-200"
-                : "border-dashed border-border bg-card/50 text-muted-foreground/60"
+                : "border-dashed border-border bg-card/50 text-muted-foreground"
             }`}
           >
             <Flame
@@ -651,7 +651,7 @@ function StaticFallback() {
       <div className="mx-auto max-w-5xl">
         <p className="text-center text-xs uppercase tracking-[0.3em] text-primary">How it works</p>
         <h2 className="mx-auto mt-3 max-w-3xl text-center font-display text-3xl font-bold tracking-tight md:text-5xl">
-          From curious to <span className="gradient-text">capable</span>, step by step.
+          From curious to <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">capable</span>, step by step.
         </h2>
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {STEPS.map((s) => {

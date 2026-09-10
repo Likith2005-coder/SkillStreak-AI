@@ -182,7 +182,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
       <div className="mb-6 flex items-center gap-3">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted/60">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-violet-400"
+            className="h-full rounded-full bg-gradient-to-r from-energy/70 to-energy"
             animate={{ width: `${generating ? 100 : progress}%` }}
             transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
           />
@@ -285,7 +285,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
               Great — that&apos;s everything I need. Designing your {domainName} plan…
             </MentorBubble>
             <div className="flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-4 py-3.5 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-violet-300" />
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none text-violet-300" />
               <span>
                 Building your phases, picking resources, designing your capstone
                 project — usually 20–40 seconds.
@@ -295,7 +295,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
         )}
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive-text" role="alert">
             {error}
             <Button
               size="sm"

@@ -13,7 +13,7 @@ export default function ChatbotPageWrapper() {
     <Suspense
       fallback={
         <main className="flex h-[calc(100vh-3.5rem)] items-center justify-center text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
         </main>
       }
     >

@@ -65,7 +65,7 @@ export default function DomainsPage() {
             Pick your domain
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            9 paths into <span className="gradient-text">modern tech</span>
+            9 paths into <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">modern tech</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Five domains have full curated roadmaps. The other four are served
@@ -110,7 +110,7 @@ export default function DomainsPage() {
       </header>
 
       {error && (
-        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
           {error}
         </div>
       )}
@@ -238,12 +238,12 @@ function DomainSkeleton() {
   return (
     <div className="rounded-2xl border border-border bg-card/40 p-6">
       <div className="flex items-start justify-between">
-        <div className="h-10 w-10 animate-pulse rounded-xl bg-muted/50" />
-        <div className="h-5 w-20 animate-pulse rounded-full bg-muted/40" />
+        <div className="h-10 w-10 animate-pulse motion-reduce:animate-none rounded-xl bg-muted/50" />
+        <div className="h-5 w-20 animate-pulse motion-reduce:animate-none rounded-full bg-muted/40" />
       </div>
-      <div className="mt-5 h-5 w-2/3 animate-pulse rounded bg-muted/50" />
-      <div className="mt-2 h-4 w-full animate-pulse rounded bg-muted/30" />
-      <div className="mt-1.5 h-4 w-4/5 animate-pulse rounded bg-muted/30" />
+      <div className="mt-5 h-5 w-2/3 animate-pulse motion-reduce:animate-none rounded bg-muted/50" />
+      <div className="mt-2 h-4 w-full animate-pulse motion-reduce:animate-none rounded bg-muted/30" />
+      <div className="mt-1.5 h-4 w-4/5 animate-pulse motion-reduce:animate-none rounded bg-muted/30" />
     </div>
   );
 }

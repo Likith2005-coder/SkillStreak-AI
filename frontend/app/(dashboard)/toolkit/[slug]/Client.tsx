@@ -60,7 +60,7 @@ export default function ToolPage() {
         <div className="mt-8">
           <PromptLine path={`~/arsenal/${slug}`} command={`man ${toolName.toLowerCase()}`} />
           <div className="mt-6 flex items-center gap-2 font-mono text-sm text-emerald-400/70">
-            <Loader2 className="h-4 w-4 animate-spin" /> compiling field guide<span className="term-cursor" />
+            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" /> compiling field guide<span className="term-cursor" />
           </div>
         </div>
       )}

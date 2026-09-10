@@ -131,7 +131,7 @@ export default function DashboardPage() {
           </div>
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">
             Welcome back,{" "}
-            <span className="gradient-text">{user.name.split(" ")[0]}</span>.
+            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">{user.name.split(" ")[0]}</span>.
           </h1>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
             {overview?.recommended
@@ -219,7 +219,7 @@ export default function DashboardPage() {
       </motion.section>
 
       {error && (
-        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
           {error}
         </div>
       )}
@@ -483,7 +483,7 @@ function SkeletonGrid() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-[140px] animate-pulse rounded-2xl border border-border bg-card/40" />
+        <div key={i} className="h-[140px] animate-pulse motion-reduce:animate-none rounded-2xl border border-border bg-card/40" />
       ))}
     </div>
   );

@@ -190,7 +190,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
         onKeyDown={onKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative mt-2 flex h-[400px] items-center justify-center outline-none"
+        className="focus-ring relative mt-2 flex h-[400px] items-center justify-center rounded-2xl"
         style={{ perspective: `${PERSPECTIVE}px` }}
       >
         <div

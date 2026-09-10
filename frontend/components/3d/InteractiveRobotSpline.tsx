@@ -17,7 +17,7 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
           className={`flex h-full w-full items-center justify-center ${className ?? ""}`}
         >
           <svg
-            className="mr-3 h-5 w-5 animate-spin text-muted-foreground"
+            className="mr-3 h-5 w-5 animate-spin motion-reduce:animate-none text-muted-foreground"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 export function PageLoader({ hint }: { hint?: string }) {
   return (
     <div className="container flex min-h-[60vh] flex-col items-center justify-center gap-3 px-4 py-20 text-muted-foreground">
-      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <Loader2 className="h-6 w-6 animate-spin motion-reduce:animate-none text-primary" />
       {hint && <p className="text-sm">{hint}</p>}
     </div>
   );

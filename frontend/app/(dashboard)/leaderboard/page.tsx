@@ -42,13 +42,13 @@ export default function LeaderboardPage() {
         className="mt-4"
         eyebrow="This week's top learners"
         icon={<Sparkles className="h-3.5 w-3.5 text-primary" />}
-        title={<span className="gradient-text">Leaderboard</span>}
+        title="Leaderboard"
         subtitle="Ranked by XP earned since Monday (UTC). Resets every week."
         ghost="RANK"
       />
 
       {error && (
-        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
           {error}
         </div>
       )}
@@ -56,7 +56,7 @@ export default function LeaderboardPage() {
       <section className="mt-6">
         {!entries ? (
           <div className="flex justify-center py-12 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
           </div>
         ) : entries.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center">

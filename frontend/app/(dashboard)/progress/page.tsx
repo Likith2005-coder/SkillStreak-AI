@@ -2,15 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import {
@@ -22,6 +13,7 @@ import {
   type RecentAttempt,
 } from "@/lib/api";
 import { Heatmap } from "@/components/progress/Heatmap";
+import { ScoreTrendChartLazy } from "@/components/progress/ScoreTrendChartLazy";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
 import { styleFor } from "@/lib/domain-style";
@@ -51,7 +43,7 @@ export default function ProgressPage() {
   if (error) {
     return (
       <main className="container px-4 py-10">
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
           {error}
         </div>
       </main>
@@ -61,7 +53,7 @@ export default function ProgressPage() {
   if (!overview || !heatmap) {
     return (
       <main className="container flex items-center justify-center px-4 py-20 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
       </main>
     );
   }
@@ -88,7 +80,7 @@ export default function ProgressPage() {
         title={
           <>
             {overview.totals.topicsCompleted} of {overview.totals.topicsAvailable} topics ·{" "}
-            <span className="gradient-text">{totalPct}%</span>
+            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">{totalPct}%</span>
           </>
         }
         subtitle={`Heatmap covers the last 90 days · ${heatmap.totalActiveDays} active days · ${heatmap.totalActions} total actions`}
@@ -147,41 +139,7 @@ function QuizTrendCard({ items }: { items: RecentAttempt[] }) {
         </div>
       ) : (
         <div className="mt-4 h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-              <defs>
-                <linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.55} />
-                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" opacity={0.4} />
-              <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-              <YAxis
-                domain={[0, 5]}
-                ticks={[0, 1, 2, 3, 4, 5]}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={11}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 8,
-                  fontSize: 12,
-                }}
-                labelStyle={{ color: "hsl(var(--muted-foreground))" }}
-                formatter={(v) => [`${v}/5`, "Score"]}
-              />
-              <Area
-                type="monotone"
-                dataKey="score"
-                stroke="#a78bfa"
-                strokeWidth={2}
-                fill="url(#scoreFill)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <ScoreTrendChartLazy data={data} />
         </div>
       )}
 

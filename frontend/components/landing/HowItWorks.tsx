@@ -54,8 +54,8 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
-            From <span className="gradient-text">curious</span> to{" "}
-            <span className="gradient-text">consistent</span> in three steps.
+            From <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">curious</span> to{" "}
+            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">consistent</span> in three steps.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
             One loop. Repeat daily. Watch your streak grow.

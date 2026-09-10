@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Award, Check, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,9 +19,11 @@ type Props = {
 };
 
 export function QuizResult({ topicId, score, total, passed, breakdown, onRetake }: Props) {
-  // Confetti on perfect score.
+  const reduce = useReducedMotion();
+  // Confetti on perfect score — skipped entirely for reduced motion. The
+  // emerald card and Award icon already carry the win without it.
   useEffect(() => {
-    if (score !== total) return;
+    if (score !== total || reduce) return;
     const fire = (particleRatio: number, opts: confetti.Options) => {
       confetti({
         origin: { y: 0.65 },
@@ -36,7 +38,7 @@ export function QuizResult({ topicId, score, total, passed, breakdown, onRetake 
     fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
     fire(0.1, { spread: 120, startVelocity: 45 });
-  }, [score, total]);
+  }, [score, total, reduce]);
 
   const percent = Math.round((score / total) * 100);
 

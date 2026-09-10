@@ -41,7 +41,11 @@ const config: Config = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+          // Error COPY uses this; the DEFAULT is a fill and fails 4.5:1 as text.
+          text: "hsl(var(--destructive-text))",
         },
+        // Streak / progress energy. Reserved: if it isn't momentum, it isn't lime.
+        energy: "hsl(var(--energy))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -65,10 +69,6 @@ const config: Config = {
           from: { opacity: "0", transform: "translateX(12px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
-        "gradient-shift": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-        },
         marquee: {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
@@ -89,7 +89,6 @@ const config: Config = {
       animation: {
         "fade-in": "fade-in 0.35s ease-out",
         "slide-in-right": "slide-in-right 0.25s ease-out",
-        "gradient-shift": "gradient-shift 8s ease infinite",
         gradient: "gradient 6s linear infinite",
         nudge: "nudge 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite",
         marquee: "marquee 35s linear infinite",

@@ -19,7 +19,7 @@ export default function NotFound() {
         </div>
 
         <h1 className="text-[28vw] font-black leading-none tracking-tighter sm:text-[18vw] lg:text-[14vw]">
-          <span className="gradient-text animate-gradient">404</span>
+          <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">404</span>
         </h1>
 
         <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">

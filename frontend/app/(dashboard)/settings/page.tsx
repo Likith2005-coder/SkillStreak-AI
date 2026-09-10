@@ -109,7 +109,7 @@ export default function SettingsPage() {
   if (!user || !user.profile) {
     return (
       <main className="container flex items-center justify-center px-4 py-20 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
       </main>
     );
   }
@@ -277,7 +277,7 @@ export default function SettingsPage() {
                 onClick={handleUseFreeze}
                 disabled={usingFreeze || !streak || streak.freezesAvailable <= 0}
               >
-                {usingFreeze && <Loader2 className="h-4 w-4 animate-spin" />}
+                {usingFreeze && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
                 <Snowflake className="h-4 w-4" />
                 Use a freeze
               </Button>
@@ -340,7 +340,7 @@ export default function SettingsPage() {
 
           <div className="mt-6 flex justify-end">
             <Button onClick={handleSavePrefs} disabled={savingPrefs}>
-              {savingPrefs && <Loader2 className="h-4 w-4 animate-spin" />}
+              {savingPrefs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {savingPrefs ? "Saving…" : "Save preferences"}
             </Button>
           </div>
@@ -402,7 +402,7 @@ export default function SettingsPage() {
 
           <div className="mt-6 flex justify-end">
             <Button onClick={handleSaveNotifs} disabled={savingNotifs}>
-              {savingNotifs && <Loader2 className="h-4 w-4 animate-spin" />}
+              {savingNotifs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {savingNotifs ? "Saving…" : "Save notifications"}
             </Button>
           </div>

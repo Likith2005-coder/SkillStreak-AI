@@ -95,7 +95,7 @@ export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
         )}
 
         {error && (
-          <div className="mx-auto mt-4 max-w-3xl rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <div className="mx-auto mt-4 max-w-3xl rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
             <div className="flex items-center justify-between gap-3">
               <span>{error}</span>
               <button

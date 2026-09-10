@@ -135,6 +135,14 @@ export function apiErrorMessage(err: unknown, fallback = "Something went wrong")
   if (axios.isAxiosError(err)) {
     const data = err.response?.data as { error?: string; details?: unknown } | undefined;
     if (data?.error) return data.error;
+    // Transport failures carry developer-facing text ("timeout of 15000ms
+    // exceeded", "Network Error"). Say something the reader can act on.
+    if (err.code === "ECONNABORTED" || err.message?.startsWith("timeout of")) {
+      return "This is taking longer than usual — the AI is still generating. Try again in a moment.";
+    }
+    if (err.code === "ERR_NETWORK") {
+      return "Can't reach the server. Check that the backend is running.";
+    }
     if (err.message) return err.message;
   }
   return fallback;
@@ -640,7 +648,11 @@ export type RecommendedTopic = {
 };
 
 export async function fetchResources(topicId: string): Promise<ResourcesResponse> {
-  const { data } = await api.get<ResourcesResponse>(`/resources/topics/${topicId}`);
+  // A cold cache builds the list with one LLM call (then cached 7 days), which
+  // regularly outruns the 15s default. Bump the timeout for this request only.
+  const { data } = await api.get<ResourcesResponse>(`/resources/topics/${topicId}`, {
+    timeout: 60_000,
+  });
   return data;
 }
 

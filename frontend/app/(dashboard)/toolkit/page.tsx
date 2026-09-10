@@ -81,7 +81,7 @@ export default function ToolkitPage() {
 
       {!phases && !error && (
         <div className="mt-10 flex items-center justify-center gap-2 font-mono text-sm text-emerald-400/70">
-          <Loader2 className="h-4 w-4 animate-spin" /> loading modules<span className="term-cursor" />
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" /> loading modules<span className="term-cursor" />
         </div>
       )}
 

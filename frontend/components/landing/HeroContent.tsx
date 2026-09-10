@@ -69,7 +69,7 @@ export function HeroContent() {
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm"
         >
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/70" />
+            <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-full bg-primary/70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
           AI-powered learning, reimagined
@@ -82,7 +82,7 @@ export function HeroContent() {
           <span className="block">
             Master{" "}
             <RotatingWord
-              className="gradient-text animate-gradient"
+              className="text-primary [text-shadow:0_0_32px_hsl(187_92%_52%/0.5)]"
               words={[
                 "tech",
                 "Cyber",
@@ -99,7 +99,7 @@ export function HeroContent() {
           </span>
           <span className="block">
             one{" "}
-            <span className="text-lime-300 [text-shadow:0_0_28px_hsl(84_85%_62%/0.45)]">
+            <span className="text-energy [text-shadow:0_0_28px_hsl(var(--energy)/0.45)]">
               streak
             </span>{" "}
             at a time.
@@ -119,9 +119,10 @@ export function HeroContent() {
           className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground lg:justify-start"
         >
           <Pill icon={<Bot className="h-3.5 w-3.5 text-primary" />}>AI chatbot</Pill>
-          <Pill icon={<ListChecks className="h-3.5 w-3.5 text-emerald-400" />}>MCQ quizzes</Pill>
-          <Pill icon={<Flame className="h-3.5 w-3.5 text-orange-400" />}>Daily streaks</Pill>
-          <Pill icon={<Trophy className="h-3.5 w-3.5 text-amber-400" />}>Leaderboard</Pill>
+          <Pill icon={<ListChecks className="h-3.5 w-3.5 text-primary" />}>MCQ quizzes</Pill>
+          {/* Lime is reserved for momentum — this is the one pill that means it. */}
+          <Pill icon={<Flame className="h-3.5 w-3.5 text-energy" />}>Daily streaks</Pill>
+          <Pill icon={<Trophy className="h-3.5 w-3.5 text-secondary" />}>Leaderboard</Pill>
         </motion.ul>
 
         <motion.div

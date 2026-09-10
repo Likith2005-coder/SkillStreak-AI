@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, FileText, Play, Video, Youtube } from "lucide-react";
+import { ExternalLink, FileText, Play, RefreshCw, Video, Youtube } from "lucide-react";
 import {
   apiErrorMessage,
   fetchResources,
@@ -18,6 +18,9 @@ type Props = {
 export function ResourceList({ topicId }: Props) {
   const [data, setData] = useState<ResourcesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Bumping this re-runs the effect: the first generation warms a 7-day cache,
+  // so a retry after a slow cold start almost always resolves instantly.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,12 +32,20 @@ export function ResourceList({ topicId }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [topicId]);
+  }, [topicId, attempt]);
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-        {error}
+      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4">
+        <p className="text-sm text-destructive-text">{error}</p>
+        <button
+          type="button"
+          onClick={() => setAttempt((n) => n + 1)}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-destructive/40 px-3 py-1.5 text-xs font-medium text-destructive-text transition-colors hover:bg-destructive/15"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Try again
+        </button>
       </div>
     );
   }
@@ -43,7 +54,7 @@ export function ResourceList({ topicId }: Props) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-14 animate-pulse rounded-xl border border-border bg-card/30" />
+          <div key={i} className="h-14 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
         ))}
       </div>
     );

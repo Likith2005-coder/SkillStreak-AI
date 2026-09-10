@@ -49,7 +49,7 @@ export function HealthIndicator() {
     >
       {state.kind === "loading" && (
         <>
-          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none text-muted-foreground" />
           <span className="text-muted-foreground">Pinging backend…</span>
         </>
       )}
@@ -80,7 +80,7 @@ export function HealthIndicator() {
 
       {state.kind === "error" && (
         <>
-          <AlertCircle className="h-4 w-4 text-destructive" />
+          <AlertCircle className="h-4 w-4 text-destructive-text" />
           <span className="text-foreground">Backend unreachable</span>
         </>
       )}

@@ -18,7 +18,7 @@ export function FieldError({
   return (
     <p
       className={cn(
-        "mt-1.5 inline-flex items-center gap-1.5 text-[13px] font-medium text-destructive",
+        "mt-1.5 inline-flex items-center gap-1.5 text-[13px] font-medium text-destructive-text",
         className
       )}
       role="alert"

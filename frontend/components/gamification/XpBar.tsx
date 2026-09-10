@@ -85,7 +85,7 @@ export function XpBar({ level, xp }: Props) {
       {/* power meter — thicker bar, glowing head, shimmer along the fill */}
       <div className="relative mt-4 h-3 overflow-hidden rounded-full bg-muted/40">
         <motion.div
-          className="relative h-full overflow-hidden rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500"
+          className="relative h-full overflow-hidden rounded-full bg-gradient-to-r from-energy/70 to-energy"
           style={{ boxShadow: "0 0 16px rgba(167,139,250,0.55)" }}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}

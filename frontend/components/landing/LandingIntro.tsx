@@ -221,7 +221,7 @@ export function LandingIntro() {
 
       {/* Skip hint */}
       <motion.p
-        className="absolute inset-x-0 bottom-6 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60"
+        className="absolute inset-x-0 bottom-6 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
         initial={{ opacity: 0 }}
         animate={{ opacity: revealing ? 0 : 1 }}
         transition={{ delay: revealing ? 0 : 1.1, duration: 0.5 }}

@@ -35,13 +35,13 @@ import { HeroContent } from "@/components/landing/HeroContent";
 export const revalidate = 3600;
 
 const DOMAIN_TICKER = [
-  { icon: ShieldCheck, name: "Cybersecurity", color: "text-rose-400" },
-  { icon: Code2, name: "Web Development", color: "text-blue-400" },
-  { icon: Brain, name: "Artificial Intelligence", color: "text-violet-400" },
-  { icon: TrendingUp, name: "Machine Learning", color: "text-emerald-400" },
-  { icon: Database, name: "Data Science", color: "text-cyan-400" },
-  { icon: Cloud, name: "Cloud Computing", color: "text-sky-400" },
-  { icon: SparklesIcon, name: "+ 3 more via AI", color: "text-violet-400" },
+  { icon: ShieldCheck, name: "Cybersecurity" },
+  { icon: Code2, name: "Web Development" },
+  { icon: Brain, name: "Artificial Intelligence" },
+  { icon: TrendingUp, name: "Machine Learning" },
+  { icon: Database, name: "Data Science" },
+  { icon: Cloud, name: "Cloud Computing" },
+  { icon: SparklesIcon, name: "+ 3 more via AI" },
 ];
 
 export default function LandingPage() {
@@ -208,7 +208,7 @@ export default function LandingPage() {
                 </p>
                 <p className="text-emerald-400/70">
                   └─<span className="text-emerald-300">$</span>{" "}
-                  <span className="inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-emerald-400" />
+                  <span className="inline-block h-4 w-2 translate-y-0.5 animate-pulse motion-reduce:animate-none bg-emerald-400" />
                 </p>
               </div>
               </TiltCard>
@@ -221,7 +221,7 @@ export default function LandingPage() {
       <FinalCTA />
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-border/40 px-4 py-8 text-center text-xs text-muted-foreground/60 lg:px-12">
+      <footer className="border-t border-border/40 px-4 py-8 text-center text-xs text-muted-foreground lg:px-12">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2">
             <SparklesIcon className="h-3.5 w-3.5 text-primary" />
@@ -265,7 +265,7 @@ function ControlDial() {
           />
         );
       })}
-      <circle cx="38" cy="3" r="2.5" fill="hsl(84 85% 62%)" />
+      <circle cx="38" cy="3" r="2.5" fill="hsl(187 92% 55%)" />
       <circle cx="73" cy="38" r="2.5" fill="hsl(265 85% 70%)" />
     </svg>
   );
@@ -295,7 +295,7 @@ function DomainMarquee() {
         aria-hidden
       />
 
-      <div className="flex w-max animate-marquee gap-8 px-8">
+      <div className="flex w-max animate-marquee motion-reduce:animate-none gap-8 px-8">
         {items.map((d, i) => {
           const Icon = d.icon;
           return (
@@ -303,7 +303,7 @@ function DomainMarquee() {
               key={`${d.name}-${i}`}
               className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm text-muted-foreground"
             >
-              <Icon className={`h-4 w-4 ${d.color}`} />
+              <Icon className="h-4 w-4 text-primary/70" />
               {d.name}
             </div>
           );

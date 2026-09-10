@@ -100,7 +100,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
   if (phase === "loading") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin" />
+        <Loader2 className="h-6 w-6 animate-spin motion-reduce:animate-none" />
         <p className="text-sm">Generating a 5-question quiz on {topicTitle}…</p>
       </div>
     );
@@ -109,7 +109,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
   if (phase === "error" || !quiz) {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6">
-        <p className="text-sm text-destructive">{errorMsg ?? "Quiz unavailable."}</p>
+        <p className="text-sm text-destructive-text">{errorMsg ?? "Quiz unavailable."}</p>
         <Button onClick={() => load(true)} variant="outline" className="mt-4">
           Try again
         </Button>
@@ -171,7 +171,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
 
       <div className="h-1 w-full overflow-hidden rounded-full bg-card">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-500"
+          className="h-full rounded-full bg-gradient-to-r from-energy/70 to-energy transition-[width] duration-500"
           style={{ width: `${progressPct}%` }}
         />
       </div>
@@ -207,7 +207,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
           ) : (
             <Button onClick={next} disabled={phase === "submitting"}>
               {phase === "submitting" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
               ) : current === total - 1 ? (
                 "See result"
               ) : (
