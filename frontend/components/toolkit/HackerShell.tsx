@@ -21,7 +21,7 @@ export function HackerShell({
     <div className="hacker relative min-h-[100svh] text-emerald-100">
       <div className="hacker-bg" aria-hidden />
       <div className="container px-4 py-8">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-xl border border-emerald-500/25 bg-black/60 shadow-[0_0_40px_-10px_rgba(16,185,129,0.25)] backdrop-blur-sm">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-xl border border-emerald-500/25 bg-black/60 shadow-[0_0_40px_-10px_rgba(16,185,129,0.25)]">
           {/* Terminal title bar */}
           <div className="flex items-center gap-2 border-b border-emerald-500/20 bg-emerald-500/[0.04] px-4 py-2.5">
             <span className="h-3 w-3 rounded-full bg-red-500/80" />

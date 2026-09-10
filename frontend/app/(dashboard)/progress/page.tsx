@@ -127,7 +127,7 @@ function QuizTrendCard({ items }: { items: RecentAttempt[] }) {
     }));
 
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <h3 className="text-sm font-medium">Quiz score trend</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">
         {items.length === 0 ? "No attempts yet." : "Last 5 attempts (oldest → newest)."}
@@ -151,7 +151,7 @@ function QuizTrendCard({ items }: { items: RecentAttempt[] }) {
               <li key={a.id}>
                 <Link
                   href={`/topic/${a.topicId}`}
-                  className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-xs transition hover:bg-card/60"
+                  className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-xs transition hover:bg-card/85"
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", `bg-${a.domain.color}-400`)} />

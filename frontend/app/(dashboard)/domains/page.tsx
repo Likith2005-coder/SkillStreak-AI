@@ -46,7 +46,7 @@ export default function DomainsPage() {
 
   return (
     <main className="container px-4 py-10">
-      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl border border-border/50 bg-card/20 px-6 py-8 backdrop-blur-sm lg:grid-cols-[1fr_360px] lg:px-8">
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl border border-border/50 bg-card/20 px-6 py-8 lg:grid-cols-[1fr_360px] lg:px-8">
         {/* Neon knowledge-grid horizon — same signature as the landing hero */}
         <div className="grid-scene" aria-hidden>
           <div className="grid-floor" />
@@ -155,7 +155,7 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
       <Link
         href={href}
         className={cn(
-          "relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/70 p-6 backdrop-blur-md transition-colors duration-300",
+          "relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/85 p-6 transition-colors duration-300",
           s.cardHover
         )}
       >
@@ -196,7 +196,7 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
               "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
               domain.isCurated
                 ? s.badgeBg
-                : "border-border bg-card/60 text-muted-foreground"
+                : "border-border bg-card/85 text-muted-foreground"
             )}
           >
             {domain.isCurated ? <BookOpen className="h-3 w-3" /> : <MessageCircle className="h-3 w-3" />}
@@ -236,7 +236,7 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
 
 function DomainSkeleton() {
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-6">
+    <div className="rounded-2xl border border-border bg-card/80 p-6">
       <div className="flex items-start justify-between">
         <div className="h-10 w-10 animate-pulse motion-reduce:animate-none rounded-xl bg-muted/50" />
         <div className="h-5 w-20 animate-pulse motion-reduce:animate-none rounded-full bg-muted/40" />

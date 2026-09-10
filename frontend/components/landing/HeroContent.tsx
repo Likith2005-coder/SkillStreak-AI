@@ -66,7 +66,7 @@ export function HeroContent() {
       >
         <motion.div
           variants={item}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/85 px-4 py-1.5 text-sm text-muted-foreground"
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-full bg-primary/70" />
@@ -139,7 +139,7 @@ export function HeroContent() {
 
 function Pill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 backdrop-blur-sm">
+    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1">
       {icon}
       {children}
     </li>

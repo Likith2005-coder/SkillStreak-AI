@@ -108,8 +108,16 @@ export function ScrollStory() {
     offset: ["start start", "end end"],
   });
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const i = Math.min(STEPS.length - 1, Math.max(0, Math.floor(v * STEPS.length)));
+    const raw = v * STEPS.length;
+    const i = Math.min(STEPS.length - 1, Math.max(0, Math.floor(raw)));
+    if (i === activeRef.current) return;
+    // Hysteresis: only commit once we're clearly inside a band, so jitter on a
+    // boundary can't thrash a mount/unmount of the whole vignette subtree.
+    const frac = raw - Math.floor(raw);
+    if (frac < 0.1 || frac > 0.9) return;
+    activeRef.current = i;
     setActive(i);
   });
   const railScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -124,9 +132,13 @@ export function ScrollStory() {
       <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
         {/* soft moving glow tinted to the active step */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <div
-            className={`absolute left-1/2 top-1/2 h-[60vmax] w-[60vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br ${step.from} ${step.to} opacity-[0.08] blur-[120px] transition-all duration-700`}
-          />
+          {STEPS.map((s2, i) => (
+            <div
+              key={s2.k}
+              className={`absolute left-1/2 top-1/2 h-[42vmax] w-[42vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br ${s2.from} ${s2.to} blur-[80px] transition-opacity duration-700`}
+              style={{ opacity: i === active ? 0.08 : 0, contain: "paint" }}
+            />
+          ))}
         </div>
 
         {/* Giant ghost step number — outlined, crossfades with the step */}
@@ -189,11 +201,11 @@ export function ScrollStory() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step.k}
-                  initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
-                  transition={{ duration: 0.5, ease: EASE }}
-                  className="grid items-center gap-8 rounded-3xl border border-border/70 bg-card/50 p-8 backdrop-blur-sm sm:p-10 lg:grid-cols-[1fr_minmax(0,400px)]"
+                  initial={{ opacity: 0, y: 28 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                  className="grid items-center gap-8 rounded-3xl border border-border/70 bg-card/80 p-8 sm:p-10 lg:grid-cols-[1fr_minmax(0,400px)]"
                 >
                   <div>
                     <div

@@ -40,7 +40,7 @@ export function QuestionCard({
       animate={{ opacity: 1, x: 0 }}
       exit={reduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
       transition={{ duration: reduce ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-2xl border border-border bg-card/70 p-6 backdrop-blur-md sm:p-8"
+      className="rounded-2xl border border-border bg-card/85 p-6 sm:p-8"
     >
       <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
         <span>
@@ -72,7 +72,7 @@ export function QuestionCard({
                 "group flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 !revealed && isSelected && "border-primary/60 bg-primary/10",
-                !revealed && !isSelected && "border-border bg-card/50 hover:border-primary/40",
+                !revealed && !isSelected && "border-border bg-card/80 hover:border-primary/40",
                 isCorrect && "border-emerald-500/60 bg-emerald-500/15",
                 isWrongPick && "border-rose-500/60 bg-rose-500/15",
                 revealed && !isCorrect && !isWrongPick && "border-border bg-card/30 opacity-60"
@@ -106,7 +106,7 @@ export function QuestionCard({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
-          className="mt-5 rounded-xl border border-border bg-card/50 p-4 text-sm text-muted-foreground"
+          className="mt-5 rounded-xl border border-border bg-card/80 p-4 text-sm text-muted-foreground"
         >
           <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground">
             Explanation

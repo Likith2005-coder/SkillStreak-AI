@@ -287,7 +287,7 @@ function RoadmapNode({
           >
             <div
               className={cn(
-                "mx-auto inline-block max-w-full truncate rounded-md bg-card/80 px-2 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur",
+                "mx-auto inline-block max-w-full truncate rounded-md bg-card/80 px-2 py-1 text-xs font-semibold text-foreground shadow-sm",
                 isCurrent && "ring-1 ring-inset",
                 isCurrent && colorStyle.ring
               )}

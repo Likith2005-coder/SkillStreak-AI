@@ -10,7 +10,7 @@ type Props = { items: WeakArea[] };
 
 export function WeakAreasCard({ items }: Props) {
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="flex items-center gap-2 text-sm font-medium">
         <AlertTriangle className="h-4 w-4 text-amber-400" />
         Weak areas
@@ -31,7 +31,7 @@ export function WeakAreasCard({ items }: Props) {
               <li key={w.topicId}>
                 <Link
                   href={`/topic/${w.topicId}`}
-                  className="group flex items-center justify-between gap-3 rounded-xl border border-border bg-card/50 px-3 py-2.5 transition hover:border-primary/40 hover:bg-card"
+                  className="group flex items-center justify-between gap-3 rounded-xl border border-border bg-card/80 px-3 py-2.5 transition hover:border-primary/40 hover:bg-card"
                 >
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium text-foreground">{w.title}</div>

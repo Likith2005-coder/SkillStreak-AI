@@ -145,7 +145,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
   const activeAccent = ACCENTS[activeBadge.icon] ?? FALLBACK_ACCENT;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5">
       {/* ambient bloom tinted to the active badge */}
       <div
         aria-hidden
@@ -323,7 +323,7 @@ function CarouselArrow({ dir, onClick }: { dir: -1 | 1; onClick: () => void }) {
       type="button"
       aria-label={dir === -1 ? "Previous badge" : "Next badge"}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card/60 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card/85 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
     >
       <Icon className="h-4 w-4" />
     </button>

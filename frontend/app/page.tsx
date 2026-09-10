@@ -88,7 +88,7 @@ export default function LandingPage() {
           <ControlDial />
         </div>
 
-        <Sparkles count={14} />
+        <Sparkles count={8} />
         {/* Text column — animated hero */}
         <HeroContent />
 
@@ -101,14 +101,14 @@ export default function LandingPage() {
           />
           <SignalBotLazy className="absolute inset-0" />
           {/* Interaction hint */}
-          <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-card/70 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur-sm">
+          <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-card/85 px-3 py-1 text-[11px] text-muted-foreground">
             👀 it follows your cursor — click it
           </div>
         </div>
       </section>
 
       {/* ── Section 2 — Domains marquee ──────────────────────── */}
-      <section className="relative border-y border-border/40 bg-card/20 py-6 backdrop-blur-sm">
+      <section className="relative border-y border-border/40 bg-card/20 py-6">
         <p className="mb-4 text-center text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
           Pick from
         </p>
@@ -116,9 +116,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── Section 3 — Stats banner with animated counters ────── */}
-      <Reveal>
-        <StatsBanner />
-      </Reveal>
+      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_640px]">
+        <Reveal>
+          <StatsBanner />
+        </Reveal>
+      </div>
 
       {/* ── Section 4 — Wordmark pops up, CTA bursts from the "a" ──── */}
       <BurstSection />
@@ -134,7 +136,7 @@ export default function LandingPage() {
         className="relative scroll-mt-16 px-4 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12"
       >
         <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-10 rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-card/40 to-card/40 p-8 backdrop-blur-sm lg:grid-cols-2 lg:p-12">
+          <div className="grid items-center gap-10 rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-card/40 to-card/40 p-8 lg:grid-cols-2 lg:p-12">
             {/* Copy */}
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-300">
@@ -218,7 +220,9 @@ export default function LandingPage() {
       </section>
 
       {/* ── Section 7 — Closing CTA ──────────────────────────── */}
-      <FinalCTA />
+      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_700px]">
+        <FinalCTA />
+      </div>
 
       {/* ── Footer ────────────────────────────────────────────── */}
       <footer className="border-t border-border/40 px-4 py-8 text-center text-xs text-muted-foreground lg:px-12">
@@ -273,7 +277,7 @@ function ControlDial() {
 
 function Pill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 backdrop-blur-sm">
+    <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1">
       {icon}
       {children}
     </li>
@@ -301,7 +305,7 @@ function DomainMarquee() {
           return (
             <div
               key={`${d.name}-${i}`}
-              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm text-muted-foreground"
+              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/85 px-4 py-2 text-sm text-muted-foreground"
             >
               <Icon className="h-4 w-4 text-primary/70" />
               {d.name}

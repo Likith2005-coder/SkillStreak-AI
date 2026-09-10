@@ -8,7 +8,7 @@
  */
 
 import { useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 interface SparklesProps {
   count?: number;
@@ -57,23 +57,20 @@ export function Sparkles({ count = 18, className }: SparklesProps) {
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`}
     >
       {particles.map((p) => (
-        <motion.span
+        // Plain span + CSS keyframe, not a motion value: the box-shadow is
+        // static so the layer rasterises once and only its transform changes,
+        // and this stays off framer's frameloop entirely.
+        <span
           key={p.id}
-          className="absolute bottom-0 rounded-full bg-white"
+          className="absolute bottom-0 rounded-full bg-white motion-reduce:hidden"
           style={{
             left: `${p.left}%`,
             width: p.size,
             height: p.size,
             opacity: p.opacity,
             boxShadow: `0 0 ${p.size * 4}px hsl(290 75% 70%)`,
-          }}
-          initial={{ y: 20 }}
-          animate={{ y: "-110vh" }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "linear",
+            animation: `sparkle-rise ${p.duration}s linear ${p.delay}s infinite`,
+            willChange: "transform",
           }}
         />
       ))}

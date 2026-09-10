@@ -41,7 +41,7 @@ export function LandingNav() {
       transition={{ duration: 0.6, ease: EASE }}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? "border-b border-border/60 bg-background/75 backdrop-blur-md"
+          ? "border-b border-border/60 bg-background/90 backdrop-blur-sm"
           : "border-b border-transparent bg-transparent"
       }`}
     >

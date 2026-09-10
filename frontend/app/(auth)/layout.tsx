@@ -113,7 +113,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <span>AI</span>
             </Link>
 
-            <div className="rounded-2xl border border-border bg-card/70 p-8 shadow-2xl backdrop-blur-xl">
+            <div className="rounded-2xl border border-border bg-card/85 p-8 shadow-2xl">
               {children}
             </div>
           </div>

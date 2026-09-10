@@ -138,7 +138,7 @@ export function PlanClient() {
       {/* Learner profile */}
       <motion.section
         {...rise(0.05)}
-        className="mt-8 rounded-3xl border border-border/70 bg-card/50 p-6 backdrop-blur-sm"
+        className="mt-8 rounded-3xl border border-border/70 bg-card/80 p-6"
         aria-label="Your learner profile"
       >
         <div className="grid gap-x-6 gap-y-4 sm:grid-cols-3">
@@ -280,7 +280,7 @@ export function PlanClient() {
               <motion.div
                 key={d.day}
                 {...rise(0.03 * i)}
-                className="rounded-2xl border border-border/70 bg-card/50 p-4"
+                className="rounded-2xl border border-border/70 bg-card/80 p-4"
               >
                 <div className="flex items-baseline gap-3">
                   <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan-300">
@@ -394,7 +394,7 @@ function PhaseCard({
       {...rise}
       className={cn(
         "overflow-hidden rounded-2xl border transition-colors",
-        open ? "border-cyan-400/40 bg-card/70" : "border-border/70 bg-card/40 hover:border-cyan-400/25"
+        open ? "border-cyan-400/40 bg-card/85" : "border-border/70 bg-card/80 hover:border-cyan-400/25"
       )}
     >
       <button

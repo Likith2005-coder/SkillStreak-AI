@@ -79,7 +79,7 @@ export default function DashboardPage() {
   return (
     <main className="container px-4 py-10">
       {/* Hero with 3D floating orbs */}
-      <section className="relative overflow-hidden rounded-2xl border border-border bg-card/50 p-8 backdrop-blur">
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-8">
         {/* Signature neon knowledge-grid horizon, same motif as the landing */}
         <div className="grid-scene opacity-60" aria-hidden>
           <div className="grid-floor" />
@@ -173,7 +173,7 @@ export default function DashboardPage() {
       >
         <Link
           href="/toolkit"
-          className="group relative block overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card/60 to-card/60 p-6 backdrop-blur transition-all hover:border-emerald-400/60 hover:shadow-[0_0_40px_-12px_rgba(16,185,129,0.5)]"
+          className="group relative block overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card/60 to-card/60 p-6 transition-all hover:border-emerald-400/60 hover:shadow-[0_0_40px_-12px_rgba(16,185,129,0.5)]"
         >
           {/* faint code-grid accent on the right */}
           <div
@@ -332,7 +332,7 @@ export default function DashboardPage() {
           {overview ? (
             <RecentAttempts items={overview.recentAttempts} />
           ) : (
-            <div className="rounded-2xl border border-border bg-card/40 p-6 text-center text-xs text-muted-foreground">
+            <div className="rounded-2xl border border-border bg-card/80 p-6 text-center text-xs text-muted-foreground">
               Loading…
             </div>
           )}
@@ -377,7 +377,7 @@ function FloatChip({
       animate={{ y: [0, -12, 0] }}
       transition={{ duration: 5.5, ease: "easeInOut", repeat: Infinity, delay }}
       className={cn(
-        "absolute flex items-center gap-2.5 rounded-xl border border-white/10 bg-card/60 px-3.5 py-2.5 shadow-xl shadow-black/30 backdrop-blur-md",
+        "absolute flex items-center gap-2.5 rounded-xl border border-white/10 bg-card/85 px-3.5 py-2.5 shadow-xl shadow-black/30",
         className
       )}
     >
@@ -429,7 +429,7 @@ function StatTile({
       <TiltCard
         max={7}
         className={cn(
-          "group relative rounded-2xl border border-border bg-gradient-to-br via-card/50 to-card/50 p-5 backdrop-blur transition-shadow hover:shadow-lg hover:shadow-primary/10",
+          "group relative rounded-2xl border border-border bg-gradient-to-br via-card/50 to-card/50 p-5 transition-shadow hover:shadow-lg hover:shadow-primary/10",
           accent.bg
         )}
       >
@@ -483,7 +483,7 @@ function SkeletonGrid() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-[140px] animate-pulse motion-reduce:animate-none rounded-2xl border border-border bg-card/40" />
+        <div key={i} className="h-[140px] animate-pulse motion-reduce:animate-none rounded-2xl border border-border bg-card/80" />
       ))}
     </div>
   );
@@ -505,7 +505,7 @@ function RecentAttempts({ items }: { items: RecentAttempt[] }) {
           <Link
             key={a.id}
             href={`/topic/${a.topicId}`}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card/50 p-4 backdrop-blur transition hover:border-primary/40 hover:bg-card"
+            className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 p-4 transition hover:border-primary/40 hover:bg-card"
           >
             <div className="min-w-0">
               <div className={cn("text-[11px] uppercase tracking-wider", s.text)}>{a.domain.name}</div>

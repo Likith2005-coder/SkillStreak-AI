@@ -205,10 +205,10 @@ export default function SignalBot({ className }: { className?: string }) {
   return (
     <div ref={wrapper} className={className}>
       <Canvas
-        dpr={[1, 1.6]}
+        dpr={[1, 1.5]}
         frameloop={animated && inView ? "always" : "demand"}
         camera={{ position: [0, 0.35, 7], fov: 38 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[4, 7, 6]} intensity={1.15} />

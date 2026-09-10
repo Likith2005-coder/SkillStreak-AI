@@ -27,7 +27,7 @@ export function CursorFollower() {
       x.set(e.clientX - SIZE / 2);
       y.set(e.clientY - SIZE / 2);
     }
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, [reduce, x, y]);
 

@@ -301,7 +301,7 @@ function InterviewBody({
           {prep.weekPlan.map((d) => (
             <div
               key={d.day}
-              className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur-sm transition hover:border-primary/40 hover:-translate-y-0.5"
+              className="rounded-xl border border-border bg-card/80 p-4 transition hover:border-primary/40 hover:-translate-y-0.5"
             >
               <div className="text-xs uppercase tracking-wider text-muted-foreground">
                 Day {d.day}
@@ -326,7 +326,7 @@ function InterviewBody({
                 href={r.url ?? "#"}
                 target={r.url ? "_blank" : undefined}
                 rel="noreferrer"
-                className="flex flex-col rounded-xl border border-border bg-card/40 p-4 backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-primary/40"
+                className="flex flex-col rounded-xl border border-border bg-card/80 p-4 transition hover:-translate-y-0.5 hover:border-primary/40"
               >
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   {r.type}
@@ -414,7 +414,7 @@ function Hero({
       </div>
 
       {/* Progress bar */}
-      <div className="mt-6 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+      <div className="mt-6 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15">
         <div className="flex items-baseline justify-between gap-3 text-xs">
           <span className="font-semibold uppercase tracking-wider text-white/90">
             Your progress
@@ -494,7 +494,7 @@ function QuestionsSection({
         subtitle={`${questions.length} questions — filter, shuffle, or run a focused practice session.`}
       />
 
-      <div className="mt-5 sticky top-14 z-20 -mx-4 rounded-xl border border-border bg-background/85 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:mx-0">
+      <div className="mt-5 sticky top-14 z-20 -mx-4 rounded-xl border border-border bg-background/85 px-4 py-3 supports-[backdrop-filter]:bg-background/70 sm:mx-0">
         <div className="flex flex-wrap items-center gap-2">
           <FilterChip active={cat === "all"} onClick={() => setCat("all")}>
             All
@@ -526,7 +526,7 @@ function QuestionsSection({
             <button
               type="button"
               onClick={onShuffle}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground"
               title="Shuffle order"
             >
               <Shuffle className="h-3 w-3" />
@@ -545,7 +545,7 @@ function QuestionsSection({
               onClick={() => {
                 if (confirm("Clear all review marks for this domain?")) onClearReviews();
               }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground"
               title="Clear all review marks"
             >
               <RotateCcw className="h-3 w-3" />
@@ -592,11 +592,11 @@ function QuestionItem({
       ? "border-emerald-500/40 bg-emerald-500/[0.04]"
       : review === "need-work"
         ? "border-rose-500/40 bg-rose-500/[0.04]"
-        : "border-border bg-card/40";
+        : "border-border bg-card/80";
 
   return (
     <li
-      className={`overflow-hidden rounded-xl border backdrop-blur-sm transition hover:border-primary/30 ${tone}`}
+      className={`overflow-hidden rounded-xl border transition hover:border-primary/30 ${tone}`}
     >
       <button
         type="button"
@@ -670,7 +670,7 @@ function QuestionItem({
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                 review === "got-it"
                   ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40"
-                  : "border border-border bg-card/40 text-muted-foreground hover:text-foreground"
+                  : "border border-border bg-card/80 text-muted-foreground hover:text-foreground"
               }`}
             >
               <Check className="h-3 w-3" />
@@ -682,7 +682,7 @@ function QuestionItem({
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                 review === "need-work"
                   ? "bg-rose-500/20 text-rose-300 ring-1 ring-rose-500/40"
-                  : "border border-border bg-card/40 text-muted-foreground hover:text-foreground"
+                  : "border border-border bg-card/80 text-muted-foreground hover:text-foreground"
               }`}
             >
               <CircleAlert className="h-3 w-3" />
@@ -764,7 +764,7 @@ function PracticeMode({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md"
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
@@ -974,7 +974,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
         {icon}
         {title}
@@ -995,7 +995,7 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-card/60 ring-1 ring-border">
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-card/85 ring-1 ring-border">
         {icon}
       </div>
       <div>
@@ -1022,7 +1022,7 @@ function FilterChip({
       className={`rounded-full border px-3 py-1 text-xs transition ${
         active
           ? "border-primary/50 bg-primary/15 text-foreground"
-          : "border-border bg-card/40 text-muted-foreground hover:text-foreground"
+          : "border-border bg-card/80 text-muted-foreground hover:text-foreground"
       }`}
     >
       {children}
@@ -1036,7 +1036,7 @@ function SystemDesignCard({
   item: { scenario: string; solutionOutline: string; followUps: string[] };
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
         Scenario
       </div>

@@ -326,7 +326,7 @@ export default function SettingsPage() {
                           "rounded-full border px-3 py-1 text-xs transition",
                           active
                             ? `${s.badgeBg} border-transparent`
-                            : "border-border bg-card/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                            : "border-border bg-card/80 text-muted-foreground hover:border-primary/40 hover:text-foreground"
                         )}
                       >
                         {d.name}
@@ -369,7 +369,7 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-border bg-card/40 p-4">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-card/80 p-4">
               <div>
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Mail className="h-4 w-4 text-cyan-400" />
@@ -444,7 +444,7 @@ function SettingCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-6 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/80 p-6">
       <div className="flex items-center gap-2 text-sm font-medium">
         {icon}
         {title}
@@ -494,7 +494,7 @@ function RadioGroup<T extends string>({
                 "rounded-xl border p-3 text-left transition",
                 active
                   ? "border-primary/60 bg-primary/10"
-                  : "border-border bg-card/40 hover:border-primary/40"
+                  : "border-border bg-card/80 hover:border-primary/40"
               )}
             >
               <div className="text-sm font-medium text-foreground">{opt.label}</div>

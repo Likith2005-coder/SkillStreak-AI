@@ -31,7 +31,7 @@ export function PageHero({
   return (
     <header
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-border/50 bg-card/20 px-6 pb-16 pt-8 backdrop-blur-sm lg:px-8",
+        "relative overflow-hidden rounded-3xl border border-border/50 bg-card/20 px-6 pb-16 pt-8 lg:px-8",
         className
       )}
     >

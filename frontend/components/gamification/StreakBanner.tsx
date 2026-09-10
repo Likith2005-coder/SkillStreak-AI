@@ -29,7 +29,7 @@ export function StreakBanner({ streak }: Props) {
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-6 backdrop-blur sm:flex-row sm:items-center sm:gap-6",
+        "relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-6 sm:flex-row sm:items-center sm:gap-6",
         lit
           ? "border-orange-500/30 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent"
           : "border-border bg-gradient-to-br from-orange-500/[0.06] via-card/40 to-card/40"

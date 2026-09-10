@@ -41,7 +41,7 @@ export function RecommendedNext() {
   const personalized = items?.[0]?.reason === "personalized";
 
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-medium">
           <Sparkles className="h-4 w-4 text-primary" />
@@ -205,7 +205,7 @@ function QueueRow({ item, index }: { item: RecommendedTopic; index: number }) {
     >
       <Link
         href={`/topic/${item.topicId}`}
-        className="group relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-border bg-card/50 p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10"
+        className="group relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-border bg-card/80 p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10"
       >
         {/* queue number — gives the list a "next up" playlist feel */}
         <span className="font-mono text-lg font-bold tabular-nums text-muted-foreground/30 transition-colors group-hover:text-primary/60">

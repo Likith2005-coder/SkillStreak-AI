@@ -33,7 +33,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
           wrapper so the two transforms never fight. */}
       <TiltCard
         max={7}
-        className="group relative rounded-2xl border border-border bg-card/50 p-5 backdrop-blur transition-colors hover:border-primary/30"
+        className="group relative rounded-2xl border border-border bg-card/80 p-5 transition-colors hover:border-primary/30"
       >
       <Link href={`/domains/${tile.slug}`} className="flex items-center gap-4">
         <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
@@ -83,7 +83,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
             {Math.round(pct * 100)}% complete
           </div>
           {tile.avgScore !== null && (
-            <div className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-border bg-card/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-border bg-card/85 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
               avg {tile.avgScore}/5
             </div>
           )}

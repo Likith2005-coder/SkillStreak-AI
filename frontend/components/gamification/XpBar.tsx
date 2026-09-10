@@ -52,7 +52,7 @@ export function XpBar({ level, xp }: Props) {
   }, [xp]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/10 via-card/40 to-card/40 p-6 backdrop-blur">
+    <div className="relative overflow-hidden rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/10 via-card/40 to-card/40 p-6">
       {/* violet bloom behind the level numeral */}
       <div
         aria-hidden

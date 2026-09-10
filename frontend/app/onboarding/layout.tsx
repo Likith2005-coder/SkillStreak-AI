@@ -48,7 +48,7 @@ export default function OnboardingLayout({
           <span>AI</span>
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card/60 p-8 shadow-lg backdrop-blur sm:p-10">
+        <div className="rounded-2xl border border-border bg-card/85 p-8 shadow-lg sm:p-10">
           {children}
         </div>
       </div>

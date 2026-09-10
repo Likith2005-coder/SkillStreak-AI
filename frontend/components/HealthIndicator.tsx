@@ -40,7 +40,7 @@ export function HealthIndicator() {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-3 rounded-2xl border bg-card/50 px-5 py-3 text-sm backdrop-blur transition-colors",
+        "inline-flex items-center gap-3 rounded-2xl border bg-card/80 px-5 py-3 text-sm transition-colors",
         state.kind === "ok" && "border-emerald-500/30",
         state.kind === "degraded" && "border-amber-500/30",
         state.kind === "error" && "border-destructive/30",

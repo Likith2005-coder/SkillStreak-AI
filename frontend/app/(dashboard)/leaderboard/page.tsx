@@ -95,7 +95,7 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
         ? "border-slate-400/40 bg-slate-400/10"
         : entry.rank === 3
           ? "border-orange-700/40 bg-orange-700/10"
-          : "border-border bg-card/40";
+          : "border-border bg-card/80";
 
   return (
     <motion.li
@@ -105,12 +105,12 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
     >
       <div
         className={cn(
-          "flex items-center gap-4 rounded-2xl border p-4 backdrop-blur",
+          "flex items-center gap-4 rounded-2xl border p-4",
           podium,
           isMe && "ring-1 ring-inset ring-primary/40"
         )}
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card/70 text-sm font-semibold tabular-nums">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card/85 text-sm font-semibold tabular-nums">
           {entry.rank === 1 ? <Crown className="h-5 w-5 text-amber-300" /> : entry.rank}
         </div>
         <div className="min-w-0 flex-1">

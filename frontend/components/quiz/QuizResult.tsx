@@ -51,7 +51,7 @@ export function QuizResult({ topicId, score, total, passed, breakdown, onRetake 
     >
       <section
         className={cn(
-          "rounded-2xl border p-8 text-center backdrop-blur-md",
+          "rounded-2xl border p-8 text-center",
           passed
             ? "border-emerald-500/40 bg-emerald-500/10"
             : "border-rose-500/40 bg-rose-500/10"
@@ -99,7 +99,7 @@ function BreakdownRow({ index, item }: { index: number; item: QuizBreakdownItem 
   return (
     <div
       className={cn(
-        "rounded-2xl border p-5 backdrop-blur",
+        "rounded-2xl border p-5",
         item.correct
           ? "border-emerald-500/30 bg-emerald-500/5"
           : "border-rose-500/30 bg-rose-500/5"

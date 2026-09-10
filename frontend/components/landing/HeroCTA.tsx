@@ -73,7 +73,7 @@ export function HeroCTA() {
       <EmojiBurst>
       <Link
         href="/login"
-        className="group/sec relative inline-flex items-center justify-center gap-1 rounded-full border-2 border-white/60 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-white hover:bg-white/20"
+        className="group/sec relative inline-flex items-center justify-center gap-1 rounded-full border-2 border-white/60 bg-white/10 px-8 py-4 text-base font-semibold text-white transition-all duration-300 hover:border-white hover:bg-white/20"
       >
         <span className="relative">I already have an account</span>
         <ArrowRight className="ml-1 h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover/sec:translate-x-0 group-hover/sec:opacity-100" />

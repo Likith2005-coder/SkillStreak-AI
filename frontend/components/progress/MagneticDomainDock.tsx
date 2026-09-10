@@ -203,7 +203,7 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
               else setOpen(i);
             }}
             className={cn(
-              "group relative cursor-pointer overflow-hidden rounded-2xl border bg-card/50 backdrop-blur",
+              "group relative cursor-pointer overflow-hidden rounded-2xl border bg-card/80",
               isOpen ? "border-white/15" : "border-border hover:border-white/15"
             )}
           >
@@ -304,7 +304,7 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                     </div>
                   </div>
                 </div>
-                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/60 text-muted-foreground">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/85 text-muted-foreground">
                   <X className="h-3.5 w-3.5" />
                 </span>
               </div>
@@ -321,7 +321,7 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                     {pct}%
                   </div>
                   {tile.avgScore !== null && (
-                    <div className="mt-1 inline-flex rounded-full border border-border bg-card/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <div className="mt-1 inline-flex rounded-full border border-border bg-card/85 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
                       avg quiz {tile.avgScore}/5
                     </div>
                   )}

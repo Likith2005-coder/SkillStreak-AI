@@ -172,7 +172,7 @@ export default function RoadmapPage() {
         <BackToDomains />
         <DomainHeader data={data} colorStyle={s} />
 
-        <section className="mt-10 rounded-2xl border border-border bg-card/50 p-8 text-center backdrop-blur">
+        <section className="mt-10 rounded-2xl border border-border bg-card/80 p-8 text-center">
           <MessageCircle className={cn("mx-auto h-10 w-10", s.text)} />
           <h2 className="mt-4 text-lg font-semibold">Roadmap on demand</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
@@ -286,7 +286,7 @@ function DomainHeader({
   progress?: { completed: number; total: number; percent: number };
 }) {
   return (
-    <header className="mt-4 flex flex-col gap-6 rounded-2xl border border-border bg-card/50 p-6 backdrop-blur sm:flex-row sm:items-center">
+    <header className="mt-4 flex flex-col gap-6 rounded-2xl border border-border bg-card/80 p-6 sm:flex-row sm:items-center">
       <div
         className={cn(
           "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl",
@@ -443,7 +443,7 @@ function InterviewUnlockCTA({
   }
 
   return (
-    <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 backdrop-blur-sm sm:flex-row sm:items-center">
+    <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 sm:flex-row sm:items-center">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/40">
         <Lock className="h-5 w-5 text-muted-foreground" />
       </div>
@@ -545,7 +545,7 @@ function CareerUnlockCTA({
   }
 
   return (
-    <div className="mt-14 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 backdrop-blur-sm sm:flex-row sm:items-center">
+    <div className="mt-14 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 sm:flex-row sm:items-center">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/40">
         <Lock className="h-5 w-5 text-muted-foreground" />
       </div>

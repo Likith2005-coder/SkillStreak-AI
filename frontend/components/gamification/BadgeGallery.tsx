@@ -33,7 +33,7 @@ export function BadgeGallery({ badges }: Props) {
   const earnedCount = badges.filter((b) => b.earnedAt).length;
 
   return (
-    <div className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-medium">Badges</h3>

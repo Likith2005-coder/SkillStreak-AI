@@ -139,7 +139,7 @@ export default function TopicPage() {
         {topic.roadmap.domain.name} roadmap
       </Link>
 
-      <header className="mt-4 flex flex-col gap-4 rounded-2xl border border-border bg-card/50 p-6 backdrop-blur sm:flex-row sm:items-start">
+      <header className="mt-4 flex flex-col gap-4 rounded-2xl border border-border bg-card/80 p-6 sm:flex-row sm:items-start">
         <div
           className={cn(
             "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
@@ -169,7 +169,7 @@ export default function TopicPage() {
         <div className="lg:col-span-2">
           <div
             className={cn(
-              "rounded-2xl border border-border bg-card/50 p-6 backdrop-blur ring-1 ring-inset",
+              "rounded-2xl border border-border bg-card/80 p-6 ring-1 ring-inset",
               s.ring
             )}
           >
@@ -323,7 +323,7 @@ function SidebarCard({ children }: { children: React.ReactNode }) {
         show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
       }}
       whileHover={reduce ? undefined : { y: -2 }}
-      className="rounded-2xl border border-border bg-card/40 p-5 backdrop-blur-sm transition-colors hover:border-primary/30"
+      className="rounded-2xl border border-border bg-card/80 p-5 transition-colors hover:border-primary/30"
     >
       {children}
     </motion.div>

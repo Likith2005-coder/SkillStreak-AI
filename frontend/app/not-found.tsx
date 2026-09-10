@@ -13,7 +13,7 @@ export default function NotFound() {
       <div className="aurora-bg" aria-hidden />
 
       <div className="relative z-10 mx-auto max-w-xl text-center">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/85 px-4 py-1.5 text-sm text-muted-foreground">
           <Compass className="h-3.5 w-3.5 text-primary" />
           You wandered off the roadmap
         </div>

@@ -202,6 +202,14 @@
     transform: translateZ(0);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
+  /* Hero sparkles. A CSS keyframe rather than 14 framer motion values, so
+     these ride the compositor and stay out of the shared JS frameloop that
+     the scroll springs use. */
+  @keyframes sparkle-rise {
+    from { transform: translate3d(0, 20px, 0); }
+    to   { transform: translate3d(0, -110vh, 0); }
+  }
+
   /* Rotating studio control-dial (decorative). */
   .studio-dial {
     animation: dial-spin 24s linear infinite;
@@ -263,8 +271,10 @@
     left: -50%;
     right: -50%;
     bottom: -12%;
-    height: 62%;
-    transform: rotateX(74deg);
+    /* 12% taller than the visible area so the 46px of travel never exposes
+       a seam at the top edge. */
+    height: 74%;
+    transform: rotateX(74deg) translate3d(0, 0, 0);
     transform-origin: bottom center;
     background-image:
       linear-gradient(hsl(187 92% 60% / 0.32) 1px, transparent 1px),
@@ -273,11 +283,15 @@
     -webkit-mask-image: linear-gradient(to top, #000 4%, transparent 70%);
             mask-image: linear-gradient(to top, #000 4%, transparent 70%);
     animation: grid-run 4.5s linear infinite;
-    will-change: background-position;
+    will-change: transform;
   }
+  /* Transform, not background-position: background-position has no compositor
+     path, so the old version repainted and re-rastered the whole floor every
+     frame. rotateX is repeated in both keyframes so this stays a pure
+     transform animation the compositor can run without the main thread. */
   @keyframes grid-run {
-    from { background-position: 0 0; }
-    to   { background-position: 0 46px; }
+    from { transform: rotateX(74deg) translate3d(0, 0, 0); }
+    to   { transform: rotateX(74deg) translate3d(0, 46px, 0); }
   }
   @media (prefers-reduced-motion: reduce) {
     .grid-floor { animation: none; }
@@ -302,7 +316,11 @@
     width: 45vmax;
     height: 45vmax;
     border-radius: 9999px;
-    filter: blur(80px);
+    /* 48px, not 80px: the render surface grows by ~3x the radius in every
+       direction, and the radial gradient already fades to transparent at
+       70%, so the extra blur bought almost nothing for a much larger
+       texture. */
+    filter: blur(48px);
     opacity: 0.22;
     will-change: transform;
     transform: translate3d(0, 0, 0);
@@ -320,13 +338,15 @@
     animation: aurora-drift-b 30s ease-in-out infinite alternate;
   }
 
+  /* Translate only — a scale() change invalidates the blurred raster and
+     forces a re-blur every frame, which is the expensive half of an aurora. */
   @keyframes aurora-drift-a {
-    0%   { transform: translate3d(0, 0, 0) scale(1); }
-    100% { transform: translate3d(8vw, 6vh, 0) scale(1.15); }
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(8vw, 6vh, 0); }
   }
   @keyframes aurora-drift-b {
-    0%   { transform: translate3d(0, 0, 0) scale(1); }
-    100% { transform: translate3d(-10vw, -4vh, 0) scale(1.1); }
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-10vw, -4vh, 0); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -334,6 +354,11 @@
     .aurora-bg::after {
       animation: none;
     }
+  }
+  /* Invisible atmosphere on small screens, on the GPUs least able to afford
+     two large blurred surfaces. */
+  @media (max-width: 1023px) {
+    .aurora-bg { display: none; }
   }
 
   /* Calm breathing halo behind the primary CTA — slow, low-opacity. */
@@ -443,10 +468,15 @@
             mask-image: radial-gradient(ellipse at 50% 0%, #000 35%, transparent 85%);
   }
   .hacker-bg::after {
-    /* CRT scanlines */
+    /* CRT scanlines. Overscanned by 120px and translated rather than
+       animating background-position, which would repaint the full viewport
+       every frame (see .grid-floor for the same fix). */
     content: "";
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    top: -120px;
+    height: calc(100% + 120px);
     background: repeating-linear-gradient(
       0deg,
       rgba(0, 0, 0, 0) 0px,
@@ -455,10 +485,11 @@
     );
     opacity: 0.5;
     animation: scanline-move 8s linear infinite;
+    will-change: transform;
   }
   @keyframes scanline-move {
-    from { background-position: 0 0; }
-    to   { background-position: 0 120px; }
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(0, 120px, 0); }
   }
   .term-glow {
     text-shadow: 0 0 8px hsl(140 90% 55% / 0.55);

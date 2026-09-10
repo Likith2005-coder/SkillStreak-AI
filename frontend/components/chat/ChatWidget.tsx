@@ -87,10 +87,10 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
           exit={{ opacity: 0, y: 16, scale: 0.96 }}
           transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "fixed bottom-24 right-5 z-40 flex h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl"
+            "fixed bottom-24 right-5 z-40 flex h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl"
           )}
         >
-          <header className="flex items-center justify-between border-b border-border bg-card/40 px-4 py-2.5 backdrop-blur">
+          <header className="flex items-center justify-between border-b border-border bg-card/80 px-4 py-2.5">
             <div className="flex items-center gap-2 text-sm font-medium">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
                 <Bot className="h-3.5 w-3.5" />

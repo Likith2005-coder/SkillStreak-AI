@@ -331,11 +331,31 @@ export function MeshText({
       cursor.vx = 0;
       cursor.vy = 0;
     };
-    wrapper.addEventListener("pointermove", onMove);
+    wrapper.addEventListener("pointermove", (e) => {
+      onMove(e);
+      ensureRunning();
+    });
     wrapper.addEventListener("pointerleave", onLeave);
 
+    // Only simulate when the wordmark is actually on screen AND there is
+    // something to simulate. Off-screen, or fully settled with the pointer
+    // away, the loop stops entirely and costs nothing.
     let rafId = 0;
+    let visible = false;
+    const ensureRunning = () => {
+      if (!rafId && visible) rafId = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        ensureRunning();
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(wrapper);
+
     const tick = () => {
+      rafId = 0;
       cursor.vx = cursor.x - cursor.px;
       cursor.vy = cursor.y - cursor.py;
       if (Math.hypot(cursor.vx, cursor.vy) > 0.3) {
@@ -351,7 +371,9 @@ export function MeshText({
         const py = positions[i2 + 1];
         const dx = disp[i2];
         const dy = disp[i2 + 1];
-        const cd = Math.hypot(cursor.x - (px + dx), cursor.y - (py + dy));
+        const ddx = cursor.x - (px + dx);
+        const ddy = cursor.y - (py + dy);
+        const cd = Math.sqrt(ddx * ddx + ddy * ddy);
         const proximity = Math.max(0, 1 / (1 + cd / 0.05) - 0.1);
 
         let vx = vel[i2] + cursor.vx * dragForce * proximity;
@@ -375,13 +397,20 @@ export function MeshText({
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, disp);
       renderGL();
 
-      rafId = requestAnimationFrame(tick);
+      // Keep going only while visible and still moving. `energy` is the total
+      // squared displacement — once the mesh has sprung back to rest and the
+      // pointer is away, there is nothing left to draw.
+      let energy = 0;
+      for (let i = 0; i < disp.length; i++) energy += disp[i] * disp[i];
+      if (visible && (cursor.x <= 1.5 || energy > 1e-6)) {
+        rafId = requestAnimationFrame(tick);
+      }
     };
-    rafId = requestAnimationFrame(tick);
 
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafId);
+      io.disconnect();
       ro.disconnect();
       wrapper.removeEventListener("pointermove", onMove);
       wrapper.removeEventListener("pointerleave", onLeave);
