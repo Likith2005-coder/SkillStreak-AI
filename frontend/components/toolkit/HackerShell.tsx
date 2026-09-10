@@ -18,7 +18,7 @@ export function HackerShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="hacker relative min-h-screen text-emerald-100">
+    <div className="hacker relative min-h-[100svh] text-emerald-100">
       <div className="hacker-bg" aria-hidden />
       <div className="container px-4 py-8">
         <div className="mx-auto max-w-5xl overflow-hidden rounded-xl border border-emerald-500/25 bg-black/60 shadow-[0_0_40px_-10px_rgba(16,185,129,0.25)] backdrop-blur-sm">

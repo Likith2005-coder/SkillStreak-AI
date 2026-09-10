@@ -121,7 +121,7 @@ export function ScrollStory() {
 
   return (
     <section ref={ref} className="relative" style={{ height: `${STEPS.length * 100}vh` }}>
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+      <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
         {/* soft moving glow tinted to the active step */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div

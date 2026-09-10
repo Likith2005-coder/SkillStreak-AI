@@ -59,7 +59,7 @@ export default function LandingPage() {
       <div className="noise-overlay" aria-hidden />
 
       {/* ── Section 1 — Hero with prominent 3D robot ─────────── */}
-      <section className="relative grid min-h-screen grid-cols-1 items-center gap-8 px-4 pb-12 pt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-12 lg:pt-28">
+      <section className="relative grid min-h-[100svh] grid-cols-1 items-center gap-8 px-4 pb-12 pt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-12 lg:pt-28">
         {/* Signature: neon knowledge-grid horizon receding behind the hero */}
         <div className="grid-scene" aria-hidden>
           <div className="grid-floor" />

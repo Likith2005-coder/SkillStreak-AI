@@ -35,14 +35,14 @@ export default function DashboardLayout({
 
   if (status !== "ready" || !user || !user.profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+      <div className="flex min-h-[100svh] items-center justify-center text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-[100svh] bg-background">
       <div className="aurora-bg" aria-hidden />
       {/* Cinematic film grain over the app, same as the landing page */}
       <div className="noise-overlay" aria-hidden />

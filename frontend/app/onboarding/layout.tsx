@@ -32,7 +32,7 @@ export default function OnboardingLayout({
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center px-4 py-12">
+    <main className="relative flex min-h-[100svh] items-center justify-center px-4 py-12">
       <div
         className="pointer-events-none absolute inset-0 -z-10 opacity-25 gradient-bg-animated blur-3xl"
         aria-hidden

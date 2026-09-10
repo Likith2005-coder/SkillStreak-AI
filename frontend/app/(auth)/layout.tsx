@@ -32,7 +32,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <AuthFormProvider>
-      <main className="grid min-h-screen lg:grid-cols-2">
+      <main className="grid min-h-[100svh] lg:grid-cols-2">
         {/* Left side — the Signal world: deep ink, neon grid floor, ghost
             word, with the animated characters standing on the horizon.
             Hidden on mobile so the form has all the room. */}

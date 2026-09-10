@@ -3,7 +3,7 @@
 /**
  * Landing-page dramatic CTA reveal — final design.
  *
- * Layout (always in this order, top → bottom inside h-screen section):
+ * Layout (always in this order, top → bottom inside h-[100svh] section):
  *
  *   ┌─────────────────────────────────────────────┐
  *   │  SkillStreak AI  ← wordmark, always visible │
@@ -39,6 +39,7 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { HeroCTA } from "./HeroCTA";
 import { MeshText } from "./MeshText";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 
 export function BurstSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -96,12 +97,13 @@ export function BurstSection() {
   }, [isInView]);
 
   const reduced = reduce ?? false;
+  const isDesktop = useIsDesktop();
   const animate = isInView || reduced;
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden"
+      className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden"
     >
       {/* Smooth fade at the top + bottom edges so the gradient blends into
           adjacent dark sections instead of meeting them at a hard line. */}
@@ -159,11 +161,21 @@ export function BurstSection() {
           {/* WebGL mesh wordmark — glyphs are a fine mesh the cursor drags
               through, springing back with a cyan/violet chromatic fringe. The
               aRef sits on it so the burst glow still emanates from the mark. */}
+          {/* The mesh is a cursor-drag effect: on touch it burns a per-frame
+              96x40 spring simulation to deliver nothing. Below desktop we set
+              the wordmark as real type, which also fixes the 67px-tall
+              wordmark that 18vw produced on a 375px screen. */}
           <span
             ref={aRef}
-            className="block h-[18vw] w-full max-w-[1500px] drop-shadow-lg sm:h-[15vw] lg:h-[13vw]"
+            className="block w-full max-w-[1500px] drop-shadow-lg lg:h-[13vw]"
           >
-            <MeshText text="SkillStreak AI" />
+            {isDesktop ? (
+              <MeshText text="SkillStreak AI" />
+            ) : (
+              <span className="block font-display text-[clamp(2.25rem,11vw,5rem)] font-bold leading-[1.05] tracking-[-0.03em] text-white [text-wrap:balance]">
+                SkillStreak AI
+              </span>
+            )}
           </span>
           <p className="mt-3 text-sm text-white/85 sm:text-base">
             Free forever · Built for students · Pick up where you left off
