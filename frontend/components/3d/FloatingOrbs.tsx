@@ -76,7 +76,6 @@ export function FloatingOrbs({ className, active = true }: Props) {
 function Scene({ paused }: { paused: boolean }) {
   // Drei augments the JSX <group> element's ref type, so we widen here to avoid
   // a conflict between three.js's stock Group and drei's enhanced Group.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const groupRef = useRef<any>(null);
   const target = useRef({ x: 0, y: 0 });
   const { viewport } = useThree();

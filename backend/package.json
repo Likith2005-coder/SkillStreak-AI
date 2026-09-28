@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src",
     "test": "jest",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

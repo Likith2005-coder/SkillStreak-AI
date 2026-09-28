@@ -165,7 +165,7 @@ export default function InterviewPrepPage() {
           <Loader2 className="h-6 w-6 animate-spin motion-reduce:animate-none text-primary" />
           <p className="text-sm">Composing your interview prep…</p>
           <p className="text-xs text-muted-foreground">
-            First load takes ~15 seconds. After that it's instant.
+            First load takes ~15 seconds. After that it’s instant.
           </p>
         </div>
       </main>
@@ -386,7 +386,7 @@ function Hero({
         )}
       </div>
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-        Walk in like you've done this 10 times.
+        Walk in like you’ve done this 10 times.
       </h1>
       <p className="mt-3 max-w-2xl text-sm text-white/85 sm:text-base">
         15 questions, 2 system-design scenarios, behavioral STAR templates, and a
@@ -638,7 +638,7 @@ function QuestionItem({
           className="border-t border-border/60 px-4 pb-4 pt-3"
         >
           <div className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-            What they're really probing
+            What they’re really probing
           </div>
           <p className="text-sm text-muted-foreground">{q.whyAsked}</p>
 
@@ -853,7 +853,7 @@ function PracticeMode({
               className="mt-6"
             >
               <div className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                What they're really probing
+                What they’re really probing
               </div>
               <p className="text-sm text-muted-foreground">{q.whyAsked}</p>
 

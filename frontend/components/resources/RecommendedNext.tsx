@@ -70,7 +70,7 @@ export function RecommendedNext() {
         </div>
       ) : items.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-border bg-card/30 p-4 text-center text-xs text-muted-foreground">
-          You're all caught up. 🏁
+          You’re all caught up. 🏁
         </div>
       ) : (
         <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr]">

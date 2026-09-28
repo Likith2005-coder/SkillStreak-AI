@@ -23,7 +23,6 @@ type PointerRef = React.MutableRefObject<{ x: number; y: number }>;
 // runtime hoists @types/three@0.184 next to three@0.160), so typed
 // Group/Mesh refs fail to unify. These refs are only mutated imperatively
 // in useFrame — structural typing adds nothing here.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Obj3DRef = any;
 
 /* Eye blink: closed for a beat every ~3.8s. Returns Y scale 1 → ~0.08. */

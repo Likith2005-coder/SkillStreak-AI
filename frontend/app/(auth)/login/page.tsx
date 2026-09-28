@@ -233,7 +233,7 @@ export default function LoginPage() {
                   >
                     creating an account
                   </Link>{" "}
-                  if you don't have one yet.
+                  if you don’t have one yet.
                 </p>
               )}
             </div>

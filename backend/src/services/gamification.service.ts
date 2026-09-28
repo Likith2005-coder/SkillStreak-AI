@@ -546,7 +546,7 @@ export async function evaluateBadges(
           icon: b.icon,
           earnedAt: award.earnedAt,
         });
-      } catch (err) {
+      } catch {
         // Race: someone else granted the same badge in parallel.
         log.warn("badge already awarded (race)", { slug: b.slug, userId });
       }
