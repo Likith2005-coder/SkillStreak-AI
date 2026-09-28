@@ -42,13 +42,12 @@ Nine domains: Cybersecurity · Web Development · AI · Machine Learning · Data
 ## Screenshots
 
 <table>
-<tr>
-<td width="50%"><img src="docs/screenshots/04-boot-construction.jpg" alt="Boot intro: blueprint guides drawing the streak bolt"></td>
-<td width="50%"><img src="docs/screenshots/01-boot-intro.jpg" alt="Boot intro resolving into the SkillStreak AI wordmark"></td>
-</tr>
-<tr><td colspan="2" align="center"><sub><b>Signal Boot</b> — construction guides draw through the vertices of the streak bolt, which ignites into the wordmark.</sub></td></tr>
-<tr><td colspan="2"><img src="docs/screenshots/03-progress-analytics.jpg" alt="Scroll story showing the progress heatmap and score trend"></td></tr>
-<tr><td colspan="2" align="center"><sub><b>Pinned scroll story</b> — one system per viewport, each with a live vignette.</sub></td></tr>
+<tr><td><img src="docs/screenshots/05-domains.jpg" alt="Domains page listing the nine learning tracks"></td></tr>
+<tr><td align="center"><sub><b>Pick your domain</b> — nine tracks, each with a curated roadmap or one generated on demand by the AI tutor.</sub></td></tr>
+<tr><td><img src="docs/screenshots/06-arsenal.jpg" alt="Ethical Hacking Arsenal in its terminal theme, showing reconnaissance tools"></td></tr>
+<tr><td align="center"><sub><b>Ethical Hacking Arsenal</b> — the penetration-testing methodology phase by phase, with a guide for every tool. Learning reference only; it runs nothing.</sub></td></tr>
+<tr><td><img src="docs/screenshots/03-progress-analytics.jpg" alt="Scroll story showing the progress heatmap and score trend"></td></tr>
+<tr><td align="center"><sub><b>Progress analytics</b> — heatmap, score trend and weak-area detection.</sub></td></tr>
 </table>
 
 ## Architecture
