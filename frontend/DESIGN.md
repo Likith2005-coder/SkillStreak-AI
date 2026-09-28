@@ -93,9 +93,10 @@ Signature effects (all in `globals.css`, GPU-cheap):
 - `.bento-card` — conic gradient ring drawn on hover via `@property --bento-angle`.
 - `.route-bar` — top-of-page cyan→violet route progress bar.
 
-3D: Spline (`@splinetool/react-spline`) runs the interactive robot mascot, lazy-loaded, blended
-into the page with `mix-blend-mode: screen` + a radial mask so the canvas dissolves into the
-ground. react-three-fiber / drei / three are available for custom WebGL scenes.
+3D: the SignalBot mascot is a custom react-three-fiber scene (`components/3d/SignalBot.tsx`) —
+screen face, cursor-tracking eyes, halo rings instead of legs. It and the MeshText WebGL wordmark
+load only on `(min-width: 1024px) and (pointer: fine)`; everywhere else `SignalBotStatic` draws
+the same character as inline SVG, so phones never download three.js.
 
 ## Components
 

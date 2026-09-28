@@ -52,3 +52,7 @@ backend/prisma/migrations/dev.db*
 
 # Reference videos (not part of the app)
 *.mp4
+
+# Local AI design tooling (kept on disk, not part of the project)
+.claude/
+.impeccable/

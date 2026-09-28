@@ -5,12 +5,12 @@ set up and the conventions to follow when changing it.
 
 ## Getting set up
 
-See [Getting Started](README.md#-getting-started) in the README. In short: `npm install`,
-`npm run db:up`, copy the two `.env` examples, `npm --workspace backend run db:migrate`,
-then `npm run dev`.
+See [Getting started](README.md#getting-started) in the README. In short: `npm install`,
+`npm run db:up`, copy the `.env` examples, `npm --workspace backend run db:migrate`,
+`npm --workspace backend run db:seed`, then `npm run dev`.
 
 You need a `GEMINI_API_KEY` in `backend/.env` for anything AI-powered (tutor, quizzes,
-onboarding assessment, plan generation, interview prep). The rest of the app runs without it.
+domain assessment, plan generation, interview prep). The rest of the app runs without it.
 
 ## Repository layout
 

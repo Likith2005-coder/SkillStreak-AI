@@ -1,141 +1,138 @@
 <div align="center">
 
+<img src="frontend/app/icon.svg" width="72" alt="SkillStreak AI">
+
 # SkillStreak AI
 
-**Learn tech skills the way you'd play a game — streaks, XP, and an AI tutor that never sleeps.**
+**Structured mastery of modern tech — guided by an AI mentor, kept alive by streaks.**
 
-Pick a technology domain, meet an AI mentor that builds you a personalized roadmap, chat with a streaming tutor, pass AI-generated quizzes, and keep your daily streak alive while you climb the leaderboard.
+A learning console you operate, not a course catalog you browse.
 
 [![CI](https://github.com/Likith2005-coder/SkillStreak-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/Likith2005-coder/SkillStreak-AI/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-06B6D4.svg)](LICENSE)
-![Next.js](https://img.shields.io/badge/Next.js_14-000000?logo=nextdotjs&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22d3ee.svg)](LICENSE)
+![Lighthouse](https://img.shields.io/badge/Lighthouse-99%20·%20100%20·%20100%20·%20100-a3e635)
+![Next.js](https://img.shields.io/badge/Next.js_14-000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL_+_pgvector-4169E1?logo=postgresql&logoColor=white)
-![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?logo=googlegemini&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white)
 
-<img src="docs/screenshots/02-landing-hero.jpg" alt="SkillStreak AI landing page — the hero with the SignalBot 3D mascot" width="100%">
+<img src="docs/screenshots/02-landing-hero.jpg" alt="SkillStreak AI landing page with the SignalBot mascot" width="100%">
 
 </div>
 
----
+## Why
 
-## ✨ Features
+Self-learners don't fail for lack of content. They fail because nothing tells them what to do next, and nothing makes them come back tomorrow. SkillStreak fixes both: an AI mentor builds a plan around *you*, and a streak makes continuing the obvious move.
 
-| | Feature | What it does |
-|---|---|---|
-| 🧭 | **AI onboarding assessment** | Picking a domain doesn't dump you on a roadmap. A conversational mentor asks one question at a time — goals, level, time budget, learning style, target role, certifications — then generates a learner profile and a roadmap built for *you*. |
-| 🤖 | **Streaming AI tutor** | Topic-aware, level-aware chat with intent-classified follow-ups. Every conversation persists; code blocks render with copy buttons. |
-| 🗺️ | **Curated + personalized roadmaps** | 9 technology domains. Curated paths visualized as a Duolingo-style winding trail, plus AI-generated phased plans with resources, exercises, mini-projects and a capstone. |
-| 📝 | **AI quizzes** | 5 MCQs per topic, generated then validated by a second LLM pass. Pass 3/5 to complete a topic. |
-| 🔁 | **Adaptive difficulty** | Quiz scores feed back into the plan — below 70% flags a topic for revision, above 90% unlocks skipping ahead. |
-| 🔥 | **Streaks, XP & badges** | Daily streaks with auto-spent freezes, level math via `100·N·log₂(N+1)`, 8 unlockable badges, weekly leaderboard. |
-| 📊 | **Progress analytics** | GitHub-style 90-day heatmap, per-domain progress rings, weak-area detection, score-trend charts. |
-| 💀 | **Ethical Hacking Arsenal** | Every phase of a real penetration test with 37+ real tools and AI-generated field guides — inside a full hacker terminal UI. |
-| 💼 | **Career paths & interview prep** | Role roadmaps per domain plus AI-driven interview practice. |
-| 🎯 | **Personalized recommendations** | pgvector similarity matching surfaces the best next topic for each learner. |
-| 🛠️ | **Admin console** | Separate admin app for metrics, topic management, users, and email digests. |
+## What it does
 
-## 📸 Screenshots
+| | |
+|---|---|
+| **AI mentor assessment** | Pick a domain and a mentor asks one question at a time — goal, level, daily time, learning style, target role, certifications, OS. It then writes your learner profile and a phased roadmap that visibly reacts to your answers. |
+| **Personalized roadmap** | Each phase ships objectives, a beginner explanation, videos, docs, practice sites, exercises, a mini-project and a milestone — plus a step-by-step capstone and a day-by-day Week 1. |
+| **Adaptive difficulty** | Quiz scores feed back into the plan: under 70% flags a topic for revision, over 90% unlocks skipping ahead. |
+| **Streaming AI tutor** | Topic-aware, level-aware chat with saved conversations and copy-ready code. |
+| **Validated quizzes** | Five MCQs per topic, generated then checked by a second LLM pass. Pass 3/5 to clear the topic. |
+| **Streaks, XP & badges** | Daily streaks with auto-spent freezes, a `100·N·log₂(N+1)` level curve, unlockable badges and a weekly leaderboard. |
+| **Progress analytics** | 90-day activity heatmap, per-domain progress rings, weak-area detection, score trends. |
+| **Ethical Hacking Arsenal** | Every phase of a real penetration test with 37+ tools and AI field guides, inside a terminal UI. |
+| **Career & interview prep** | Role roadmaps per domain and AI-driven mock interviews, unlocked by finishing a trail. |
+
+Nine domains: Cybersecurity · Web Development · AI · Machine Learning · Data Science · Cloud · DevOps · Blockchain · IoT.
+
+## Screenshots
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/04-boot-construction.jpg" alt="The Signal Boot intro drawing blueprint construction guides" width="100%"></td>
-<td width="50%"><img src="docs/screenshots/01-boot-intro.jpg" alt="The Signal Boot intro resolving into the SkillStreak AI wordmark" width="100%"></td>
+<td width="50%"><img src="docs/screenshots/04-boot-construction.jpg" alt="Boot intro: blueprint guides drawing the streak bolt"></td>
+<td width="50%"><img src="docs/screenshots/01-boot-intro.jpg" alt="Boot intro resolving into the SkillStreak AI wordmark"></td>
 </tr>
-<tr>
-<td colspan="2" align="center"><em><strong>Signal Boot</strong> — construction guides draw themselves through the vertices of the streak bolt, which then ignites into the wordmark before the curtain lifts into the page.</em></td>
-</tr>
-<tr>
-<td colspan="2"><img src="docs/screenshots/03-progress-analytics.jpg" alt="Pinned scroll story showing the 90-day progress heatmap and score trend" width="100%"></td>
-</tr>
-<tr>
-<td colspan="2" align="center"><em><strong>Pinned scroll story</strong> — five integrated systems, one per viewport, each with its own live vignette.</em></td>
-</tr>
+<tr><td colspan="2" align="center"><sub><b>Signal Boot</b> — construction guides draw through the vertices of the streak bolt, which ignites into the wordmark.</sub></td></tr>
+<tr><td colspan="2"><img src="docs/screenshots/03-progress-analytics.jpg" alt="Scroll story showing the progress heatmap and score trend"></td></tr>
+<tr><td colspan="2" align="center"><sub><b>Pinned scroll story</b> — one system per viewport, each with a live vignette.</sub></td></tr>
 </table>
 
-## 🏗️ Architecture
+## Architecture
 
-npm-workspaces monorepo with three apps:
-
-```
-skillstreak-ai/
-├── frontend/     Next.js 14 learner app (Tailwind, shadcn/ui, Framer Motion, GSAP)  → :3000
-├── backend/      Express + TypeScript API (Prisma, PostgreSQL + pgvector, Redis)    → :4000
-├── admin/        Next.js admin console                                              → :3001
-├── docs/         Architecture, API & database documentation
-├── planning/     System design & engineering docs
-└── docker-compose.yml   Local Postgres + Redis
+```mermaid
+flowchart LR
+    L[Learner app<br/>Next.js 14 · :3000] --> API
+    A[Admin console<br/>Next.js 14 · :3001] --> API
+    API[REST API<br/>Express + TypeScript · :4000] --> DB[(PostgreSQL<br/>+ pgvector)]
+    API --> R[(Redis<br/>in-memory fallback)]
+    API --> G[Google Gemini<br/>circuit-breaker guarded]
+    API --> Y[YouTube Data API]
 ```
 
-**AI:** Google Gemini powers the tutor, the onboarding assessment and plan generation, quiz generation/validation, tool field guides, and interview prep. Embeddings + pgvector drive personalized recommendations. A circuit breaker guards all LLM calls, and generated resources are constrained to real, stable URLs — never invented ones.
+An npm-workspaces monorepo:
 
-**Gamification engine:** streak tracking with freeze auto-spend, XP economy, level curve, badge unlock rules, and weekly leaderboard aggregation — all server-side.
+```
+frontend/   learner app — Tailwind, Framer Motion, GSAP, Lenis, react-three-fiber
+backend/    API — Prisma, Zod, JWT, rate limiting, LLM + YouTube services
+admin/      admin console — metrics, topics, users, email digests
+docs/       architecture, API and database reference
+```
 
-**Design:** a dark-locked design system called **Signal** — deep-ink console, electric cyan as the live signal, violet for depth, lime reserved for streak energy. Every animation ships with a `prefers-reduced-motion` fallback as a hard invariant. See [`frontend/DESIGN.md`](frontend/DESIGN.md).
+**AI you can trust.** Every LLM call runs through a circuit breaker. Generated learning resources are never allowed to invent URLs: they cite well-known stable pages or emit a search query the UI resolves, and videos are verified live before they're shown.
 
-## 🚀 Getting Started
+**Built to be fast.** Production Lighthouse scores **99 / 100 / 100 / 100** on desktop and **90** on throttled mobile. The 3D mascot and WebGL wordmark only load on devices with a pointer that can drive them; phones get a static SVG instead of 667 kB of three.js. Scroll-path animations run on the compositor, and heavy charts are code-split.
 
-**Prerequisites:** Node.js ≥ 20, npm ≥ 10, Docker Desktop, Git
+**Designed as a system.** A dark-locked design language called **Signal** — deep ink, cyan as the live signal, violet for depth, lime reserved for streak energy. Every animation has a reduced-motion fallback and every text pair clears WCAG AA. See [`frontend/DESIGN.md`](frontend/DESIGN.md).
 
-```powershell
-# 1. Install dependencies (root + all workspaces)
+## Getting started
+
+**Requires** Node.js 20+, npm 10+, and Docker (for local Postgres + Redis).
+
+```bash
+git clone https://github.com/Likith2005-coder/SkillStreak-AI.git
+cd SkillStreak-AI
 npm install
 
-# 2. Start Postgres + Redis
-npm run db:up
+npm run db:up                                   # Postgres + Redis in Docker
+cp backend/.env.example backend/.env            # then add your keys (below)
+cp frontend/.env.example frontend/.env.local
 
-# 3. Configure environment
-Copy-Item backend/.env.example backend/.env
-Copy-Item frontend/.env.example frontend/.env.local
-# add your GEMINI_API_KEY to backend/.env
+npm --workspace backend run db:migrate          # create the schema
+npm --workspace backend run db:seed             # load the 9 domains and roadmaps
 
-# 4. Run database migrations
-npm --workspace backend run db:migrate
-
-# 5. Start all three apps
-npm run dev
+npm run dev                                     # learner, API and admin together
 ```
 
 | App | URL |
 |---|---|
 | Learner app | http://localhost:3000 |
-| Backend API | http://localhost:4000 |
+| API | http://localhost:4000 |
 | Admin console | http://localhost:3001 |
 
-> **Tip:** the landing page plays its boot intro once per browser session. Add `?intro=1` to replay it.
+### Environment
 
-## 📜 Scripts
+| Variable | | Purpose |
+|---|---|---|
+| `DATABASE_URL` | required | Postgres with the `pgvector` extension |
+| `JWT_SECRET` | required | A long random string |
+| `GEMINI_API_KEY` | required | Powers the mentor, tutor, quizzes and plans — [get one free](https://aistudio.google.com/apikey) |
+| `YOUTUBE_API_KEY` | optional | Direct, verified video links; falls back to keyless resolution |
+| `REDIS_URL` | optional | Falls back to an in-memory store |
+| `RESEND_API_KEY` | optional | Weekly digest and reminder emails |
 
-| Script | What it does |
+To use the admin console, promote your account after registering:
+
+```bash
+npm --workspace backend run grant-admin -- you@example.com
+```
+
+## Scripts
+
+| Command | |
 |---|---|
-| `npm run dev` | Start frontend + backend + admin in parallel |
-| `npm run dev:frontend` / `dev:backend` / `dev:admin` | Start a single app |
-| `npm run build` | Production build (backend + frontend) |
-| `npm run lint` | Lint all workspaces |
-| `npm run test` | Run all test suites |
-| `npm run type-check` | TypeScript check across all workspaces |
-| `npm run db:up` / `db:down` / `db:logs` | Manage local Postgres + Redis containers |
+| `npm run dev` | Run all three apps |
+| `npm run build` | Production build of API and learner app |
+| `npm run type-check` | TypeScript across every workspace |
+| `npm run lint` · `npm test` | Lint and test every workspace |
 
-## 📚 Documentation
+## Documentation
 
-- [`docs/architecture.md`](docs/architecture.md) — system architecture
-- [`docs/api.md`](docs/api.md) — API reference
-- [`docs/database.md`](docs/database.md) — database schema
-- [`frontend/DESIGN.md`](frontend/DESIGN.md) — the **Signal** design system
-- [`planning/`](planning/) — system design & engineering process docs
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — development workflow and conventions
-- [`SECURITY.md`](SECURITY.md) — reporting a vulnerability
+[Architecture](docs/architecture.md) · [API reference](docs/api.md) · [Database schema](docs/database.md) · [Design system](frontend/DESIGN.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-## 🧰 Tech Stack
-
-**Frontend** — Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, GSAP + ScrollTrigger, Lenis, react-three-fiber (the custom SignalBot mascot), Zustand, Recharts
-**Backend** — Express, TypeScript, Prisma, PostgreSQL + pgvector, Redis, Zod, JWT auth, rate limiting
-**AI** — Google Gemini (chat, assessment + plan generation, quiz gen + validation, embeddings), circuit-breaker-protected
-**Infra** — Docker Compose (local), Supabase (Postgres hosting), GitHub Actions CI
-
-## 📄 License
+## License
 
 [MIT](LICENSE) © Likith
