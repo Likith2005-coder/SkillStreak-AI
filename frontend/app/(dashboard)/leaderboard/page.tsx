@@ -60,7 +60,7 @@ export default function LeaderboardPage() {
           </div>
         ) : entries.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center">
-            <Trophy className="mx-auto h-8 w-8 text-amber-400/70" />
+            <Trophy className="mx-auto h-8 w-8 text-amber-600/70" />
             <p className="mt-3 text-sm font-medium text-foreground">
               Nobody has scored this week — the crown is up for grabs.
             </p>
@@ -111,7 +111,7 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
         )}
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card/85 text-sm font-semibold tabular-nums">
-          {entry.rank === 1 ? <Crown className="h-5 w-5 text-amber-300" /> : entry.rank}
+          {entry.rank === 1 ? <Crown className="h-5 w-5 text-amber-700" /> : entry.rank}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
             )}
           </div>
           <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-            <Trophy className="h-3 w-3 text-amber-400" />
+            <Trophy className="h-3 w-3 text-amber-600" />
             Lvl {entry.level} · {entry.xpTotal.toLocaleString()} XP total
           </div>
         </div>

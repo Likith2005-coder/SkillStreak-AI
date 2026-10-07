@@ -56,7 +56,7 @@ export function HealthIndicator() {
 
       {state.kind === "ok" && (
         <>
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <span className="text-foreground">Backend connected</span>
           <Dot color="emerald" label={`db ${state.data.checks.database}`} />
           <Dot color="emerald" label={`redis ${state.data.checks.redis}`} />
@@ -65,7 +65,7 @@ export function HealthIndicator() {
 
       {state.kind === "degraded" && (
         <>
-          <AlertCircle className="h-4 w-4 text-amber-400" />
+          <AlertCircle className="h-4 w-4 text-amber-600" />
           <span className="text-foreground">Backend degraded</span>
           <Dot
             color={state.data.checks.database === "up" ? "emerald" : "red"}

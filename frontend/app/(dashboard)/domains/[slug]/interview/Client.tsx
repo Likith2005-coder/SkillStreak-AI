@@ -78,9 +78,9 @@ const CATEGORY_ICON: Record<InterviewQuestion["category"], React.ReactNode> = {
 };
 
 const DIFFICULTY_RING: Record<InterviewQuestion["difficulty"], string> = {
-  easy: "ring-emerald-500/30 text-emerald-300 bg-emerald-500/10",
-  medium: "ring-amber-500/30 text-amber-300 bg-amber-500/10",
-  hard: "ring-rose-500/30 text-rose-300 bg-rose-500/10",
+  easy: "ring-emerald-500/30 text-emerald-700 bg-emerald-500/10",
+  medium: "ring-amber-500/30 text-amber-700 bg-amber-500/10",
+  hard: "ring-rose-500/30 text-rose-700 bg-rose-500/10",
 };
 
 // Stable id for a question — used both as React key and as the localStorage
@@ -236,7 +236,7 @@ function InterviewBody({
 
       {/* Pillars / Pitfalls / Differentiators */}
       <section className="mt-10 grid gap-4 lg:grid-cols-3">
-        <Card icon={<Target className="h-4 w-4 text-violet-300" />} title="Pillars to own">
+        <Card icon={<Target className="h-4 w-4 text-violet-700" />} title="Pillars to own">
           <ul className="space-y-3 text-sm">
             {prep.pillars.map((p, i) => (
               <li key={i}>
@@ -246,7 +246,7 @@ function InterviewBody({
             ))}
           </ul>
         </Card>
-        <Card icon={<CircleAlert className="h-4 w-4 text-rose-300" />} title="Common pitfalls">
+        <Card icon={<CircleAlert className="h-4 w-4 text-rose-700" />} title="Common pitfalls">
           <ul className="space-y-2 text-sm text-foreground/90">
             {prep.pitfalls.map((s, i) => (
               <li key={i} className="flex gap-2">
@@ -256,7 +256,7 @@ function InterviewBody({
             ))}
           </ul>
         </Card>
-        <Card icon={<Award className="h-4 w-4 text-amber-300" />} title="Differentiators">
+        <Card icon={<Award className="h-4 w-4 text-amber-700" />} title="Differentiators">
           <ul className="space-y-2 text-sm text-foreground/90">
             {prep.differentiators.map((s, i) => (
               <li key={i} className="flex gap-2">
@@ -280,7 +280,7 @@ function InterviewBody({
 
       <section className="mt-12">
         <SectionHeader
-          icon={<Layers className="h-5 w-5 text-violet-300" />}
+          icon={<Layers className="h-5 w-5 text-violet-700" />}
           title="System Design Scenarios"
           subtitle="Treat each as a 35-minute round — explore tradeoffs out loud."
         />
@@ -293,7 +293,7 @@ function InterviewBody({
 
       <section className="mt-12">
         <SectionHeader
-          icon={<CalendarDays className="h-5 w-5 text-emerald-300" />}
+          icon={<CalendarDays className="h-5 w-5 text-emerald-700" />}
           title="7-day cram plan"
           subtitle="If the interview is a week away, run this."
         />
@@ -315,7 +315,7 @@ function InterviewBody({
 
       <section className="mt-12 mb-16">
         <SectionHeader
-          icon={<Bookmark className="h-5 w-5 text-sky-300" />}
+          icon={<Bookmark className="h-5 w-5 text-sky-700" />}
           title="Worth bookmarking"
           subtitle="The classics + the surprises."
         />
@@ -376,7 +376,7 @@ function Hero({
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="mt-4 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-8 text-white shadow-2xl shadow-fuchsia-500/20 sm:p-10"
     >
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-amber-200">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-amber-700">
         <Briefcase className="h-3.5 w-3.5" />
         Interview prep · {prep.domainName}
         {adminOverride && (
@@ -489,7 +489,7 @@ function QuestionsSection({
   return (
     <section className="mt-12">
       <SectionHeader
-        icon={<Lightbulb className="h-5 w-5 text-amber-300" />}
+        icon={<Lightbulb className="h-5 w-5 text-amber-700" />}
         title="Real questions, real answers"
         subtitle={`${questions.length} questions — filter, shuffle, or run a focused practice session.`}
       />
@@ -617,8 +617,8 @@ function QuestionItem({
           <span
             className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
               review === "got-it"
-                ? "bg-emerald-500/15 text-emerald-300"
-                : "bg-rose-500/15 text-rose-300"
+                ? "bg-emerald-500/15 text-emerald-700"
+                : "bg-rose-500/15 text-rose-700"
             }`}
           >
             {review === "got-it" ? "Got it" : "Need work"}
@@ -669,7 +669,7 @@ function QuestionItem({
               onClick={() => onReview("got-it")}
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                 review === "got-it"
-                  ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40"
+                  ? "bg-emerald-500/20 text-emerald-700 ring-1 ring-emerald-500/40"
                   : "border border-border bg-card/80 text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -681,7 +681,7 @@ function QuestionItem({
               onClick={() => onReview("need-work")}
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                 review === "need-work"
-                  ? "bg-rose-500/20 text-rose-300 ring-1 ring-rose-500/40"
+                  ? "bg-rose-500/20 text-rose-700 ring-1 ring-rose-500/40"
                   : "border border-border bg-card/80 text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -814,8 +814,8 @@ function PracticeMode({
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
                   review === "got-it"
-                    ? "bg-emerald-500/15 text-emerald-300"
-                    : "bg-rose-500/15 text-rose-300"
+                    ? "bg-emerald-500/15 text-emerald-700"
+                    : "bg-rose-500/15 text-rose-700"
                 }`}
               >
                 {review === "got-it" ? "Got it" : "Need work"}
@@ -897,7 +897,7 @@ function PracticeMode({
               onClick={() => onReview(q._id, review === "got-it" ? undefined : "got-it")}
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
                 review === "got-it"
-                  ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40"
+                  ? "bg-emerald-500/20 text-emerald-700 ring-1 ring-emerald-500/40"
                   : "border border-border text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -912,7 +912,7 @@ function PracticeMode({
               }
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
                 review === "need-work"
-                  ? "bg-rose-500/20 text-rose-300 ring-1 ring-rose-500/40"
+                  ? "bg-rose-500/20 text-rose-700 ring-1 ring-rose-500/40"
                   : "border border-border text-muted-foreground hover:text-foreground"
               }`}
             >

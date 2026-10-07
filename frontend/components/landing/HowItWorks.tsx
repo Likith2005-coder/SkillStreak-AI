@@ -18,30 +18,30 @@ import {
 const STEPS = [
   {
     n: "01",
-    icon: <BookOpen className="h-5 w-5 text-rose-300" />,
+    icon: <BookOpen className="h-5 w-5 text-rose-700" />,
     title: "Pick a domain",
     body:
       "Browse 9 tech domains. Five come with deeply-curated roadmaps; the others are generated on-demand by the AI tutor.",
     accent: "from-rose-500/15 to-pink-500/10",
-    badge: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    badge: "bg-rose-500/15 text-rose-700 border-rose-500/30",
   },
   {
     n: "02",
-    icon: <Bot className="h-5 w-5 text-violet-300" />,
+    icon: <Bot className="h-5 w-5 text-violet-700" />,
     title: "Learn with the AI tutor",
     body:
       "Open any topic for an instant AI-generated explanation tailored to your level. Ask follow-ups in the streaming chatbot.",
     accent: "from-cyan-500/15 via-violet-500/10 to-violet-500/15",
-    badge: "bg-violet-500/15 text-violet-300 border-violet-500/30",
+    badge: "bg-violet-500/15 text-violet-700 border-violet-500/30",
   },
   {
     n: "03",
-    icon: <Flame className="h-5 w-5 text-orange-300" />,
+    icon: <Flame className="h-5 w-5 text-orange-700" />,
     title: "Quiz, earn XP, keep your streak",
     body:
       "5-question MCQs at the end of each topic. Pass 3/5 to mark complete, earn XP, climb levels, and unlock badges.",
     accent: "from-orange-500/15 to-amber-500/10",
-    badge: "bg-orange-500/15 text-orange-300 border-orange-500/30",
+    badge: "bg-orange-500/15 text-orange-700 border-orange-500/30",
   },
 ];
 
@@ -54,8 +54,8 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
-            From <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">curious</span> to{" "}
-            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">consistent</span> in three steps.
+            From <span className="text-primary">curious</span> to{" "}
+            <span className="text-primary">consistent</span> in three steps.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
             One loop. Repeat daily. Watch your streak grow.

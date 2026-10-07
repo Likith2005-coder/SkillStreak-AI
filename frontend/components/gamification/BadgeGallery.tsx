@@ -65,7 +65,7 @@ export function BadgeGallery({ badges }: Props) {
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-full transition-transform group-hover:scale-110",
                   earned
-                    ? "bg-amber-500/20 text-amber-300"
+                    ? "bg-amber-500/20 text-amber-700"
                     : "bg-muted/40 text-muted-foreground"
                 )}
               >

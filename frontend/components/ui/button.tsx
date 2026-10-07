@@ -5,25 +5,32 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+// The chunky "pressable" button. A solid face sits on a darker edge (the
+// box-shadow); pressing sinks the face into the edge (translate-y + shadow
+// collapse) so it feels like a physical key, not a hover effect. The edge
+// height is a CSS variable so each size can carry a proportional depth.
+const PRESS =
+  "[--edge:4px] shadow-[0_var(--edge)_0_var(--edge-color)] hover:brightness-[1.06] active:translate-y-[var(--edge)] active:shadow-[0_0_0_var(--edge-color)]";
+
 const buttonVariants = cva(
-  // Note: bouncy press uses CSS transform-gpu + transition-transform with a custom cubic-bezier for spring-y feel.
-  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.94] hover:-translate-y-px disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0",
+  "relative inline-flex select-none items-center justify-center gap-2 rounded-2xl font-extrabold tracking-wide ring-offset-background transition-[transform,box-shadow,filter,background-color] duration-100 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none motion-reduce:transition-none",
   {
     variants: {
       variant: {
-        default:
-          "bg-gradient-to-r from-cyan-400 to-teal-300 text-primary-foreground font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/50",
-        outline:
-          "border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
-        ghost: "text-foreground hover:bg-accent hover:text-accent-foreground",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-lg shadow-destructive/20 hover:opacity-90",
+        default: `${PRESS} bg-primary text-primary-foreground [--edge-color:hsl(var(--primary-shade))]`,
+        secondary: `${PRESS} bg-secondary text-secondary-foreground [--edge-color:hsl(var(--secondary-shade))]`,
+        energy: `${PRESS} bg-energy text-white [--edge-color:hsl(var(--energy-shade))]`,
+        grape: `${PRESS} bg-grape text-white [--edge-color:hsl(var(--grape-shade))]`,
+        outline: `${PRESS} border-2 border-border bg-card text-foreground [--edge-color:hsl(var(--border))] hover:bg-muted`,
+        ghost: "text-foreground hover:bg-muted",
+        destructive: `${PRESS} bg-destructive text-destructive-foreground [--edge-color:hsl(var(--destructive-shade))]`,
+        link: "h-auto px-0 text-secondary underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-8 px-3",
-        md: "h-10 px-4 py-2",
-        lg: "h-11 px-6 text-base",
-        icon: "h-10 w-10",
+        sm: "h-9 px-4 text-xs [--edge:3px]",
+        md: "h-11 px-5 text-sm",
+        lg: "h-14 px-8 text-base",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: { variant: "default", size: "md" },

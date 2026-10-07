@@ -166,7 +166,7 @@ export function PlanClient() {
         </div>
         {profile.certification && (
           <p className="mt-4 text-xs text-muted-foreground">
-            Certification track: <span className="text-cyan-300">{profile.certification}</span>
+            Certification track: <span className="text-cyan-700">{profile.certification}</span>
           </p>
         )}
       </motion.section>
@@ -219,10 +219,10 @@ export function PlanClient() {
       >
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-500/25 ring-1 ring-violet-400/40">
-            <Rocket className="h-5 w-5 text-violet-300" />
+            <Rocket className="h-5 w-5 text-violet-700" />
           </span>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-300">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-700">
               Capstone project
             </p>
             <h2 className="font-display text-xl font-bold tracking-tight sm:text-2xl">
@@ -238,7 +238,7 @@ export function PlanClient() {
         <ol className="mt-3 space-y-2.5">
           {plan.capstone.steps.map((s, i) => (
             <li key={i} className="flex items-start gap-3 text-sm leading-relaxed text-foreground/90">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/25 font-mono text-[10px] font-bold text-violet-200">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/25 font-mono text-[10px] font-bold text-violet-700">
                 {i + 1}
               </span>
               {s}
@@ -252,7 +252,7 @@ export function PlanClient() {
             <ul className="mt-2 space-y-1.5">
               {plan.capstone.deliverables.map((d, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
                   {d}
                 </li>
               ))}
@@ -274,7 +274,7 @@ export function PlanClient() {
             {...rise(0.1)}
             className="mt-12 flex items-center gap-2.5 font-display text-2xl font-bold tracking-tight"
           >
-            <Calendar className="h-5 w-5 text-cyan-300" /> Your first week
+            <Calendar className="h-5 w-5 text-cyan-700" /> Your first week
           </motion.h2>
           <div className="mt-5 space-y-2.5">
             {plan.week1.map((d, i) => (
@@ -284,16 +284,16 @@ export function PlanClient() {
                 className="rounded-2xl border border-border/70 bg-card/80 p-4"
               >
                 <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan-300">
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan-700">
                     Day {d.day}
                   </span>
                   <span className="text-sm font-semibold text-foreground">{d.focus}</span>
                 </div>
                 <div className="mt-2.5 grid gap-x-6 gap-y-1.5 text-[13px] text-muted-foreground sm:grid-cols-2">
-                  <DayItem icon={<Clapperboard className="h-3.5 w-3.5 text-violet-300" />} label="Watch" text={d.watch} />
-                  <DayItem icon={<FileText className="h-3.5 w-3.5 text-cyan-300" />} label="Read" text={d.read} />
-                  <DayItem icon={<Dumbbell className="h-3.5 w-3.5 text-emerald-300" />} label="Practice" text={d.practice} />
-                  <DayItem icon={<Target className="h-3.5 w-3.5 text-amber-300" />} label="Quiz" text={d.quiz} />
+                  <DayItem icon={<Clapperboard className="h-3.5 w-3.5 text-violet-700" />} label="Watch" text={d.watch} />
+                  <DayItem icon={<FileText className="h-3.5 w-3.5 text-cyan-700" />} label="Read" text={d.read} />
+                  <DayItem icon={<Dumbbell className="h-3.5 w-3.5 text-emerald-700" />} label="Practice" text={d.practice} />
+                  <DayItem icon={<Target className="h-3.5 w-3.5 text-amber-700" />} label="Quiz" text={d.quiz} />
                 </div>
               </motion.div>
             ))}
@@ -342,9 +342,9 @@ function ChipList({
 }) {
   const chip =
     tone === "emerald"
-      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-      : "border-rose-500/30 bg-rose-500/10 text-rose-200";
-  const head = tone === "emerald" ? "text-emerald-300" : "text-rose-300";
+      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+      : "border-rose-500/30 bg-rose-500/10 text-rose-700";
+  const head = tone === "emerald" ? "text-emerald-700" : "text-rose-700";
   return (
     <div>
       <p className={cn("flex items-center gap-1.5 text-xs font-medium", head)}>
@@ -373,10 +373,10 @@ function DayItem({ icon, label, text }: { icon: React.ReactNode; label: string; 
 }
 
 const RESOURCE_META = [
-  { key: "videos" as const, label: "Videos", icon: Clapperboard, color: "text-violet-300" },
-  { key: "docs" as const, label: "Docs", icon: FileText, color: "text-cyan-300" },
-  { key: "courses" as const, label: "Courses", icon: BookOpen, color: "text-emerald-300" },
-  { key: "practice" as const, label: "Practice", icon: Dumbbell, color: "text-amber-300" },
+  { key: "videos" as const, label: "Videos", icon: Clapperboard, color: "text-violet-700" },
+  { key: "docs" as const, label: "Docs", icon: FileText, color: "text-cyan-700" },
+  { key: "courses" as const, label: "Courses", icon: BookOpen, color: "text-emerald-700" },
+  { key: "practice" as const, label: "Practice", icon: Dumbbell, color: "text-amber-700" },
 ];
 
 function PhaseCard({
@@ -404,7 +404,7 @@ function PhaseCard({
         aria-expanded={open}
         className="flex w-full items-center gap-4 p-5 text-left"
       >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 font-mono text-sm font-bold text-cyan-300 ring-1 ring-cyan-400/30">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 font-mono text-sm font-bold text-cyan-700 ring-1 ring-cyan-400/30">
           {String(phase.n).padStart(2, "0")}
         </span>
         <span className="min-w-0 flex-1">
@@ -462,7 +462,7 @@ function PhaseCard({
                           href={resourceHref(r, key)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[13px] text-foreground/85 underline-offset-4 transition-colors hover:text-cyan-300 hover:underline"
+                          className="text-[13px] text-foreground/85 underline-offset-4 transition-colors hover:text-cyan-700 hover:underline"
                         >
                           {r.title}
                         </a>
@@ -476,13 +476,13 @@ function PhaseCard({
 
           {phase.exercises?.length > 0 && (
             <div>
-              <h4 className="flex items-center gap-1.5 text-xs font-medium text-emerald-300">
+              <h4 className="flex items-center gap-1.5 text-xs font-medium text-emerald-700">
                 <Dumbbell className="h-3.5 w-3.5" /> Hands-on exercises
               </h4>
               <ul className="mt-2 space-y-1.5">
                 {phase.exercises.map((e, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70" />
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600/70" />
                     {e}
                   </li>
                 ))}
@@ -492,14 +492,14 @@ function PhaseCard({
 
           {phase.miniProject && (
             <div className="rounded-xl border border-violet-500/25 bg-violet-500/[0.07] p-4">
-              <h4 className="flex items-center gap-1.5 text-xs font-medium text-violet-300">
+              <h4 className="flex items-center gap-1.5 text-xs font-medium text-violet-700">
                 <Hammer className="h-3.5 w-3.5" /> Mini project — {phase.miniProject.title}
               </h4>
               <p className="mt-1.5 text-[13px] text-muted-foreground">{phase.miniProject.brief}</p>
               <ol className="mt-2.5 space-y-1.5">
                 {phase.miniProject.steps.map((s, i) => (
                   <li key={i} className="flex items-start gap-2 text-[13px] text-foreground/85">
-                    <span className="mt-px shrink-0 font-mono text-[11px] font-bold text-violet-300">
+                    <span className="mt-px shrink-0 font-mono text-[11px] font-bold text-violet-700">
                       {i + 1}.
                     </span>
                     {s}
@@ -509,8 +509,8 @@ function PhaseCard({
             </div>
           )}
 
-          <p className="flex items-start gap-2 text-[13px] text-amber-200/90">
-            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />
+          <p className="flex items-start gap-2 text-[13px] text-amber-700/90">
+            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" />
             <span>
               <span className="font-medium">Milestone:</span> {phase.milestone}
             </span>

@@ -53,7 +53,7 @@ export function ShikiCodeBlock({ code, lang }: ShikiCodeBlockProps) {
             aria-label={copied ? "Copied" : "Copy code"}
           >
             {copied ? (
-              <Check className="h-3 w-3 text-emerald-400" />
+              <Check className="h-3 w-3 text-emerald-600" />
             ) : (
               <Copy className="h-3 w-3" />
             )}

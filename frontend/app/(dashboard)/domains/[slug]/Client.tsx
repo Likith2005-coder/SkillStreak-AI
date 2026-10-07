@@ -231,7 +231,7 @@ export default function RoadmapPage() {
           href={`/domains/${data.slug}/plan`}
           className="mt-6 flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-5 py-3.5 transition-colors hover:border-violet-400/45 hover:bg-violet-500/[0.12]"
         >
-          <Sparkles className="h-4 w-4 shrink-0 text-violet-300" />
+          <Sparkles className="h-4 w-4 shrink-0 text-violet-700" />
           <span className="flex-1 text-sm text-foreground/90">
             <span className="font-semibold">Your personalized plan</span>
             <span className="text-muted-foreground">
@@ -239,7 +239,7 @@ export default function RoadmapPage() {
               — phases, resources, projects and your capstone build.
             </span>
           </span>
-          <ArrowRight className="h-4 w-4 shrink-0 text-violet-300" />
+          <ArrowRight className="h-4 w-4 shrink-0 text-violet-700" />
         </Link>
       )}
 
@@ -444,7 +444,7 @@ function InterviewUnlockCTA({
             <Briefcase className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1 text-white">
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-amber-200">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-amber-700">
               <Sparkles className="h-3 w-3" />
               {isAdmin && !completionUnlocked
                 ? "Admin override · Interview prep"

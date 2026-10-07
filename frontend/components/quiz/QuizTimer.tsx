@@ -53,7 +53,7 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
 
   return (
     <div className="flex items-center gap-2">
-      <Timer className={cn("h-3.5 w-3.5", danger ? "text-rose-400" : "text-muted-foreground")} />
+      <Timer className={cn("h-3.5 w-3.5", danger ? "text-rose-600" : "text-muted-foreground")} />
       <div className="relative h-1 w-32 overflow-hidden rounded-full bg-card">
         <div
           className={cn(
@@ -63,7 +63,7 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className={cn("w-10 text-right text-xs tabular-nums", danger && "text-rose-400")}>
+      <span className={cn("w-10 text-right text-xs tabular-nums", danger && "text-rose-600")}>
         {remaining}s
       </span>
     </div>

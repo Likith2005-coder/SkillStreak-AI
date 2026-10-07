@@ -64,7 +64,7 @@ export function QuizResult({ topicId, score, total, passed, breakdown, onRetake 
             passed ? "bg-emerald-500/20" : "bg-rose-500/20"
           )}
         >
-          <Award className={cn("h-8 w-8", passed ? "text-emerald-300" : "text-rose-300")} />
+          <Award className={cn("h-8 w-8", passed ? "text-emerald-700" : "text-rose-700")} />
         </div>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight">
           {score}/{total}
@@ -110,7 +110,7 @@ function BreakdownRow({ index, item }: { index: number; item: QuizBreakdownItem 
         <div
           className={cn(
             "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-            item.correct ? "bg-emerald-500/20 text-emerald-200" : "bg-rose-500/20 text-rose-200"
+            item.correct ? "bg-emerald-500/20 text-emerald-700" : "bg-rose-500/20 text-rose-700"
           )}
         >
           {item.correct ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
@@ -147,7 +147,7 @@ function Row({ label, value, tone }: { label: string; value: string; tone: "good
   return (
     <div className="flex gap-2">
       <span className="text-muted-foreground">{label}:</span>
-      <span className={cn(tone === "good" ? "text-emerald-300" : "text-rose-300")}>{value}</span>
+      <span className={cn(tone === "good" ? "text-emerald-700" : "text-rose-700")}>{value}</span>
     </div>
   );
 }

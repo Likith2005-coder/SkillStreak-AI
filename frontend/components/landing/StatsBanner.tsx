@@ -33,7 +33,7 @@ const STATS: Stat[] = [
     value: 9,
     label: "Tech domains",
     hint: "Cybersecurity to Cloud",
-    accent: "text-cyan-300",
+    accent: "text-cyan-700",
     glow: "0 0 48px rgba(34,211,238,0.45)",
   },
   {
@@ -42,7 +42,7 @@ const STATS: Stat[] = [
     suffix: "+",
     label: "Curated topics",
     hint: "Across 5 deep roadmaps",
-    accent: "text-violet-300",
+    accent: "text-violet-700",
     glow: "0 0 48px rgba(167,139,250,0.45)",
   },
   {
@@ -50,7 +50,7 @@ const STATS: Stat[] = [
     value: 5,
     label: "AI MCQs / topic",
     hint: "Validated by a 2nd-pass LLM",
-    accent: "text-emerald-300",
+    accent: "text-emerald-700",
     glow: "0 0 48px rgba(52,211,153,0.45)",
   },
   {
@@ -58,7 +58,7 @@ const STATS: Stat[] = [
     value: 8,
     label: "Unlockable badges",
     hint: "Streaks, perfect quizzes, more",
-    accent: "text-lime-300",
+    accent: "text-lime-700",
     glow: "0 0 48px rgba(163,230,53,0.45)",
   },
 ];
@@ -98,7 +98,7 @@ export function StatsBanner() {
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight md:text-5xl">
             Built end-to-end.{" "}
             <span className="inline-flex items-baseline gap-3 whitespace-nowrap">
-              <span className="text-cyan-300 [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">
+              <span className="text-cyan-700">
                 Live today
               </span>
               {/* live pulse dot — makes "Live" literal */}

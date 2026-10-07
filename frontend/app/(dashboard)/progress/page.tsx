@@ -80,7 +80,7 @@ export default function ProgressPage() {
         title={
           <>
             {overview.totals.topicsCompleted} of {overview.totals.topicsAvailable} topics ·{" "}
-            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">{totalPct}%</span>
+            <span className="text-primary">{totalPct}%</span>
           </>
         }
         subtitle={`Heatmap covers the last 90 days · ${heatmap.totalActiveDays} active days · ${heatmap.totalActions} total actions`}

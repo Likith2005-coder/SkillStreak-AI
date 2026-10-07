@@ -204,7 +204,7 @@ export default function LoginPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-400"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-600"
             >
               <ArrowUp className="h-3 w-3" />
               Caps Lock is on

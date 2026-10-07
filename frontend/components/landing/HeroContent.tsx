@@ -77,7 +77,7 @@ export function HeroContent() {
           <span className="block">
             Master{" "}
             <RotatingWord
-              className="text-primary [text-shadow:0_0_18px_hsl(187_92%_52%/0.45)]"
+              className="text-primary"
               words={[
                 "tech",
                 "Cyber",
@@ -94,7 +94,7 @@ export function HeroContent() {
           </span>
           <span className="block">
             one{" "}
-            <span className="text-energy [text-shadow:0_0_28px_hsl(var(--energy)/0.45)]">
+            <span className="text-energy">
               streak
             </span>{" "}
             at a time.

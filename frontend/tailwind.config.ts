@@ -25,10 +25,14 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          bright: "hsl(var(--primary-bright))",
+          shade: "hsl(var(--primary-shade))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          bright: "hsl(var(--secondary-bright))",
+          shade: "hsl(var(--secondary-shade))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -41,20 +45,35 @@ const config: Config = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
-          // Error COPY uses this; the DEFAULT is a fill and fails 4.5:1 as text.
+          // Error COPY uses this; the DEFAULT is a fill.
           text: "hsl(var(--destructive-text))",
+          bright: "hsl(var(--destructive-bright))",
+          shade: "hsl(var(--destructive-shade))",
         },
-        // Streak / progress energy. Reserved: if it isn't momentum, it isn't lime.
-        energy: "hsl(var(--energy))",
+        // Fixed meanings: energy = streak, xp = XP and rewards, grape = level/league.
+        energy: {
+          DEFAULT: "hsl(var(--energy))",
+          bright: "hsl(var(--energy-bright))",
+          shade: "hsl(var(--energy-shade))",
+        },
+        xp: {
+          DEFAULT: "hsl(var(--xp))",
+          bright: "hsl(var(--xp-bright))",
+          shade: "hsl(var(--xp-shade))",
+        },
+        grape: {
+          DEFAULT: "hsl(var(--grape))",
+          bright: "hsl(var(--grape-bright))",
+          shade: "hsl(var(--grape-shade))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
       },
       fontFamily: {
-        sans: ["var(--font-archivo)", "system-ui", "sans-serif"],
-        // Same family as body; `.font-display` in globals.css widens it.
-        display: ["var(--font-archivo)", "system-ui", "sans-serif"],
+        sans: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        display: ["var(--font-nunito)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {

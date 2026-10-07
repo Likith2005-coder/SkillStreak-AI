@@ -51,11 +51,11 @@ export function XpBar({ level, xp }: Props) {
       <div className="relative flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-            <Trophy className="h-4 w-4 text-amber-300 [filter:drop-shadow(0_0_8px_rgba(251,191,36,0.5))]" />
+            <Trophy className="h-4 w-4 text-amber-700 [filter:drop-shadow(0_0_8px_rgba(251,191,36,0.5))]" />
             Level
           </div>
           <div
-            className="mt-1 text-5xl font-bold tabular-nums tracking-tight text-violet-300"
+            className="mt-1 text-5xl font-bold tabular-nums tracking-tight text-violet-700"
             style={{ textShadow: "0 0 36px rgba(167,139,250,0.5)" }}
           >
             {level}

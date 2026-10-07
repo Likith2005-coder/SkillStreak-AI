@@ -40,17 +40,17 @@ import { cn } from "@/lib/utils";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const CERT_LEVEL_STYLES: Record<string, { badge: string; label: string }> = {
-  foundation: { badge: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30", label: "Foundation" },
-  intermediate: { badge: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30", label: "Intermediate" },
-  advanced: { badge: "bg-violet-500/15 text-violet-300 border-violet-500/30", label: "Advanced" },
-  expert: { badge: "bg-amber-500/15 text-amber-300 border-amber-500/30", label: "Expert" },
+  foundation: { badge: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30", label: "Foundation" },
+  intermediate: { badge: "bg-cyan-500/15 text-cyan-700 border-cyan-500/30", label: "Intermediate" },
+  advanced: { badge: "bg-violet-500/15 text-violet-700 border-violet-500/30", label: "Advanced" },
+  expert: { badge: "bg-amber-500/15 text-amber-700 border-amber-500/30", label: "Expert" },
 };
 
 const SENIORITY_STYLES: Record<string, string> = {
-  entry: "text-emerald-300",
-  mid: "text-cyan-300",
-  senior: "text-violet-300",
-  lead: "text-amber-300",
+  entry: "text-emerald-700",
+  mid: "text-cyan-700",
+  senior: "text-violet-700",
+  lead: "text-amber-700",
 };
 
 // Rotating status lines for the (potentially 20-40s) cold generation.
@@ -320,7 +320,7 @@ function CareerView({
                     </span>
                   ))}
                 </div>
-                <p className="mt-3 flex items-start gap-1.5 text-xs text-emerald-300/90">
+                <p className="mt-3 flex items-start gap-1.5 text-xs text-emerald-700/90">
                   <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
                     <span className="font-medium">Done when:</span> {st.milestone}

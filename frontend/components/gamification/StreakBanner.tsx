@@ -59,8 +59,8 @@ export function StreakBanner({ streak }: Props) {
           className={cn(
             "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ring-1",
             lit
-              ? "bg-orange-500/20 text-orange-300 ring-orange-400/30 [filter:drop-shadow(0_0_14px_rgba(251,146,60,0.5))]"
-              : "bg-muted/30 text-orange-300/40 ring-border/60"
+              ? "bg-orange-500/20 text-orange-700 ring-orange-400/30 [filter:drop-shadow(0_0_14px_rgba(251,146,60,0.5))]"
+              : "bg-muted/30 text-orange-700/40 ring-border/60"
           )}
         >
           <Flame className="h-7 w-7" />
@@ -70,7 +70,7 @@ export function StreakBanner({ streak }: Props) {
             <span
               className={cn(
                 "text-5xl font-bold tracking-tight tabular-nums",
-                lit ? "text-orange-300" : "text-foreground/80"
+                lit ? "text-orange-700" : "text-foreground/80"
               )}
               style={
                 lit
@@ -99,7 +99,7 @@ export function StreakBanner({ streak }: Props) {
           <div
             key={i}
             title="Streak freeze (auto-spent on a missed day)"
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 [filter:drop-shadow(0_0_8px_rgba(34,211,238,0.35))]"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-700 [filter:drop-shadow(0_0_8px_rgba(34,211,238,0.35))]"
           >
             <Snowflake className="h-4 w-4" />
           </div>

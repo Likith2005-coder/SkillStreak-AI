@@ -55,7 +55,7 @@ export default function DomainsPage() {
             Pick your domain
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            9 paths into <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">modern tech</span>
+            9 paths into <span className="text-primary">modern tech</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Five domains have full curated roadmaps. The other four are served

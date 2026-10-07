@@ -102,7 +102,7 @@ export function SessionSidebar() {
                         setEditingId(null);
                       }}
                       aria-label="Save"
-                      className="text-emerald-400 hover:text-emerald-300"
+                      className="text-emerald-600 hover:text-emerald-700"
                     >
                       <Check className="h-4 w-4" />
                     </button>

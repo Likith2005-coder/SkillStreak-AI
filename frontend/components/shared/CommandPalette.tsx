@@ -114,7 +114,7 @@ export function CommandPalette() {
           )}
 
           <Command.Group heading="Actions" className="text-xs uppercase tracking-wider text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5">
-            <Item icon={<Flame className="h-4 w-4 text-orange-400" />} label="Use a streak freeze" subtitle="Rescue a missed day" onSelect={() => go("/settings")} />
+            <Item icon={<Flame className="h-4 w-4 text-orange-600" />} label="Use a streak freeze" subtitle="Rescue a missed day" onSelect={() => go("/settings")} />
           </Command.Group>
         </Command.List>
 

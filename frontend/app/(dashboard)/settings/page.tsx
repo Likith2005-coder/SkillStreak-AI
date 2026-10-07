@@ -224,7 +224,7 @@ export default function SettingsPage() {
               label="Level"
               value={
                 <span className="inline-flex items-center gap-1.5">
-                  <Trophy className="h-3.5 w-3.5 text-amber-400" />
+                  <Trophy className="h-3.5 w-3.5 text-amber-600" />
                   Lvl {user.level}
                 </span>
               }
@@ -238,7 +238,7 @@ export default function SettingsPage() {
 
         {/* ── Streak rescue ─────────────────────────────────── */}
         <SettingCard
-          icon={<Flame className="h-4 w-4 text-orange-400" />}
+          icon={<Flame className="h-4 w-4 text-orange-600" />}
           title="Streak"
           hint="Use a freeze proactively to protect tomorrow's day."
         >
@@ -262,7 +262,7 @@ export default function SettingsPage() {
                 {Array.from({ length: streak?.freezesAvailable ?? 0 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                    className="flex h-7 w-7 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-700"
                   >
                     <Snowflake className="h-3.5 w-3.5" />
                   </div>
@@ -287,7 +287,7 @@ export default function SettingsPage() {
 
         {/* ── Learning preferences ──────────────────────────── */}
         <SettingCard
-          icon={<Target className="h-4 w-4 text-violet-400" />}
+          icon={<Target className="h-4 w-4 text-violet-600" />}
           title="Learning preferences"
           hint="Adjust what the AI tutor knows about your level and goals."
         >
@@ -348,7 +348,7 @@ export default function SettingsPage() {
 
         {/* ── Notifications (existing) ──────────────────────── */}
         <SettingCard
-          icon={<Bell className="h-4 w-4 text-orange-400" />}
+          icon={<Bell className="h-4 w-4 text-orange-600" />}
           title="Notifications"
           hint="Email reminders and weekly summary."
         >
@@ -372,7 +372,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between rounded-xl border border-border bg-card/80 p-4">
               <div>
                 <div className="flex items-center gap-2 text-sm font-medium">
-                  <Mail className="h-4 w-4 text-cyan-400" />
+                  <Mail className="h-4 w-4 text-cyan-600" />
                   Weekly digest
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -416,7 +416,7 @@ export default function SettingsPage() {
 
         {/* ── Danger zone ───────────────────────────────────── */}
         <SettingCard
-          icon={<LogOut className="h-4 w-4 text-rose-400" />}
+          icon={<LogOut className="h-4 w-4 text-rose-600" />}
           title="Account actions"
           hint="Sign out of this browser."
         >

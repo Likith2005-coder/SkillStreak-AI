@@ -49,7 +49,7 @@ const STEPS: Step[] = [
     icon: BookOpen,
     from: "from-rose-500",
     to: "to-pink-500",
-    text: "text-rose-300",
+    text: "text-rose-700",
     glowHex: "#f43f5e",
   },
   {
@@ -59,7 +59,7 @@ const STEPS: Step[] = [
     icon: Bot,
     from: "from-violet-500",
     to: "to-violet-500",
-    text: "text-violet-300",
+    text: "text-violet-700",
     glowHex: "#8b5cf6",
   },
   {
@@ -69,7 +69,7 @@ const STEPS: Step[] = [
     icon: ListChecks,
     from: "from-emerald-500",
     to: "to-teal-500",
-    text: "text-emerald-300",
+    text: "text-emerald-700",
     glowHex: "#10b981",
   },
   {
@@ -79,7 +79,7 @@ const STEPS: Step[] = [
     icon: Trophy,
     from: "from-amber-500",
     to: "to-orange-500",
-    text: "text-amber-300",
+    text: "text-amber-700",
     glowHex: "#f59e0b",
   },
   {
@@ -89,7 +89,7 @@ const STEPS: Step[] = [
     icon: TrendingUp,
     from: "from-cyan-500",
     to: "to-sky-500",
-    text: "text-cyan-300",
+    text: "text-cyan-700",
     glowHex: "#22d3ee",
   },
 ];
@@ -160,7 +160,7 @@ export function ScrollStory() {
           </p>
           <h2 className="mx-auto mt-3 max-w-3xl text-center font-display text-3xl font-bold tracking-tight md:text-5xl">
             From curious to{" "}
-            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">capable</span>, step by step.
+            <span className="text-primary">capable</span>, step by step.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-muted-foreground md:text-base">
             Five tightly-integrated systems working as one loop — so you don&apos;t
@@ -301,7 +301,7 @@ function TrailVignette() {
             {...rise(0.15 + i * 0.1)}
             className={`rounded-full border px-2.5 py-1 text-[10px] font-medium ${
               i === 0
-                ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
+                ? "border-rose-500/40 bg-rose-500/15 text-rose-700"
                 : "border-border bg-card/60 text-muted-foreground"
             }`}
           >
@@ -358,10 +358,10 @@ function TutorVignette() {
     <div className="absolute inset-0 flex flex-col p-5">
       <div className="flex items-center gap-2 border-b border-border/60 pb-3">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-violet-500/20 ring-1 ring-violet-400/40">
-          <Bot className="h-4 w-4 text-violet-300" />
+          <Bot className="h-4 w-4 text-violet-700" />
         </span>
         <span className="text-xs font-medium text-foreground">AI tutor</span>
-        <span className="ml-auto flex items-center gap-1.5 text-[10px] text-emerald-300">
+        <span className="ml-auto flex items-center gap-1.5 text-[10px] text-emerald-700">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute h-full w-full animate-ping motion-reduce:animate-none rounded-full bg-emerald-400 opacity-60" />
             <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -383,8 +383,8 @@ function TutorVignette() {
           className="max-w-[85%] rounded-2xl rounded-bl-sm bg-card/80 px-3.5 py-2.5 text-xs leading-relaxed text-foreground/90 ring-1 ring-border"
         >
           Think of a bank vault: only tellers get in{" "}
-          <span className="text-violet-300">(confidentiality)</span>, the ledger
-          can&apos;t be forged <span className="text-violet-300">(integrity)</span>,
+          <span className="text-violet-700">(confidentiality)</span>, the ledger
+          can&apos;t be forged <span className="text-violet-700">(integrity)</span>,
           and it opens when you need it…
           <motion.span
             className="ml-0.5 inline-block h-3 w-[2px] translate-y-0.5 bg-violet-300"
@@ -397,7 +397,7 @@ function TutorVignette() {
           {["Give me an analogy", "Quiz me"].map((chip) => (
             <span
               key={chip}
-              className="rounded-full border border-violet-500/40 bg-violet-500/10 px-2.5 py-1 text-[10px] text-violet-200"
+              className="rounded-full border border-violet-500/40 bg-violet-500/10 px-2.5 py-1 text-[10px] text-violet-700"
             >
               {chip}
             </span>
@@ -418,7 +418,7 @@ function QuizVignette() {
   return (
     <div className="absolute inset-0 flex flex-col p-5">
       <motion.div {...rise(0.15)} className="flex items-center justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-300">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-700">
           Quiz · Q3/5
         </span>
         <span className="rounded-full border border-border bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground">
@@ -471,7 +471,7 @@ function QuizVignette() {
         transition={{ delay: 1.35, duration: 0.4, ease: EASE }}
         className="mt-auto flex items-center justify-between"
       >
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
           <Zap className="h-3.5 w-3.5" />
           +25 XP · perfect
         </span>
@@ -495,10 +495,10 @@ function HabitVignette() {
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
           className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500/20 ring-1 ring-orange-400/40 [filter:drop-shadow(0_0_12px_rgba(251,146,60,0.5))]"
         >
-          <Flame className="h-6 w-6 text-orange-300" />
+          <Flame className="h-6 w-6 text-orange-700" />
         </motion.span>
         <div>
-          <div className="text-xl font-bold tabular-nums text-orange-300">
+          <div className="text-xl font-bold tabular-nums text-orange-700">
             5-day streak
           </div>
           <div className="text-[10px] text-muted-foreground">
@@ -514,12 +514,12 @@ function HabitVignette() {
             {...pop(0.35 + i * 0.12)}
             className={`flex h-10 w-9 flex-col items-center justify-center gap-0.5 rounded-lg border text-[9px] ${
               i < litCount
-                ? "border-orange-400/40 bg-orange-500/15 text-orange-200"
+                ? "border-orange-400/40 bg-orange-500/15 text-orange-700"
                 : "border-dashed border-border bg-card/50 text-muted-foreground"
             }`}
           >
             <Flame
-              className={`h-3.5 w-3.5 ${i < litCount ? "text-orange-300" : "text-muted-foreground/30"}`}
+              className={`h-3.5 w-3.5 ${i < litCount ? "text-orange-700" : "text-muted-foreground/30"}`}
             />
             {d}
           </motion.div>
@@ -548,10 +548,10 @@ function HabitVignette() {
         className="mt-auto flex items-center justify-between rounded-xl border border-border bg-card/70 px-3 py-2"
       >
         <span className="flex items-center gap-2 text-[11px] text-foreground">
-          <Trophy className="h-3.5 w-3.5 text-amber-300" />
+          <Trophy className="h-3.5 w-3.5 text-amber-700" />
           Weekly leaderboard
         </span>
-        <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+        <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold text-amber-700">
           #2 ↑
         </span>
       </motion.div>
@@ -578,7 +578,7 @@ function AnalyticsVignette() {
   return (
     <div className="absolute inset-0 flex flex-col p-5">
       <motion.div {...rise(0.15)} className="flex items-center justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-300">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-700">
           Progress · last 90 days
         </span>
         <span className="rounded-full border border-border bg-card/70 px-2 py-0.5 text-[10px] text-muted-foreground">
@@ -623,7 +623,7 @@ function AnalyticsVignette() {
         </svg>
         <motion.span
           {...pop(2.1)}
-          className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-200"
+          className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-700"
         >
           <TrendingUp className="h-3 w-3" />
           quiz scores ↑ 12%
@@ -637,11 +637,11 @@ function AnalyticsVignette() {
         transition={{ delay: 2.3, duration: 0.4, ease: EASE }}
         className="mt-auto flex items-center justify-between rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2"
       >
-        <span className="flex items-center gap-2 text-[11px] text-rose-200">
-          <TrendingDown className="h-3.5 w-3.5 text-rose-300" />
+        <span className="flex items-center gap-2 text-[11px] text-rose-700">
+          <TrendingDown className="h-3.5 w-3.5 text-rose-700" />
           Weak area detected: SQL injection
         </span>
-        <span className="rounded-full bg-rose-400/15 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+        <span className="rounded-full bg-rose-400/15 px-2 py-0.5 text-[10px] font-bold text-rose-700">
           review →
         </span>
       </motion.div>
@@ -657,7 +657,7 @@ function StaticFallback() {
       <div className="mx-auto max-w-5xl">
         <p className="text-center text-xs uppercase tracking-[0.3em] text-primary">How it works</p>
         <h2 className="mx-auto mt-3 max-w-3xl text-center font-display text-3xl font-bold tracking-tight md:text-5xl">
-          From curious to <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">capable</span>, step by step.
+          From curious to <span className="text-primary">capable</span>, step by step.
         </h2>
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {STEPS.map((s) => {

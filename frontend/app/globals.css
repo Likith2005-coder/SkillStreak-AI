@@ -3,28 +3,54 @@
 @tailwind utilities;
 
 @layer base {
-  /* ── "Signal" identity ────────────────────────────────────────
-     Deep-ink learning console. Electric cyan is the signal (primary),
-     violet the depth (secondary), lime the energy accent (streaks). */
+  /* ── SkillStreak "Playground" theme ──────────────────────────
+     Bright, chunky, celebratory. Every brand colour has three roles:
+       face   — deep enough to carry white text at AA (>=4.5:1)
+       bright — the juicy tone for icons, fills and celebrations
+       shade  — the darker bottom edge that makes buttons pressable
+     Meanings are fixed: green = progress / continue / correct,
+     orange = streak, gold = XP, grape = level and league, red = wrong. */
   :root {
-    --background: 210 40% 99%;
-    --foreground: 214 60% 8%;
+    --background: 0 0% 100%;
+    --foreground: 215 22% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 214 60% 8%;
-    --primary: 189 94% 43%;
-    --primary-foreground: 200 80% 98%;
-    --secondary: 265 84% 60%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 205 30% 95%;
-    --muted-foreground: 210 12% 42%;
-    --accent: 205 30% 95%;
-    --accent-foreground: 214 47% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 210 25% 89%;
-    --input: 210 25% 89%;
-    --ring: 189 94% 43%;
-    --radius: 0.6rem;
+    --card-foreground: 215 22% 20%;
+    --muted: 210 25% 96%;
+    --muted-foreground: 215 14% 40%;
+    --accent: 210 25% 96%;
+    --accent-foreground: 215 22% 20%;
+    --border: 214 20% 88%;
+    --input: 214 16% 70%;
+    --ring: 201 90% 37%;
+    --radius: 0.9rem;
+
+    --primary: 104 66% 31%;
+    --primary-foreground: 0 0% 100%;
+    --primary-bright: 100 72% 45%;
+    --primary-shade: 106 70% 22%;
+
+    --secondary: 201 90% 37%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-bright: 199 92% 52%;
+    --secondary-shade: 203 90% 26%;
+
+    --energy: 22 100% 39%;
+    --energy-bright: 28 100% 55%;
+    --energy-shade: 18 100% 30%;
+
+    --xp: 38 100% 31%;
+    --xp-bright: 43 100% 52%;
+    --xp-shade: 36 100% 34%;
+
+    --grape: 262 62% 50%;
+    --grape-bright: 262 80% 66%;
+    --grape-shade: 262 55% 36%;
+
+    --destructive: 0 78% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-text: 0 72% 42%;
+    --destructive-bright: 0 85% 60%;
+    --destructive-shade: 0 70% 33%;
   }
 
   .dark {
@@ -55,6 +81,21 @@
        inputs, so --input is deliberately lighter than --border. */
     --input: 205 32% 38%;
     --ring: 187 92% 52%;
+    --primary-bright: 187 92% 60%;
+    --primary-shade: 187 92% 30%;
+    --secondary-bright: 265 85% 75%;
+    --secondary-shade: 265 60% 40%;
+    --energy-bright: 84 85% 70%;
+    --energy-shade: 84 70% 35%;
+    --xp: 43 100% 60%;
+    --xp-bright: 43 100% 66%;
+    --xp-shade: 36 100% 34%;
+    --grape: 265 85% 72%;
+    --grape-bright: 265 85% 80%;
+    --grape-shade: 265 55% 40%;
+    --destructive-bright: 0 85% 65%;
+    --destructive-shade: 0 70% 33%;
+    --radius: 0.6rem;
   }
 }
 
@@ -69,13 +110,32 @@
 }
 
 @layer utilities {
-  /* Display voice: Archivo stretched toward its expanded end. Wide, heavy and
-     slightly tight reads as engineered lettering rather than a generic
-     headline face. Tailwind sets the family; this sets the width. */
+  /* Chunky card: the card version of the pressable button. A 2px outline
+     with a thicker bottom edge gives every surface a little weight, like a
+     game tile. `.card-press` adds the same sink-on-press for clickable ones. */
+  .card-chunky {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--border));
+    border-bottom-width: 5px;
+    border-radius: 1.25rem;
+  }
+  .card-press {
+    transition: transform 100ms ease-out, border-bottom-width 100ms ease-out, margin 100ms ease-out;
+  }
+  .card-press:active {
+    transform: translateY(3px);
+    border-bottom-width: 2px;
+    margin-bottom: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-press, .card-press:active { transition: none; transform: none; }
+  }
+
+  /* Display voice: Nunito at its heaviest, slightly tight. Chunky and
+     friendly, like a game title. */
   .font-display {
-    font-stretch: 118%;
-    letter-spacing: -0.025em;
-    font-feature-settings: "ss01" 1;
+    font-weight: 900;
+    letter-spacing: -0.02em;
   }
   /* Live numbers: tabular so counters don't jitter while they tick. */
   .font-mono, .tabular { font-variant-numeric: tabular-nums; }
@@ -94,7 +154,10 @@
      generic-AI tell the detector flags. `bg-[length:200%_auto]` gives
      `animate-gradient` room to flow. */
   .gradient-text {
-    @apply bg-gradient-to-r from-cyan-300 to-violet-400 bg-clip-text text-transparent bg-[length:200%_auto];
+    /* The wordmark: solid, heavy, brand green. The old cyan→violet clip was
+       built for dark ink and is unreadable on white. */
+    color: hsl(var(--primary));
+    font-weight: 900;
   }
   .gradient-bg-animated {
     background: linear-gradient(
@@ -210,12 +273,16 @@
     pointer-events: none;
     opacity: 0.045;
     isolation: isolate;
+    /* Grain is a dark-ink texture; on the bright theme it reads as dirt. */
+    display: none;
     transform: translateZ(0);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
   /* Hero sparkles. A CSS keyframe rather than 14 framer motion values, so
      these ride the compositor and stay out of the shared JS frameloop that
      the scroll springs use. */
+  .dark .noise-overlay { display: block; }
+
   @keyframes sparkle-rise {
     from { transform: translate3d(0, 20px, 0); }
     to   { transform: translate3d(0, -110vh, 0); }
@@ -332,7 +399,7 @@
        70%, so the extra blur bought almost nothing for a much larger
        texture. */
     filter: blur(48px);
-    opacity: 0.22;
+    opacity: 0.12;
     will-change: transform;
     transform: translate3d(0, 0, 0);
   }

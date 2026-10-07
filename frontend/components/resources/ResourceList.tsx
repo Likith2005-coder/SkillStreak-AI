@@ -63,7 +63,7 @@ export function ResourceList({ topicId }: Props) {
   return (
     <div className="space-y-4">
       {data.videos.length > 0 && (
-        <Section title="Watch" icon={<Video className="h-4 w-4 text-rose-400" />} count={data.videos.length}>
+        <Section title="Watch" icon={<Video className="h-4 w-4 text-rose-600" />} count={data.videos.length}>
           <div className="space-y-2">
             {data.videos.map((r, i) => (
               <VideoRow key={r.id} item={r} index={i} />
@@ -73,10 +73,10 @@ export function ResourceList({ topicId }: Props) {
       )}
 
       {data.docs.length > 0 && (
-        <Section title="Read" icon={<FileText className="h-4 w-4 text-cyan-400" />} count={data.docs.length}>
+        <Section title="Read" icon={<FileText className="h-4 w-4 text-cyan-600" />} count={data.docs.length}>
           <div className="space-y-2">
             {data.docs.map((r, i) => (
-              <ResourceRow key={r.id} item={r} index={i} icon={<FileText className="h-4 w-4 text-cyan-400" />} />
+              <ResourceRow key={r.id} item={r} index={i} icon={<FileText className="h-4 w-4 text-cyan-600" />} />
             ))}
           </div>
         </Section>
@@ -139,7 +139,7 @@ function VideoRow({ item, index }: { item: ResourceItem; index: number }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <Youtube className="h-5 w-5 text-rose-400" />
+            <Youtube className="h-5 w-5 text-rose-600" />
           </div>
         )}
         <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity group-hover:opacity-100">
@@ -149,7 +149,7 @@ function VideoRow({ item, index }: { item: ResourceItem; index: number }) {
       <div className="min-w-0 flex-1">
         <div className="line-clamp-2 text-sm font-medium leading-snug text-foreground">{item.title}</div>
         <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <Youtube className="h-3 w-3 text-rose-400" />
+          <Youtube className="h-3 w-3 text-rose-600" />
           <span className="truncate">{item.source}</span>
         </div>
       </div>

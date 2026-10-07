@@ -49,7 +49,7 @@ export function Navbar() {
         <Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold">
           <Sparkles className="h-4 w-4 text-primary" />
           <span className="gradient-text">SkillStreak</span>
-          <span className="text-foreground">AI</span>
+          <span className="hidden text-foreground sm:inline">AI</span>
         </Link>
 
         <div className="flex items-center gap-1.5 lg:gap-2.5">

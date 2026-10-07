@@ -259,7 +259,7 @@ export default function TopicPage() {
               disabled={completeState !== "idle"}
             >
               {completeState === "saving" && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
-              {completeState === "done" && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
+              {completeState === "done" && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
               {completeState === "done"
                 ? "Completed"
                 : completeState === "saving"

@@ -135,7 +135,7 @@ export function LandingIntro() {
       ref={overlayRef}
       aria-hidden
       onPointerDown={startReveal}
-      className="landing-intro fixed inset-0 z-[100] cursor-pointer select-none overflow-hidden bg-background"
+      className="dark landing-intro fixed inset-0 z-[100] cursor-pointer select-none overflow-hidden bg-background"
       initial={{ clipPath: "inset(0 0 0% 0)" }}
       animate={{ clipPath: revealing ? "inset(0 0 100% 0)" : "inset(0 0 0% 0)" }}
       transition={{ duration: 0.9, ease: CURTAIN }}

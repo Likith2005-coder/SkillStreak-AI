@@ -12,7 +12,7 @@ export function WeakAreasCard({ items }: Props) {
   return (
     <div className="rounded-2xl border border-border bg-card/80 p-5">
       <div className="flex items-center gap-2 text-sm font-medium">
-        <AlertTriangle className="h-4 w-4 text-amber-400" />
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
         Weak areas
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
@@ -38,7 +38,7 @@ export function WeakAreasCard({ items }: Props) {
                     <div className={cn("mt-0.5 text-[11px]", s.text)}>{w.domain.name}</div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700">
                       {w.bestScore ?? 0}/5
                     </span>
                     <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

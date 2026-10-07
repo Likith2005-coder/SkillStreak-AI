@@ -177,7 +177,7 @@ function HeroPick({ item }: { item: RecommendedTopic }) {
 
         <div className="relative mt-auto flex items-center justify-between gap-3 pt-4">
           {/* real numbers: topic_complete 10 XP + quiz_perfect 25 XP */}
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-[11px] font-medium text-amber-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-[11px] font-medium text-amber-700">
             <Zap className="h-3.5 w-3.5" />
             Up to 35 XP
           </span>

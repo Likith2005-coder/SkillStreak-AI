@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Archivo, Martian_Mono } from "next/font/google";
+import { Nunito, Martian_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ViewTransitions } from "next-view-transitions";
 import { RouteProgress } from "@/components/shared/RouteProgress";
 import "./globals.css";
 
-// One family, two voices. Archivo's width axis (62-125%) lets the same face
-// read as quiet body copy at 100% and as engineered, instrument-panel display
-// type when stretched — see `.font-display` in globals.css. Pairing two
-// different grotesques would blur together; one family on a contrast axis
-// doesn't.
-const archivo = Archivo({
+// Nunito: rounded, friendly, and heavy enough (up to 1000) for chunky,
+// game-like headings. One family at many weights keeps the voice coherent.
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-archivo",
+  variable: "--font-nunito",
   display: "swap",
-  axes: ["wdth"],
 });
 
 // Readouts: XP, streak counts, terminal output, step numbers. A mono with its
@@ -43,8 +39,8 @@ export default function RootLayout({
     // into each other instead of hard-cutting. Browsers without support just
     // navigate normally.
     <ViewTransitions>
-    <html lang="en" className="dark">
-      <body className={`${archivo.variable} ${martianMono.variable} font-sans`}>
+    <html lang="en">
+      <body className={`${nunito.variable} ${martianMono.variable} font-sans`}>
         <RouteProgress />
         {children}
         <Toaster

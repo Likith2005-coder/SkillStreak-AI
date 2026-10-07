@@ -2,22 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
-import { WeekStrip } from "@/components/gamification/WeekStrip";
+import { PathPreview } from "@/components/playground/PathPreview";
+import { ArsenalCard, LeagueCard, LevelCard, StatPills, StreakCard } from "@/components/playground/Rail";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   ArrowRight,
   BarChart3,
-  BookOpen,
-  Bot,
-  ListChecks,
-  Sparkles,
-  Target,
-  Terminal,
-  Trophy,
 } from "lucide-react";
-import { TiltCard } from "@/components/landing/TiltCard";
-import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/userStore";
 import {
   apiErrorMessage,
@@ -32,11 +24,8 @@ import {
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { MagneticDomainDock } from "@/components/progress/MagneticDomainDock";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
-import { StreakBanner } from "@/components/gamification/StreakBanner";
-import { XpBar } from "@/components/gamification/XpBar";
 import { BadgeCoverflow } from "@/components/gamification/BadgeCoverflow";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
-import { useCountUp } from "@/hooks/useCountUp";
 
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
@@ -71,162 +60,64 @@ export default function DashboardPage() {
     : 0;
 
   return (
-    <main className="container px-4 py-10">
-      {/* Hero: greeting + next action on the left, this week's rhythm on the
-          right. The orbs and floating stat chips are gone — they duplicated
-          the numbers already in the navbar meter and the cards below. */}
-      <section className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-8">
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            Mission control
-          </div>
-          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">
-            Welcome back,{" "}
-            <span className="text-primary [text-shadow:0_0_28px_hsl(187_92%_52%/0.45)]">{user.name.split(" ")[0]}</span>.
+    <main className="container px-4 py-8">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        {/* ── Centre: the path ─────────────────────────────── */}
+        <div className="min-w-0">
+          <h1 className="font-display text-3xl text-foreground sm:text-4xl [text-wrap:balance]">
+            Welcome back, {user.name.split(" ")[0]}!
           </h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            {overview?.recommended
-              ? `Pick up where you left off — your next topic is ready below.`
-              : `Browse domains, take a quiz, or chat with the AI tutor anytime.`}
-          </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            {overview?.recommended ? (
-              <Button asChild size="lg">
-                <Link href={`/topic/${overview.recommended.topicId}`}>
-                  <BookOpen className="h-4 w-4" />
-                  Continue: {overview.recommended.topicTitle}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg">
-                <Link href="/domains">
-                  <BookOpen className="h-4 w-4" /> Browse domains <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            )}
-            <Button asChild variant="outline" size="lg">
-              <Link href="/chatbot">
-                <Bot className="h-4 w-4" /> Open AI tutor
-              </Link>
-            </Button>
-          </div>
-        </div>
-        <WeekStrip className="relative z-10 mt-8 lg:absolute lg:right-8 lg:top-1/2 lg:mt-0 lg:w-[360px] lg:-translate-y-1/2" />
-      </section>
-
-      {/* Featured: Ethical Hacking Arsenal */}
-      <motion.section
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.05 }}
-        className="mt-6"
-      >
-        <Link
-          href="/toolkit"
-          className="group relative block overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card/60 to-card/60 p-6 transition-all hover:border-emerald-400/60 hover:shadow-[0_0_40px_-12px_rgba(16,185,129,0.5)]"
-        >
-          {/* faint code-grid accent on the right */}
-          <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-1/2 opacity-[0.15]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(16,185,129,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.5) 1px, transparent 1px)",
-              backgroundSize: "26px 26px",
-              maskImage: "linear-gradient(to left, #000, transparent)",
-              WebkitMaskImage: "linear-gradient(to left, #000, transparent)",
-            }}
-            aria-hidden
-          />
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10">
-                <Terminal className="h-6 w-6 text-emerald-400" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-semibold tracking-tight">Ethical Hacking Arsenal</h2>
-                  <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
-                    New
-                  </span>
-                </div>
-                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                  Every phase of a penetration test — recon, scanning, exploitation, post-exploitation
-                  — with the real tools and AI-generated, command-packed guides for each. Full hacker
-                  terminal inside.
+          {/* Unit banner: the one thing to do next, as a big chunky slab */}
+          {overview?.recommended ? (
+            <section
+              className="mt-5 flex flex-col gap-5 rounded-[1.5rem] bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between"
+              style={{ boxShadow: "0 6px 0 hsl(var(--primary-shade))" }}
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-extrabold uppercase tracking-wider">
+                  {overview.recommended.domain.name} · Next up
+                </p>
+                <p className="mt-1 font-display text-2xl leading-tight sm:text-3xl [text-wrap:balance]">
+                  {overview.recommended.topicTitle}
                 </p>
               </div>
-            </div>
-            <Button
-              size="lg"
-              className="shrink-0 border-emerald-500/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25"
-              variant="outline"
+              <Link
+                href={`/topic/${overview.recommended.topicId}`}
+                className="focus-ring inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-8 text-base font-black uppercase tracking-wide text-primary transition-[transform,box-shadow] duration-100 [box-shadow:0_5px_0_hsl(var(--primary-shade))] active:translate-y-[5px] active:[box-shadow:none] motion-reduce:transition-none"
+              >
+                Continue <ArrowRight className="h-5 w-5" strokeWidth={3} />
+              </Link>
+            </section>
+          ) : (
+            <section
+              className="mt-5 flex flex-col gap-5 rounded-[1.5rem] bg-secondary p-6 text-secondary-foreground sm:flex-row sm:items-center sm:justify-between"
+              style={{ boxShadow: "0 6px 0 hsl(var(--secondary-shade))" }}
             >
-              Enter the Arsenal
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Button>
-          </div>
-        </Link>
-      </motion.section>
+              <p className="font-display text-2xl leading-tight">Pick a domain and start your first streak.</p>
+              <Link
+                href="/domains"
+                className="focus-ring inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-8 text-base font-black uppercase tracking-wide text-secondary [box-shadow:0_5px_0_hsl(var(--secondary-shade))] active:translate-y-[5px] active:[box-shadow:none]"
+              >
+                Browse domains <ArrowRight className="h-5 w-5" strokeWidth={3} />
+              </Link>
+            </section>
+          )}
 
-      {error && (
-        <div className="mt-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
-          {error}
-        </div>
-      )}
+          {overview?.recommended && (
+            <section className="mt-8" aria-label="Your path">
+              <PathPreview
+                slug={overview.recommended.domain.slug}
+                currentTopicId={overview.recommended.topicId}
+              />
+            </section>
+          )}
 
-      {/* Streak + XP */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-2">
-        <StreakBanner streak={streak} />
-        <XpBar level={user.level} xp={user.xp} />
-      </section>
-
-      {/* Stat tiles — big accent-lit numerals, same treatment as the landing */}
-      <section className="mt-6 grid gap-4 sm:grid-cols-3">
-        <NumberTile
-          icon={<Target className="h-4 w-4" />}
-          label="Topics completed"
-          target={overview?.totals.topicsCompleted ?? 0}
-          hint={overview ? `of ${overview.totals.topicsAvailable} · ${totalPct}%` : "loading…"}
-          accent={{
-            text: "text-cyan-300",
-            glow: "0 0 32px rgba(34,211,238,0.45)",
-            bg: "from-cyan-500/10",
-            chip: "bg-cyan-500/15 text-cyan-300",
-          }}
-        />
-        <NumberTile
-          icon={<ListChecks className="h-4 w-4" />}
-          label="Recent quiz attempts"
-          target={overview?.totals.attempts ?? 0}
-          hint="last 5 shown below"
-          accent={{
-            text: "text-emerald-300",
-            glow: "0 0 32px rgba(52,211,153,0.45)",
-            bg: "from-emerald-500/10",
-            chip: "bg-emerald-500/15 text-emerald-300",
-          }}
-        />
-        <Link href="/leaderboard" className="block">
-          <StatTile
-            icon={<Trophy className="h-4 w-4" />}
-            label="Weekly leaderboard"
-            value="View →"
-            hint="Top 10 by XP this week"
-            /* It's a link, not a metric — keep it a step smaller than the
-               numeral tiles so the row reads as one calm hierarchy. */
-            valueClassName="text-2xl"
-            accent={{
-              text: "text-amber-300",
-              glow: "0 0 24px rgba(251,191,36,0.4)",
-              bg: "from-amber-500/10",
-              chip: "bg-amber-500/15 text-amber-300",
-            }}
-          />
-        </Link>
-      </section>
+          {error && (
+            <div className="mt-6 rounded-xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
+              {error}
+            </div>
+          )}
 
       {/* Recommended next */}
       <section className="mt-8">
@@ -307,94 +198,18 @@ export default function DashboardPage() {
           <BadgeCoverflow badges={badges} />
         </section>
       )}
+        </div>
+
+        {/* ── Right rail: vital signs ──────────────────────── */}
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start" aria-label="Your stats">
+          <StatPills streakDays={streak?.currentStreak ?? 0} xp={user.xp} level={user.level} />
+          <StreakCard streak={streak} />
+          <LevelCard xp={user.xp} />
+          <LeagueCard />
+          <ArsenalCard />
+        </aside>
+      </div>
     </main>
-  );
-}
-
-type TileAccent = {
-  /** numeral color class */
-  text: string;
-  /** numeral text-shadow */
-  glow: string;
-  /** gradient-from class for the card wash */
-  bg: string;
-  /** icon chip classes */
-  chip: string;
-};
-
-function StatTile({
-  icon,
-  label,
-  value,
-  hint,
-  accent,
-  valueClassName = "text-4xl",
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  hint: string;
-  accent: TileAccent;
-  valueClassName?: string;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Pointer-reactive 3D tilt + cursor glare — same tactile feel as the
-          landing's bento cards. */}
-      <TiltCard
-        max={7}
-        className={cn(
-          "group relative rounded-2xl border border-border bg-gradient-to-br via-card/50 to-card/50 p-5 transition-shadow hover:shadow-lg hover:shadow-primary/10",
-          accent.bg
-        )}
-      >
-        <div className="flex items-center gap-2.5 text-xs uppercase tracking-wider text-muted-foreground">
-          <span
-            className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-lg",
-              accent.chip
-            )}
-          >
-            {icon}
-          </span>
-          {label}
-        </div>
-        <div
-          className={cn(
-            "mt-3 font-bold tracking-tight tabular-nums",
-            valueClassName,
-            accent.text
-          )}
-          style={{ textShadow: accent.glow }}
-        >
-          {value}
-        </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
-      </TiltCard>
-    </motion.div>
-  );
-}
-
-function NumberTile({
-  icon,
-  label,
-  target,
-  hint,
-  accent,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  target: number;
-  hint: string;
-  accent: TileAccent;
-}) {
-  const display = useCountUp(target, 1100);
-  return (
-    <StatTile icon={icon} label={label} value={`${display}`} hint={hint} accent={accent} />
   );
 }
 
@@ -443,8 +258,8 @@ function RecentAttempts({ items }: { items: RecentAttempt[] }) {
                 className={cn(
                   "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
                   a.passed
-                    ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                    : "border border-rose-500/30 bg-rose-500/10 text-rose-300"
+                    ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                    : "border border-rose-500/30 bg-rose-500/10 text-rose-700"
                 )}
               >
                 {a.score}/{a.total}

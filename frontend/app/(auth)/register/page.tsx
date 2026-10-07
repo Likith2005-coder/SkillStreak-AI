@@ -197,7 +197,7 @@ export default function RegisterPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-400"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-600"
             >
               <ArrowUp className="h-3 w-3" />
               Caps Lock is on
@@ -294,7 +294,7 @@ export default function RegisterPage() {
 function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li
-      className={`inline-flex items-center gap-1 ${ok ? "text-emerald-400" : "text-muted-foreground"}`}
+      className={`inline-flex items-center gap-1 ${ok ? "text-emerald-600" : "text-muted-foreground"}`}
     >
       {ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3 opacity-50" />}
       {children}

@@ -82,8 +82,8 @@ export function QuestionCard({
               <span
                 className={cn(
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold",
-                  isCorrect && "border-emerald-500/60 bg-emerald-500/20 text-emerald-200",
-                  isWrongPick && "border-rose-500/60 bg-rose-500/20 text-rose-200",
+                  isCorrect && "border-emerald-500/60 bg-emerald-500/20 text-emerald-700",
+                  isWrongPick && "border-rose-500/60 bg-rose-500/20 text-rose-700",
                   !revealed && "border-border text-muted-foreground group-hover:text-foreground",
                   revealed && !isCorrect && !isWrongPick && "border-border text-muted-foreground"
                 )}

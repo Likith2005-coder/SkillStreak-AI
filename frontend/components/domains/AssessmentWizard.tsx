@@ -252,7 +252,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
                           )}
                         >
                           <span className="flex items-center gap-2 font-medium">
-                            {selected && <Check className="h-3.5 w-3.5 text-cyan-300" />}
+                            {selected && <Check className="h-3.5 w-3.5 text-cyan-700" />}
                             {opt.label}
                           </span>
                           {opt.hint && (
@@ -286,7 +286,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
               Great — that&apos;s everything I need. Designing your {domainName} plan…
             </MentorBubble>
             <div className="flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-4 py-3.5 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none text-violet-300" />
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none text-violet-700" />
               <span>
                 Building your phases, picking resources, designing your capstone
                 project — usually 20–40 seconds.
@@ -343,7 +343,7 @@ function MentorBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-500/25 ring-1 ring-violet-400/30">
-        <Bot className="h-4 w-4 text-violet-300" />
+        <Bot className="h-4 w-4 text-violet-700" />
       </span>
       <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/70 bg-card/70 px-4 py-2.5 text-sm leading-relaxed text-foreground/95">
         {children}
@@ -371,10 +371,10 @@ export function AssessmentIntro({
       className="mx-auto max-w-xl text-center"
     >
       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-500/20 ring-1 ring-violet-400/30">
-        <Sparkles className="h-7 w-7 text-violet-300" />
+        <Sparkles className="h-7 w-7 text-violet-700" />
       </span>
       <h1 className="mt-6 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-        Before the roadmap — let&apos;s make it <span className="text-cyan-300">yours</span>.
+        Before the roadmap — let&apos;s make it <span className="text-cyan-700">yours</span>.
       </h1>
       <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
         Answer a few quick questions about your goals and experience with{" "}

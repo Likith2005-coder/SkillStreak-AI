@@ -53,14 +53,14 @@ const ACCENTS: Record<
   string,
   { from: string; to: string; text: string; glow: string }
 > = {
-  footprints: { from: "from-cyan-500/25", to: "to-sky-500/10", text: "text-cyan-300", glow: "0 0 60px -10px rgba(34,211,238,0.55)" },
-  flame: { from: "from-orange-500/25", to: "to-amber-500/10", text: "text-orange-300", glow: "0 0 60px -10px rgba(251,146,60,0.55)" },
-  trophy: { from: "from-rose-500/25", to: "to-pink-500/10", text: "text-rose-300", glow: "0 0 60px -10px rgba(251,113,133,0.55)" },
-  award: { from: "from-violet-500/25", to: "to-purple-500/10", text: "text-violet-300", glow: "0 0 60px -10px rgba(167,139,250,0.55)" },
-  rocket: { from: "from-emerald-500/25", to: "to-teal-500/10", text: "text-emerald-300", glow: "0 0 60px -10px rgba(52,211,153,0.55)" },
-  "globe-2": { from: "from-blue-500/25", to: "to-indigo-500/10", text: "text-blue-300", glow: "0 0 60px -10px rgba(96,165,250,0.55)" },
-  moon: { from: "from-indigo-500/25", to: "to-violet-500/10", text: "text-indigo-300", glow: "0 0 60px -10px rgba(129,140,248,0.55)" },
-  sunrise: { from: "from-amber-500/25", to: "to-yellow-500/10", text: "text-amber-300", glow: "0 0 60px -10px rgba(251,191,36,0.55)" },
+  footprints: { from: "from-cyan-500/25", to: "to-sky-500/10", text: "text-cyan-700", glow: "0 0 60px -10px rgba(34,211,238,0.55)" },
+  flame: { from: "from-orange-500/25", to: "to-amber-500/10", text: "text-orange-700", glow: "0 0 60px -10px rgba(251,146,60,0.55)" },
+  trophy: { from: "from-rose-500/25", to: "to-pink-500/10", text: "text-rose-700", glow: "0 0 60px -10px rgba(251,113,133,0.55)" },
+  award: { from: "from-violet-500/25", to: "to-purple-500/10", text: "text-violet-700", glow: "0 0 60px -10px rgba(167,139,250,0.55)" },
+  rocket: { from: "from-emerald-500/25", to: "to-teal-500/10", text: "text-emerald-700", glow: "0 0 60px -10px rgba(52,211,153,0.55)" },
+  "globe-2": { from: "from-blue-500/25", to: "to-indigo-500/10", text: "text-blue-700", glow: "0 0 60px -10px rgba(96,165,250,0.55)" },
+  moon: { from: "from-indigo-500/25", to: "to-violet-500/10", text: "text-indigo-700", glow: "0 0 60px -10px rgba(129,140,248,0.55)" },
+  sunrise: { from: "from-amber-500/25", to: "to-yellow-500/10", text: "text-amber-700", glow: "0 0 60px -10px rgba(251,191,36,0.55)" },
 };
 
 const FALLBACK_ACCENT = ACCENTS.award;
