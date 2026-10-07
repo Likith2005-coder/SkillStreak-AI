@@ -1,14 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 /**
  * Pointer-reactive 3D tilt with a soft glare that follows the cursor.

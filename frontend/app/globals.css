@@ -69,6 +69,17 @@
 }
 
 @layer utilities {
+  /* Display voice: Archivo stretched toward its expanded end. Wide, heavy and
+     slightly tight reads as engineered lettering rather than a generic
+     headline face. Tailwind sets the family; this sets the width. */
+  .font-display {
+    font-stretch: 118%;
+    letter-spacing: -0.025em;
+    font-feature-settings: "ss01" 1;
+  }
+  /* Live numbers: tabular so counters don't jitter while they tick. */
+  .font-mono, .tabular { font-variant-numeric: tabular-nums; }
+
   /* One focus treatment for every interactive element that isn't a Button or
      Input (those carry their own). Keyboard users must always be able to see
      where they are — several controls previously set `outline-none` with no
@@ -443,7 +454,7 @@
      background with a green phosphor grid + scanlines, monospace
      type, and green-recoloured prose for the AI guides. */
   .hacker {
-    font-family: ui-monospace, "JetBrains Mono", "Fira Code", "Cascadia Code", "Courier New", monospace;
+    font-family: var(--font-mono), ui-monospace, monospace;
   }
   .hacker-bg {
     position: fixed;

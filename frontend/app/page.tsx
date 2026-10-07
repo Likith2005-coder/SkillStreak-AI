@@ -22,7 +22,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { CursorFollower } from "@/components/landing/CursorFollower";
-import { Sparkles } from "@/components/landing/Sparkles";
+import { SignalField } from "@/components/landing/SignalField";
 import { Reveal } from "@/components/landing/Reveal";
 import { TiltCard } from "@/components/landing/TiltCard";
 import { HeroContent } from "@/components/landing/HeroContent";
@@ -60,18 +60,10 @@ export default function LandingPage() {
 
       {/* ── Section 1 — Hero with prominent 3D robot ─────────── */}
       <section className="relative grid min-h-[100svh] grid-cols-1 items-center gap-8 px-4 pb-12 pt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-12 lg:pt-28">
-        {/* Signature: neon knowledge-grid horizon receding behind the hero */}
-        <div className="grid-scene" aria-hidden>
-          <div className="grid-floor" />
-        </div>
-
-        {/* Giant kinetic ghost word — the studio "WORK" motif */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden opacity-50"
-        >
-          <span className="ghost-word text-[24vw] leading-none">MASTERY</span>
-        </div>
+        {/* The Signal Field: living lines that converge into the SignalBot.
+            Replaces the grid floor, ghost word and sparkles — one strong
+            background idea instead of four competing ones. */}
+        <SignalField className="absolute inset-0 z-0" />
 
         {/* Studio chrome — vertical side-rail label (far left edge, clears the hero text) */}
         <div className="pointer-events-none absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 lg:block">
@@ -88,7 +80,6 @@ export default function LandingPage() {
           <ControlDial />
         </div>
 
-        <Sparkles count={8} />
         {/* Text column — animated hero */}
         <HeroContent />
 

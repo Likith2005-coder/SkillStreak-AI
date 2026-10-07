@@ -11,14 +11,8 @@
  */
 
 import { useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   BookOpen,
   Bot,

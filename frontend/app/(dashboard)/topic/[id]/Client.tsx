@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { ShikiCodeBlock } from "@/components/shared/ShikiCodeBlock";
 import {
   ArrowLeft,

@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 export function HackerShell({
   prompt,

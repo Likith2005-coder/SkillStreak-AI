@@ -16,7 +16,7 @@
  */
 
 import { useCallback, useEffect, useRef } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 // On-brand + cute: robot mascot, streak fire, signal spark, momentum.
 const DEFAULT_EMOJIS = ["🤖", "🔥", "⚡", "✨", "⭐", "🚀", "🧠", "🏆", "💜", "🎉"];

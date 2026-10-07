@@ -1,22 +1,29 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Archivo, Martian_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { RouteProgress } from "@/components/shared/RouteProgress";
 import "./globals.css";
 
-const inter = Inter({
+// One family, two voices. Archivo's width axis (62-125%) lets the same face
+// read as quiet body copy at 100% and as engineered, instrument-panel display
+// type when stretched — see `.font-display` in globals.css. Pairing two
+// different grotesques would blur together; one family on a contrast axis
+// doesn't.
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-archivo",
   display: "swap",
+  axes: ["wdth"],
 });
 
-// Display face for hero + section headings (landing, page heroes). Inter
-// stays the workhorse for body and UI; Space Grotesk carries the big type.
-const spaceGrotesk = Space_Grotesk({
+// Readouts: XP, streak counts, terminal output, step numbers. A mono with its
+// own personality rather than the system stack, so numbers feel like live
+// instrument values instead of code samples.
+const martianMono = Martian_Mono({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-mono",
   display: "swap",
-  weight: ["500", "600", "700"],
+  axes: ["wdth"],
 });
 
 export const metadata: Metadata = {
@@ -32,7 +39,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans`}>
+      <body className={`${archivo.variable} ${martianMono.variable} font-sans`}>
         <RouteProgress />
         {children}
         <Toaster

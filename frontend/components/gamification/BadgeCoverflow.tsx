@@ -18,7 +18,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   Award,
   ChevronLeft,

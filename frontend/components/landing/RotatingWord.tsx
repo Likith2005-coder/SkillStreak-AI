@@ -14,7 +14,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 interface RotatingWordProps {
   words: string[];
@@ -48,17 +49,32 @@ export function RotatingWord({ words, intervalMs = 2200, className }: RotatingWo
       </span>
       {/* Nested clip layer — absolute so it doesn't disturb the baseline above,
           overflow-hidden so the vertical slide is contained to the line box. */}
-      <span className="absolute inset-0 overflow-hidden">
+      {/* The clip extends past the line box on every side, and the word is
+          offset back by the same amount, so the baseline is unchanged. Without
+          the bleed, tall ascenders/descenders and the text-shadow glow get
+          sliced at the box edge into a visible rectangle. */}
+      <span
+        className="absolute -inset-x-[0.5em] -bottom-[0.35em] -top-[0.2em] overflow-hidden"
+        style={{
+          // Soft top/bottom edges instead of a hard clip: words fade as they
+          // slide out (never painting over the line above), and the glow
+          // never ends in a visible rectangle.
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0, #000 0.32em, #000 calc(100% - 0.4em), transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0, #000 0.32em, #000 calc(100% - 0.4em), transparent 100%)",
+        }}
+      >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={words[i]}
-            initial={{ y: "115%" }}
-            animate={{ y: "0%" }}
-            exit={{ y: "-115%" }}
+            initial={{ y: "70%", opacity: 0 }}
+            animate={{ y: "0%", opacity: 1 }}
+            exit={{ y: "-70%", opacity: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             // The gradient must live on the *visible* word — a stacked child
             // can't inherit a clipped gradient from an ancestor.
-            className={`absolute inset-0 whitespace-nowrap ${className ?? ""}`}
+            className={`absolute left-[0.5em] top-[0.2em] whitespace-nowrap ${className ?? ""}`}
           >
             {words[i]}
           </motion.span>

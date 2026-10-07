@@ -16,7 +16,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Magnetic } from "./Magnetic";
 import { EmojiBurst } from "./EmojiBurst";
 

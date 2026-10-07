@@ -12,13 +12,8 @@
  */
 
 import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type Variants,
-} from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   Bot,
   ChevronDown,
@@ -37,7 +32,7 @@ const container: Variants = {
 };
 const item: Variants = {
   hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE } },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE }, transitionEnd: { filter: "none" } },
 };
 
 export function HeroContent() {
@@ -82,7 +77,7 @@ export function HeroContent() {
           <span className="block">
             Master{" "}
             <RotatingWord
-              className="text-primary [text-shadow:0_0_32px_hsl(187_92%_52%/0.5)]"
+              className="text-primary [text-shadow:0_0_18px_hsl(187_92%_52%/0.45)]"
               words={[
                 "tech",
                 "Cyber",

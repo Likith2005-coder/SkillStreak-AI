@@ -12,7 +12,8 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { ArrowLeft, Bot, Check, Loader2, Sparkles } from "lucide-react";
 
 import {

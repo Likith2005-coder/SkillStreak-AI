@@ -9,7 +9,8 @@
  */
 
 import { useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 interface MagneticProps {
   children: React.ReactNode;

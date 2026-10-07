@@ -26,7 +26,8 @@ import {
   Rocket,
   Star,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 import { Button } from "@/components/ui/button";
 import {

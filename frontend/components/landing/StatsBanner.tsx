@@ -13,7 +13,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { BookOpen, Layers, ListChecks, Trophy } from "lucide-react";
 
 type Stat = {
@@ -128,11 +129,11 @@ function StatColumn({ stat, index }: { stat: Stat; index: number }) {
 
   return (
     <motion.div
-      initial={reduce ? { opacity: 1 } : { opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       onViewportEnter={() => setCounting(true)}
       viewport={{ once: true, amount: 0.4 }}
-      transition={{ duration: 0.55, delay: index * 0.1, ease: EASE }}
+      transition={{ duration: reduce ? 0 : 0.55, delay: reduce ? 0 : index * 0.1, ease: EASE }}
       className={`relative flex flex-col items-center px-4 text-center ${
         index > 0 ? "lg:border-l lg:border-border/40" : ""
       }`}

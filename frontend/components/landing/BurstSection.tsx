@@ -35,7 +35,8 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Sparkles } from "lucide-react";
 import { HeroCTA } from "./HeroCTA";
 import { MeshText } from "./MeshText";
@@ -103,7 +104,7 @@ export function BurstSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden"
+      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden py-16"
     >
       {/* Smooth fade at the top + bottom edges so the gradient blends into
           adjacent dark sections instead of meeting them at a hard line. */}
@@ -143,10 +144,10 @@ export function BurstSection() {
       />
 
       {/* ── Foreground stack: wordmark (always visible) + CTA (fades in) ── */}
-      <div className="relative z-10 flex max-h-full w-full flex-col items-center gap-8 overflow-y-auto px-4 py-10 text-center sm:gap-10 lg:gap-12">
+      <div className="relative z-10 flex w-full flex-col items-center gap-8 px-4 py-10 text-center sm:gap-10 lg:gap-12">
         {/* Wordmark — fades in once, stays put forever after */}
         <motion.div
-          initial={reduced ? { opacity: 1 } : { opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 40 }}
           transition={{
             delay: reduced ? 0 : 0.15,
@@ -184,7 +185,7 @@ export function BurstSection() {
 
         {/* CTA — fades in below the wordmark, both visible together */}
         <motion.div
-          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{
             opacity: animate ? 1 : 0,
             y: animate ? 0 : 30,

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import dynamicImport from "next/dynamic";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { ArrowRight, BookOpen, MessageCircle, Sparkles } from "lucide-react";
 import { apiErrorMessage, fetchDomains, type Domain } from "@/lib/api";
 import { styleFor } from "@/lib/domain-style";

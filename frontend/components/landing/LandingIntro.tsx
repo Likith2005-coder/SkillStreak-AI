@@ -19,7 +19,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { introBus } from "./introBus";
 
 const EASE = [0.22, 1, 0.36, 1] as const;

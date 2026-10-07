@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Check, Lock, Play, Star } from "lucide-react";
 import type { RoadmapTopic } from "@/lib/api";
 import { styleFor, type DomainColor } from "@/lib/domain-style";

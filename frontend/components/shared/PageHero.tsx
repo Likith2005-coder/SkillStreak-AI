@@ -7,7 +7,8 @@
  * world. Pass `right` for a slot on the right (stat, robot, badge, etc.).
  */
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
 
 export function PageHero({

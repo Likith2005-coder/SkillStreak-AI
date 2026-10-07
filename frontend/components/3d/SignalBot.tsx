@@ -15,7 +15,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, Sparkles } from "@react-three/drei";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 type PointerRef = React.MutableRefObject<{ x: number; y: number }>;
 

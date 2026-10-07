@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { AlertCircle, ArrowUp, Eye, EyeOff, Loader2 } from "lucide-react";
 // motion is kept for the error banner reveal; form itself uses a CSS shake
 // to keep the hydrated DOM identical to the server-rendered shell.

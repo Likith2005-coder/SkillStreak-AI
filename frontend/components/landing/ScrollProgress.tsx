@@ -9,7 +9,8 @@
  * so it never interferes with clicks.
  */
 
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 export function ScrollProgress() {
   const reduce = useReducedMotion();

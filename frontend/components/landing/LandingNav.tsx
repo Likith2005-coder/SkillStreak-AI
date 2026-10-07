@@ -9,7 +9,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Sparkles as SparklesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIntroDone } from "./introBus";
@@ -36,9 +37,12 @@ export function LandingNav() {
 
   return (
     <motion.header
-      initial={reduce ? false : { y: -24, opacity: 0 }}
+      // The server can't know the motion preference, so the initial state must
+      // not depend on it (that mismatch broke hydration). Reduced motion just
+      // makes the reveal instant.
+      initial={{ y: -24, opacity: 0 }}
       animate={introDone || reduce ? { y: 0, opacity: 1 } : { y: -24, opacity: 0 }}
-      transition={{ duration: 0.6, ease: EASE }}
+      transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
           ? "border-b border-border/60 bg-background/90 backdrop-blur-sm"

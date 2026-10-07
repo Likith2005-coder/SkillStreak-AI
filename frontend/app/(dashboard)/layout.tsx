@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/shared/Navbar";
 import { ChatWidget } from "@/components/chat/ChatWidget";

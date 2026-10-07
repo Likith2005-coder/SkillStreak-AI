@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Flame, Snowflake } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Streak } from "@/lib/api";
