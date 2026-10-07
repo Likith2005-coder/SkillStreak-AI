@@ -104,18 +104,8 @@ export function BurstSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden py-16"
+      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-primary py-16"
     >
-      {/* Smooth fade at the top + bottom edges so the gradient blends into
-          adjacent dark sections instead of meeting them at a hard line. */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-30 h-24 bg-gradient-to-b from-background to-transparent"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-24 bg-gradient-to-t from-background to-transparent"
-        aria-hidden
-      />
       {/* ── Burst circle — behind everything (z-0). Centre = measured "a".
           Animates simultaneously with the wordmark so there's never a
           moment where the wordmark sits alone on a dark background. */}
@@ -135,10 +125,9 @@ export function BurstSection() {
           top: `calc(${origin.y}% - 70vmax)`,
           transformOrigin: "center",
           contain: "paint",
-          // Soft ambient bloom instead of a solid disc — the section stays dark
-          // and cinematic; the glow just emanates from the "a".
+          // A lime burst glowing out of the wordmark across the green band.
           background:
-            "radial-gradient(circle, hsl(265 85% 60% / 0.30) 0%, hsl(190 92% 52% / 0.12) 30%, transparent 60%)",
+            "radial-gradient(circle, hsl(var(--primary-bright) / 0.85) 0%, hsl(var(--primary-bright) / 0.25) 28%, transparent 58%)",
         }}
         aria-hidden
       />
@@ -156,7 +145,7 @@ export function BurstSection() {
           }}
           className="flex flex-col items-center"
         >
-          <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white/80 drop-shadow">
+          <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white drop-shadow">
             Ready when you are
           </p>
           {/* WebGL mesh wordmark — glyphs are a fine mesh the cursor drags
@@ -178,7 +167,7 @@ export function BurstSection() {
               </span>
             )}
           </span>
-          <p className="mt-3 text-sm text-white/85 sm:text-base">
+          <p className="mt-3 text-sm text-white sm:text-base">
             Free forever · Built for students · Pick up where you left off
           </p>
         </motion.div>
@@ -201,7 +190,7 @@ export function BurstSection() {
           <h3 className="mt-3 font-display text-2xl font-bold tracking-tight drop-shadow-lg sm:text-3xl lg:text-4xl">
             Start learning, the smart way.
           </h3>
-          <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm text-white sm:text-base">
             Join the platform that adapts to your level, recommends your next
             move, and keeps you accountable.
           </p>
@@ -210,17 +199,17 @@ export function BurstSection() {
             <HeroCTA />
           </div>
 
-          <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/75">
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white">
             <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
               Free forever
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
               Built for students
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
               Sign up in 60 seconds
             </li>
           </ul>

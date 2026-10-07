@@ -38,7 +38,7 @@
     --energy-bright: 28 100% 55%;
     --energy-shade: 18 100% 30%;
 
-    --xp: 38 100% 31%;
+    --xp: 38 100% 28%;
     --xp-bright: 43 100% 52%;
     --xp-shade: 36 100% 34%;
 
@@ -282,6 +282,20 @@
      these ride the compositor and stay out of the shared JS frameloop that
      the scroll springs use. */
   .dark .noise-overlay { display: block; }
+
+  /* Floating stickers: a gentle bob with a fixed tilt. Duration and phase
+     are set per sticker inline so the group never moves in lockstep. */
+  .sticker-bob {
+    transform: rotate(var(--tilt, 0deg));
+    animation: sticker-bob 3.4s ease-in-out infinite;
+  }
+  @keyframes sticker-bob {
+    0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+    50% { transform: translateY(-12px) rotate(calc(var(--tilt, 0deg) * -0.4)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sticker-bob { animation: none; }
+  }
 
   @keyframes sparkle-rise {
     from { transform: translate3d(0, 20px, 0); }

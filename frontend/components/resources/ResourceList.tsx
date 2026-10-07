@@ -9,6 +9,7 @@ import {
   type ResourceItem,
   type ResourcesResponse,
 } from "@/lib/api";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -36,12 +37,12 @@ export function ResourceList({ topicId }: Props) {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4">
-        <p className="text-sm text-destructive-text">{error}</p>
+      <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 p-4">
+        <p className="text-sm font-semibold text-destructive-text">{error}</p>
         <button
           type="button"
           onClick={() => setAttempt((n) => n + 1)}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-destructive/40 px-3 py-1.5 text-xs font-medium text-destructive-text transition-colors hover:bg-destructive/15"
+          className="focus-ring mt-3 inline-flex min-h-11 items-center gap-1.5 rounded-xl border-2 border-b-4 border-destructive/40 bg-card px-4 text-xs font-extrabold uppercase tracking-wide text-destructive-text transition-transform active:translate-y-[2px] active:border-b-2"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Try again
@@ -54,7 +55,7 @@ export function ResourceList({ topicId }: Props) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-14 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
+          <div key={i} className="h-16 animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
         ))}
       </div>
     );
@@ -63,7 +64,7 @@ export function ResourceList({ topicId }: Props) {
   return (
     <div className="space-y-4">
       {data.videos.length > 0 && (
-        <Section title="Watch" icon={<Video className="h-4 w-4 text-rose-600" />} count={data.videos.length}>
+        <Section title="Watch" icon={<Video className="h-4 w-4" strokeWidth={2.6} />} tone="bg-rose-500" count={data.videos.length}>
           <div className="space-y-2">
             {data.videos.map((r, i) => (
               <VideoRow key={r.id} item={r} index={i} />
@@ -73,16 +74,16 @@ export function ResourceList({ topicId }: Props) {
       )}
 
       {data.docs.length > 0 && (
-        <Section title="Read" icon={<FileText className="h-4 w-4 text-cyan-600" />} count={data.docs.length}>
+        <Section title="Read" icon={<FileText className="h-4 w-4" strokeWidth={2.6} />} tone="bg-secondary-bright" count={data.docs.length}>
           <div className="space-y-2">
             {data.docs.map((r, i) => (
-              <ResourceRow key={r.id} item={r} index={i} icon={<FileText className="h-4 w-4 text-cyan-600" />} />
+              <ResourceRow key={r.id} item={r} index={i} icon={<FileText className="h-5 w-5 text-secondary" strokeWidth={2.4} />} />
             ))}
           </div>
         </Section>
       )}
 
-      <p className="px-1 text-[11px] text-muted-foreground">
+      <p className="px-1 text-xs font-semibold text-muted-foreground">
         Curated and verified, updated weekly. Each video opens the best matching
         video on YouTube.
       </p>
@@ -93,42 +94,48 @@ export function ResourceList({ topicId }: Props) {
 function Section({
   title,
   icon,
+  tone,
   count,
   children,
 }: {
   title: string;
   icon: React.ReactNode;
+  tone: string;
   count: number;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        {icon}
-        {title}
-        <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px]">{count}</span>
+      <div className="mb-2.5 flex items-center gap-2">
+        <span aria-hidden className={cn("flex h-7 w-7 items-center justify-center rounded-lg text-white", tone)}>
+          {icon}
+        </span>
+        <h3 className="text-sm font-black text-foreground">{title}</h3>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-extrabold tabular-nums text-muted-foreground">{count}</span>
       </div>
       {children}
     </div>
   );
 }
 
+// A chunky, pressable row: 2px outline with a heavier bottom edge that sinks on press.
+const ROW =
+  "focus-ring group flex items-center gap-3 rounded-2xl border-2 border-b-4 border-border bg-card p-2.5 transition-[transform,border-width,background-color] duration-100 hover:bg-muted/50 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none";
+
 function VideoRow({ item, index }: { item: ResourceItem; index: number }) {
+  const reduce = useReducedMotion();
   return (
     <motion.a
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, delay: index * 0.04 }}
-      whileHover={{ x: 4 }}
-      className={cn(
-        "group flex items-center gap-3 rounded-xl border border-border bg-card/50 p-2.5 transition-colors",
-        "hover:border-primary/40 hover:bg-card"
-      )}
+      // opacity only: framer-motion would own `transform` and cancel the press sink
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : index * 0.04 }}
+      className={ROW}
     >
-      <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-black/40">
+      <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-xl bg-muted">
         {item.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -147,13 +154,13 @@ function VideoRow({ item, index }: { item: ResourceItem; index: number }) {
         </div>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="line-clamp-2 text-sm font-medium leading-snug text-foreground">{item.title}</div>
-        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <Youtube className="h-3 w-3 text-rose-600" />
+        <div className="line-clamp-2 text-sm font-bold leading-snug text-foreground">{item.title}</div>
+        <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+          <Youtube className="h-3.5 w-3.5 text-rose-600" />
           <span className="truncate">{item.source}</span>
         </div>
       </div>
-      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+      <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" strokeWidth={2.6} />
     </motion.a>
   );
 }
@@ -167,28 +174,26 @@ function ResourceRow({
   index: number;
   icon: React.ReactNode;
 }) {
+  const reduce = useReducedMotion();
   return (
     <motion.a
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, delay: index * 0.04 }}
-      whileHover={{ x: 4 }}
-      className={cn(
-        "group flex items-center gap-3 rounded-xl border border-border bg-card/50 p-3 transition-colors",
-        "hover:border-primary/40 hover:bg-card"
-      )}
+      // opacity only: framer-motion would own `transform` and cancel the press sink
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : index * 0.04 }}
+      className={cn(ROW, "p-3")}
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-card">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/10">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-medium text-foreground">{item.title}</div>
-        <div className="mt-0.5 truncate text-[11px] text-muted-foreground">{item.source}</div>
+        <div className="line-clamp-2 text-sm font-bold leading-snug text-foreground">{item.title}</div>
+        <div className="mt-0.5 truncate text-xs font-semibold text-muted-foreground">{item.source}</div>
       </div>
-      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+      <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" strokeWidth={2.6} />
     </motion.a>
   );
 }

@@ -1,5 +1,5 @@
-import { PageLoader } from "@/components/shared/PageLoader";
+import { TopicSkeleton } from "./Client";
 
 export default function Loading() {
-  return <PageLoader hint="Loading topic…" />;
+  return <TopicSkeleton />;
 }

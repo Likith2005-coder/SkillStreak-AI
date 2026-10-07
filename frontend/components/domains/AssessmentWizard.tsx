@@ -14,7 +14,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
-import { ArrowLeft, Bot, Check, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { SignalBotStatic } from "@/components/3d/SignalBotStatic";
+import { Mascot } from "@/components/playground/Mascot";
 
 import {
   apiErrorMessage,
@@ -179,27 +181,40 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      {/* Progress */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted/60">
+      {/* Progress — a juicy bar, like a lesson */}
+      <div className="mb-8 flex items-center gap-3">
+        <div
+          className="h-4 flex-1 overflow-hidden rounded-full bg-muted"
+          role="progressbar"
+          aria-valuenow={generating ? 100 : progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Assessment progress"
+        >
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-energy/70 to-energy"
-            animate={{ width: `${generating ? 100 : progress}%` }}
+            className="relative h-full rounded-full bg-primary-bright"
+            initial={false}
+            animate={{ width: `${Math.max(generating ? 100 : progress, 4)}%` }}
             transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
-          />
+          >
+            <span className="absolute inset-x-2 top-[3px] h-1.5 rounded-full bg-white/35" />
+          </motion.div>
         </div>
-        <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+        <span className="text-sm font-extrabold tabular-nums text-muted-foreground">
           {Math.min(answeredCount + 1, visible.length)}/{visible.length}
         </span>
       </div>
 
       {/* Chat history — every answered exchange */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {visible.slice(0, index).map((q) => (
-          <div key={q.id} className="space-y-2.5">
+          <div key={q.id} className="space-y-3">
             <MentorBubble>{q.prompt}</MentorBubble>
             <div className="flex justify-end">
-              <div className="max-w-[80%] rounded-2xl rounded-br-sm border border-cyan-400/25 bg-cyan-500/10 px-3.5 py-2 text-sm text-foreground/90">
+              <div
+                className="max-w-[80%] rounded-2xl rounded-br-md bg-secondary px-4 py-2.5 text-sm font-bold text-secondary-foreground"
+                style={{ boxShadow: "0 3px 0 hsl(var(--secondary-shade))" }}
+              >
                 {echoOf(q, raw)}
               </div>
             </div>
@@ -209,15 +224,15 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
         {/* Current exchange */}
         {!generating && current && (
           <AnimatePresence mode="wait">
-            <motion.div key={current.id} {...bubbleIn} className="space-y-3">
+            <motion.div key={current.id} {...bubbleIn} className="space-y-4">
               {typing ? (
                 <MentorBubble>
-                  <span className="inline-flex items-center gap-1 py-0.5" aria-label="Mentor is typing">
+                  <span className="inline-flex items-center gap-1.5 py-1" aria-label="Mentor is typing">
                     {[0, 1, 2].map((i) => (
                       <motion.span
                         key={i}
-                        className="h-1.5 w-1.5 rounded-full bg-violet-300"
-                        animate={{ opacity: [0.25, 1, 0.25] }}
+                        className="h-2 w-2 rounded-full bg-grape-bright"
+                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
                         transition={{ duration: 1, repeat: Infinity, delay: i * 0.18 }}
                       />
                     ))}
@@ -230,7 +245,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
                     initial={reduce ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: 0.08, ease: EASE }}
-                    className="flex flex-wrap gap-2 pl-10"
+                    className="grid gap-2.5 sm:grid-cols-2 sm:pl-[52px]"
                   >
                     {current.options.map((opt) => {
                       const selected =
@@ -239,24 +254,35 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
                         <button
                           key={opt.value}
                           type="button"
+                          aria-pressed={current.type === "multi" ? selected : undefined}
                           onClick={() =>
                             current.type === "multi"
                               ? toggleMulti(opt.value)
                               : pickSingle(opt.value)
                           }
                           className={cn(
-                            "group rounded-2xl border px-4 py-2.5 text-left text-sm transition-all",
+                            "focus-ring group min-h-[52px] rounded-2xl border-2 border-b-4 px-4 py-3 text-left transition-[transform,border-width,background-color,border-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
                             selected
-                              ? "border-cyan-400/60 bg-cyan-500/15 text-foreground"
-                              : "border-border bg-card/60 text-foreground/90 hover:border-cyan-400/40 hover:bg-card hover:-translate-y-0.5"
+                              ? "border-secondary-bright bg-secondary/10 text-secondary"
+                              : "border-border bg-card text-foreground hover:bg-muted"
                           )}
                         >
-                          <span className="flex items-center gap-2 font-medium">
-                            {selected && <Check className="h-3.5 w-3.5 text-cyan-700" />}
+                          <span className="flex items-center gap-2 text-sm font-extrabold">
+                            {current.type === "multi" && (
+                              <span
+                                aria-hidden
+                                className={cn(
+                                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2",
+                                  selected ? "border-secondary bg-secondary text-white" : "border-border bg-card"
+                                )}
+                              >
+                                {selected && <Check className="h-3.5 w-3.5" strokeWidth={4} />}
+                              </span>
+                            )}
                             {opt.label}
                           </span>
                           {opt.hint && (
-                            <span className="mt-0.5 block text-xs text-muted-foreground">
+                            <span className="mt-0.5 block text-xs font-semibold text-muted-foreground">
                               {opt.hint}
                             </span>
                           )}
@@ -265,8 +291,8 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
                     })}
                   </motion.div>
                   {current.type === "multi" && (
-                    <div className="pl-10">
-                      <Button size="sm" onClick={confirmMulti} className="rounded-full px-5">
+                    <div className="sm:pl-[52px]">
+                      <Button onClick={confirmMulti} className="w-full uppercase sm:w-auto">
                         {multiDraft.length > 0
                           ? `Continue with ${multiDraft.length} selected`
                           : "None of these — continue"}
@@ -281,12 +307,12 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
 
         {/* Generation state — the mentor goes to work */}
         {generating && (
-          <motion.div {...bubbleIn} className="space-y-3">
+          <motion.div {...bubbleIn} className="space-y-4">
             <MentorBubble>
               Great — that&apos;s everything I need. Designing your {domainName} plan…
             </MentorBubble>
-            <div className="flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-4 py-3.5 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none text-violet-700" />
+            <div className="card-chunky flex items-center gap-3 px-4 py-4 text-sm font-semibold text-muted-foreground sm:ml-[52px]">
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-grape motion-reduce:animate-none" />
               <span>
                 Building your phases, picking resources, designing your capstone
                 project — usually 20–40 seconds.
@@ -296,14 +322,12 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
         )}
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive-text" role="alert">
-            {error}
-            <Button
-              size="sm"
-              variant="outline"
-              className="ml-3 rounded-full"
-              onClick={() => finish(raw)}
-            >
+          <div
+            className="flex flex-wrap items-center gap-3 rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text"
+            role="alert"
+          >
+            <span className="flex-1">{error}</span>
+            <Button size="sm" variant="outline" onClick={() => finish(raw)}>
               Retry
             </Button>
           </div>
@@ -314,25 +338,18 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
 
       {/* Footer controls */}
       {!generating && (
-        <div className="mt-8 flex items-center justify-between text-sm">
-          <button
-            type="button"
+        <div className="mt-10 flex items-center justify-between gap-3 border-t-2 border-border pt-4">
+          <Button
+            variant="ghost"
             onClick={goBack}
             disabled={index === 0}
-            className={cn(
-              "inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground",
-              index === 0 && "invisible"
-            )}
+            className={cn("text-muted-foreground", index === 0 && "invisible")}
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back
-          </button>
-          <button
-            type="button"
-            onClick={onSkip}
-            className="text-muted-foreground transition-colors hover:text-foreground"
-          >
+            <ArrowLeft className="h-4 w-4" strokeWidth={3} /> Back
+          </Button>
+          <Button variant="ghost" onClick={onSkip} className="h-auto min-h-11 whitespace-normal text-right text-muted-foreground">
             Skip — browse the curated trail instead
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -341,12 +358,16 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
 
 function MentorBubble({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-500/25 ring-1 ring-violet-400/30">
-        <Bot className="h-4 w-4 text-violet-700" />
+    <div className="flex items-end gap-3">
+      <span aria-hidden className="h-10 w-10 shrink-0">
+        <SignalBotStatic className="h-full w-full" />
       </span>
-      <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/70 bg-card/70 px-4 py-2.5 text-sm leading-relaxed text-foreground/95">
+      <div className="relative max-w-[85%] rounded-2xl border-2 border-border bg-card px-4 py-3 text-base font-bold leading-snug text-foreground">
         {children}
+        <span
+          aria-hidden
+          className="absolute -left-[7px] bottom-3 h-3 w-3 rotate-45 border-b-2 border-l-2 border-border bg-card"
+        />
       </div>
     </div>
   );
@@ -368,30 +389,35 @@ export function AssessmentIntro({
       initial={reduce ? false : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: EASE }}
-      className="mx-auto max-w-xl text-center"
+      className="mx-auto flex max-w-xl flex-col items-center text-center"
     >
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-500/20 ring-1 ring-violet-400/30">
-        <Sparkles className="h-7 w-7 text-violet-700" />
-      </span>
-      <h1 className="mt-6 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-        Before the roadmap — let&apos;s make it <span className="text-cyan-700">yours</span>.
-      </h1>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
+      <Mascot
+        message={`Hi! Tell me a little about you and I'll shape ${domainName} around it.`}
+        size={96}
+        className="justify-center text-left"
+      />
+      <h2 className="mt-6 font-display text-3xl text-foreground sm:text-4xl [text-wrap:balance]">
+        Before the roadmap&nbsp;— let&apos;s make it <span className="text-grape">yours</span>.
+      </h2>
+      <p className="mx-auto mt-3 max-w-md text-base font-semibold leading-relaxed text-muted-foreground">
         Answer a few quick questions about your goals and experience with{" "}
         {domainName}, and your AI mentor will design a personal phase-by-phase
         plan — with resources, projects and a capstone build.
       </p>
-      <div className="mt-8 flex flex-col items-center gap-3">
-        <Button size="lg" onClick={onStart} className="rounded-full px-8">
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        {["About 2 minutes", "Tap to answer", "Retake any time"].map((t) => (
+          <span key={t} className="rounded-full bg-muted px-3 py-1 text-xs font-extrabold text-foreground">
+            {t}
+          </span>
+        ))}
+      </div>
+      <div className="mt-8 flex w-full flex-col items-center gap-3 sm:w-auto">
+        <Button size="lg" onClick={onStart} className="w-full uppercase sm:w-auto sm:min-w-[300px]">
           Start the 2-minute chat
         </Button>
-        <button
-          type="button"
-          onClick={onSkip}
-          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
+        <Button variant="ghost" onClick={onSkip} className="text-muted-foreground">
           Skip — show me the curated trail
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

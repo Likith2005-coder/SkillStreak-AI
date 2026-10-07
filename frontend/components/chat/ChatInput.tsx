@@ -41,8 +41,8 @@ export function ChatInput({
   }
 
   return (
-    <div className="border-t border-border bg-background/80 px-4 py-3">
-      <div className="flex items-end gap-2 rounded-xl border border-border bg-card/80 p-2 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring/40">
+    <div className="border-t-2 border-border bg-background px-4 py-3">
+      <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border-2 border-b-4 border-border bg-card p-2 transition-colors focus-within:border-secondary-bright">
         <textarea
           aria-label="Message the AI tutor"
           ref={ref}
@@ -57,7 +57,7 @@ export function ChatInput({
           rows={1}
           placeholder={placeholder}
           className={cn(
-            "min-h-[36px] w-full resize-none border-0 bg-transparent px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            "min-h-[44px] w-full resize-none border-0 bg-transparent px-2 py-2.5 text-[0.95rem] font-semibold text-foreground placeholder:font-semibold placeholder:text-muted-foreground focus:outline-none"
           )}
           disabled={disabled}
         />
@@ -69,9 +69,9 @@ export function ChatInput({
             size="icon"
             onClick={onCancel}
             aria-label="Stop generating"
-            className="h-9 w-9"
+            className="mb-1 shrink-0"
           >
-            <Square className="h-4 w-4" />
+            <Square className="h-4 w-4" fill="currentColor" />
           </Button>
         ) : (
           <Button
@@ -80,14 +80,17 @@ export function ChatInput({
             onClick={submit}
             disabled={!value.trim() || disabled}
             aria-label="Send message"
-            className="h-9 w-9"
+            variant="secondary"
+            className="mb-1 shrink-0"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-5 w-5" strokeWidth={2.6} />
           </Button>
         )}
       </div>
-      <div className="mt-1.5 flex justify-between px-1 text-[10px] text-muted-foreground/70">
-        <span>Enter to send · Shift+Enter for newline</span>
+      <div className="mx-auto mt-1.5 flex max-w-3xl justify-between px-1 text-xs font-semibold text-muted-foreground">
+        {/* keyboard hint only matters where there is a keyboard */}
+        <span className="hidden sm:inline">Enter to send · Shift+Enter for newline</span>
+        <span className="sm:hidden" />
         <span>{value.length}/{MAX}</span>
       </div>
     </div>

@@ -12,7 +12,7 @@ import type { ScoreTrendPoint } from "./ScoreTrendChart";
 const ScoreTrendChart = dynamic(() => import("./ScoreTrendChart"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full animate-pulse motion-reduce:animate-none rounded-xl border border-border/60 bg-card/30" />
+    <div className="h-full w-full animate-pulse rounded-xl bg-muted motion-reduce:animate-none" />
   ),
 });
 

@@ -1,6 +1,6 @@
 export function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1 px-3 py-2" aria-label="Assistant is typing">
+    <div className="flex items-center gap-1.5 px-1 py-1.5" role="status" aria-label="Assistant is typing">
       <Dot delay="0ms" />
       <Dot delay="150ms" />
       <Dot delay="300ms" />
@@ -11,7 +11,7 @@ export function TypingIndicator() {
 function Dot({ delay }: { delay: string }) {
   return (
     <span
-      className="h-1.5 w-1.5 animate-bounce motion-reduce:animate-none rounded-full bg-muted-foreground/70"
+      className="h-2.5 w-2.5 animate-bounce rounded-full bg-grape-bright motion-reduce:animate-none"
       style={{ animationDelay: delay }}
     />
   );

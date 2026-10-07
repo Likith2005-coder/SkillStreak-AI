@@ -61,33 +61,33 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start justify-center bg-black/60 pt-[12vh] backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex items-start justify-center bg-foreground/40 px-4 pt-[12vh]"
       onClick={(e) => {
         if (e.target === e.currentTarget) setOpen(false);
       }}
     >
       <Command
         label="Command palette"
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
+        className="w-full max-w-xl overflow-hidden rounded-3xl border-2 border-b-[6px] border-border bg-card"
       >
-        <div className="flex items-center gap-2 border-b border-border px-3 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-ring/40">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 border-b-2 border-border px-4 focus-within:border-secondary-bright">
+          <Search className="h-5 w-5 text-muted-foreground" strokeWidth={2.5} />
           <Command.Input
             placeholder="Jump to anywhere — try 'domains', 'leaderboard', or 'cybersecurity'…"
-            className="flex-1 bg-transparent px-1 py-3 text-sm outline-none placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent px-1 py-4 text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
             aria-label="Search commands and destinations"
           />
-          <kbd className="rounded border border-border bg-muted/40 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+          <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5 text-[11px] font-extrabold text-muted-foreground">
             ESC
           </kbd>
         </div>
 
         <Command.List className="max-h-[60vh] overflow-y-auto p-2 text-sm">
-          <Command.Empty className="px-3 py-6 text-center text-sm text-muted-foreground">
+          <Command.Empty className="px-3 py-8 text-center text-sm font-bold text-muted-foreground">
             Nothing matches that. Try a domain name?
           </Command.Empty>
 
-          <Command.Group heading="Navigate" className="text-xs uppercase tracking-wider text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5">
+          <Command.Group heading="Navigate" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
             <Item icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" onSelect={() => go("/dashboard")} />
             <Item icon={<BookOpen className="h-4 w-4" />} label="Domains" onSelect={() => go("/domains")} />
             <Item icon={<Bot className="h-4 w-4" />} label="Chatbot" onSelect={() => go("/chatbot")} />
@@ -98,7 +98,7 @@ export function CommandPalette() {
           </Command.Group>
 
           {domains.length > 0 && (
-            <Command.Group heading="Domains" className="text-xs uppercase tracking-wider text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5">
+            <Command.Group heading="Domains" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
               {domains.map((d) => (
                 <Item
                   key={d.id}
@@ -113,18 +113,18 @@ export function CommandPalette() {
             </Command.Group>
           )}
 
-          <Command.Group heading="Actions" className="text-xs uppercase tracking-wider text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5">
-            <Item icon={<Flame className="h-4 w-4 text-orange-600" />} label="Use a streak freeze" subtitle="Rescue a missed day" onSelect={() => go("/settings")} />
+          <Command.Group heading="Actions" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
+            <Item icon={<Flame className="h-4 w-4 text-energy-bright" fill="currentColor" />} label="Use a streak freeze" subtitle="Rescue a missed day" onSelect={() => go("/settings")} />
           </Command.Group>
         </Command.List>
 
-        <div className="flex items-center justify-between border-t border-border px-3 py-2 text-[11px] text-muted-foreground">
+        <div className="flex items-center justify-between border-t-2 border-border px-4 py-2.5 text-xs font-bold text-muted-foreground">
           <span>
-            <kbd className="rounded border border-border bg-muted/40 px-1.5 py-0.5">↑ ↓</kbd> navigate
+            <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5">↑ ↓</kbd> navigate
             <span className="mx-1">·</span>
-            <kbd className="rounded border border-border bg-muted/40 px-1.5 py-0.5">↵</kbd> select
+            <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5">↵</kbd> select
           </span>
-          <span>Cmd · K</span>
+          <span>Ctrl / ⌘ K</span>
         </div>
       </Command>
     </div>
@@ -145,14 +145,14 @@ function Item({
   return (
     <Command.Item
       onSelect={onSelect}
-      className="flex cursor-pointer items-center justify-between rounded-md px-2 py-2 text-foreground aria-selected:bg-primary/15 aria-selected:text-primary aria-selected:ring-1 aria-selected:ring-primary/40"
+      className="flex min-h-11 cursor-pointer items-center justify-between rounded-2xl border-2 border-transparent px-3 py-2 font-bold text-foreground aria-selected:border-secondary-bright aria-selected:bg-secondary/10 aria-selected:text-secondary"
     >
       <div className="flex items-center gap-3">
         <span className="text-muted-foreground">{icon}</span>
         <span>{label}</span>
       </div>
       {subtitle && (
-        <span className="text-xs text-muted-foreground">{subtitle}</span>
+        <span className="text-xs font-semibold text-muted-foreground">{subtitle}</span>
       )}
     </Command.Item>
   );

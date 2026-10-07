@@ -1,114 +1,101 @@
 # Design
 
 Visual system for the SkillStreak AI frontend. Captured from the shipping code
-(`app/globals.css`, `app/layout.tsx`, Tailwind config). Colors are stored as HSL channel
+(`app/globals.css`, `app/layout.tsx`, `tailwind.config.ts`). Colors are stored as HSL channel
 triples consumed via `hsl(var(--token))`.
 
 ## Theme
 
-Dark-locked "Signal" — a deep-ink learning console. `<html>` carries `.dark` permanently;
-there is no light mode in production (light tokens exist but are unused). The mood is a dim
-control room with an electric signal running through it: near-black blue-tinted ground, cyan
-as the live signal, violet for depth, lime for streak energy. A light-token block remains in
-`:root` for reference only.
+"Playground": bright, light, chunky and celebratory. The learning app is a game board,
+not a console. White ground, saturated toy-like colour, 3D pressable keys, heavy rounded type,
+and a mascot that talks. It takes its feel from game-style learning apps (Duolingo et al.)
+without borrowing anyone's colours, characters or wordmark.
+
+Two places stay dark on purpose, by adding the `dark` class to their root so the tokens
+re-scope:
+- **The Ethical Hacking Arsenal** (`HackerShell`): the "secret level", a green-phosphor terminal.
+- **The landing boot intro** (`LandingIntro`): a dark cinematic boot that lifts into the
+  bright page ("lights on").
 
 ## Color
 
-Primary (cyan) is the signal and the interactive/brand color. Secondary (violet) carries
-depth and secondary emphasis. Lime is the energy accent reserved for streak / progress moments
-— used sparingly, it should always mean "momentum." Backgrounds are a near-black blue, surfaces
-one step up, borders a low-chroma blue hairline.
+Every brand colour has three roles:
+- **face** (`X`): deep enough for white text at AA (≥4.5:1) *and* usable as text on white.
+- **bright** (`X-bright`): the juicy tone for icons, fills, illustration and celebrations.
+  Never small text.
+- **shade** (`X-shade`): the bottom edge that makes keys and tiles look pressable.
 
-Dark theme (production), HSL triples:
-- background `214 56% 4.5%` — deep ink, the ground
-- foreground `195 30% 96%` — near-white body text
-- card `213 44% 7%` — raised surface
-- primary `187 92% 52%` — electric cyan (signal, links, focus ring)
-- primary-foreground `205 90% 6%` — ink on cyan
-- secondary `265 85% 68%` — violet (depth, secondary emphasis)
-- accent-energy (lime) `84 85% 62%` — streak / progress only
-- muted `213 32% 13%` / muted-foreground `205 16% 62%`
-- border / input `205 32% 15%`
-- destructive `0 72% 42%`
-- ring `187 92% 52%`
+Meanings are fixed and never swapped:
 
-Color strategy: Committed dark. The deep-ink surface plus a single saturated cyan signal
-carries identity; violet and lime are deliberate secondary/accent roles, not decoration.
+| Role | Face | Bright | Means |
+|---|---|---|---|
+| `primary` | `104 66% 31%` | `100 72% 45%` | progress, continue, correct, main CTA |
+| `secondary` | `201 90% 37%` | `199 92% 52%` | links, selection, info |
+| `energy` | `22 100% 39%` | `28 100% 55%` | the streak (flame) |
+| `xp` | `38 100% 31%` | `43 100% 52%` | XP (gem) |
+| `grape` | `262 62% 50%` | `262 80% 66%` | level, league, AI accents |
+| `destructive` | `0 78% 45%` | `0 85% 60%` | wrong, errors (`destructive-text` for copy) |
 
-Contrast watch: `muted-foreground 205 16% 62%` on `card 213 44% 7%` is the value to re-check
-whenever muted text sits on a raised surface — keep body and placeholder text ≥4.5:1, bump
-toward foreground if borderline.
+Neutrals: background/card white, foreground `215 22% 20%`, muted `210 25% 96%`,
+muted-foreground `215 14% 40%` (AA on white), border `214 20% 88%`.
 
-### Absolute-ban note (impeccable)
+Domain colours (`lib/domain-style.ts`) use Tailwind `X-700` text and `X-100` tints for chips;
+roadmap nodes use a bright face + dark edge per domain.
 
-`.gradient-text` (lime→cyan→violet `background-clip:text`) is used across headings today. This
-is on impeccable's absolute-ban list and reads as a generic AI tell. Treat it as legacy: on new
-or reworked brand surfaces, prefer committed solid color with weight/size hierarchy; the cyan
-signal can still glow via `text-shadow`, not a clipped gradient. Preserve it only where removing
-it would break a shipped identity the user has approved.
+Color strategy: Full palette. Each colour carries one meaning, so the palette reads as
+information, not decoration. Colored slabs (unit banners, CTA bands) carry white text only.
 
 ## Typography
 
-Family: Inter (`next/font`, `--font-inter`, `font-sans`). Single family, multiple weights.
-Inter is a reflex-reject default in the brand register; it is fine to keep for the product app,
-but the landing and Arsenal would gain distinctiveness from a committed display face paired
-against Inter body (contrast axis, not a second geometric sans). This is the highest-leverage
-open typography decision.
+**Nunito** (`--font-nunito`, `font-sans` and `font-display`) up to weight 1000. `.font-display`
+= 900 with `-0.02em` tracking for headings; UI labels and numbers run `font-extrabold` /
+`font-black`. One rounded family in many weights. **Martian Mono** (`--font-mono`) is reserved
+for the Arsenal terminal.
 
-Arsenal runs a monospace stack inside `.hacker` (`ui-monospace, JetBrains Mono, Fira Code,
-Cascadia Code`) — a genuine terminal, so mono is voice there, not costume.
+Headings use `text-wrap: balance`, and the hero clamp max is ≤ 4.25rem. No gradient text:
+`.gradient-text` now resolves to solid primary at 900 weight.
 
-Scale: fluid `clamp()` headings, `tracking-tight`. Display headings must keep letter-spacing
-≥ -0.04em (the `.ghost-word` motif sits exactly at -0.04em) and a clamp max ≤ 6rem.
+## Building blocks
 
-Kicker caution: small uppercase tracked mono eyebrows (`font-mono text-[11px] uppercase
-tracking-[0.28em]`) appear above most section headers via `PageHero`. Repeated as section
-grammar this is an AI tell. Keep it where the terminal/console voice is real; thin it to a
-deliberate cadence elsewhere rather than stamping it on every header.
+- **Chunky key** (`components/ui/button.tsx`): solid face + `box-shadow: 0 var(--edge) 0
+  <shade>`. On `:active` it sinks by `--edge` and the shadow collapses. Variants:
+  default (green), secondary, energy, grape, outline, ghost, destructive, link.
+- **Chunky card** (`.card-chunky`): 2px border with a 5px bottom border, radius 1.25rem.
+  Add `.card-press` when the whole card is clickable.
+- **Sticker tile**: a rounded-2xl coloured face, white icon, slight tilt and a 3D edge
+  (hero stickers, stat tiles).
+- **Juicy progress bar**: `h-4` muted track, bright fill, white/35 gloss strip near the top.
+- **Path nodes**: round 3D keys on a thick muted track. Done = check, current = star with a
+  ring and a bobbing START bubble, upcoming = grey book (`PathPreview`, `WindingRoadmap`).
+- **Mascot** (`components/playground/Mascot.tsx`): the SignalBot with an idle bob and a speech
+  bubble that comments on real state.
 
 ## Layout
 
-Container-based, generous vertical rhythm. Radius scale from `--radius: 0.6rem` (cards use
-`rounded-2xl`/`rounded-3xl`). Responsive grids use `sm:grid-cols-2 lg:grid-cols-3`; prefer
-`repeat(auto-fit, minmax(280px, 1fr))` for breakpoint-free card walls. `PageHero` is the shared
-cinematic header panel (bordered card + grid-scene horizon + ghost word + gradient title).
-Cards are heavily used — audit for the "identical card grid" reflex and break it where a
-section deserves its own composition.
+Container-based. The dashboard is a main column plus a 340px right rail (stat pills, streak
+week, level, league, Arsenal door), which stacks on mobile. Use cards when the thing is an
+object the learner acts on (a course, a stat, a question). Never nest them.
 
 ## Motion
 
-Libraries installed and in use: framer-motion / `motion` (component reveals, stagger), GSAP
-(navbar underline, timeline work), Lenis (smooth scroll). Easing convention is
-`cubic-bezier(0.22, 1, 0.36, 1)` (ease-out-quart) — no bounce, no elastic. Every animation has
-a `@media (prefers-reduced-motion: reduce)` fallback and this is a hard invariant.
+framer-motion for component motion; CSS keyframes for idle loops (`.sticker-bob`); Lenis for
+smooth scroll on the landing page. Ease out with `cubic-bezier(0.22, 1, 0.36, 1)`. Rewards
+get springs: icons pop, numbers bounce when they land, the confetti uses the brand colours.
+Every animation goes through `useReducedMotionSafe()` (hydration-safe), and reduced motion gets
+an instant or crossfade alternative. This is a hard invariant.
 
-Signature effects (all in `globals.css`, GPU-cheap):
-- `.grid-scene` / `.grid-floor` — neon perspective floor receding to a glowing cyan→lime
-  horizon; the "ground you build skills on." The house signature.
-- `.aurora-bg` — slow drifting cyan + violet blooms behind the page (fixed, `-z-10`).
-- `.ghost-word` — giant outlined display word behind heroes (cyan text-stroke).
-- `.glitch` — chromatic-aberration split text (needs `data-text`), brief burst on a 5.5s loop.
-- `.noise-overlay` — animated film grain, `mix-blend-mode: overlay`, opacity 0.05.
-- `.chromatic` — cyan/violet edge split on hover for cards/images.
-- `.bento-card` — conic gradient ring drawn on hover via `@property --bento-angle`.
-- `.route-bar` — top-of-page cyan→violet route progress bar.
-
-3D: the SignalBot mascot is a custom react-three-fiber scene (`components/3d/SignalBot.tsx`) —
-screen face, cursor-tracking eyes, halo rings instead of legs. It and the MeshText WebGL wordmark
-load only on `(min-width: 1024px) and (pointer: fine)`; everywhere else `SignalBotStatic` draws
-the same character as inline SVG, so phones never download three.js.
+The landing hero's stickers have two transform layers that never fight: the outer one does
+cursor parallax via `--mx/--my` (one rAF), the inner one bobs. View transitions
+(`next-view-transitions`) morph a domain card into its roadmap header.
 
 ## Components
 
 shadcn/radix-derived primitives (`components/ui`), `class-variance-authority` for variants,
-`tailwind-merge` + `clsx` via `cn()`. Default button variant is a cyan→teal gradient fill.
-Toasts via `sonner` (dark, bottom-center). Icons via `lucide-react`. Charts via `recharts`.
-Code highlighting via `shiki`. Confetti via `canvas-confetti` for streak/achievement moments.
+`cn()` = `tailwind-merge` + `clsx`. Toasts via `sonner`, icons via `lucide-react`, charts
+via `recharts`, code via `shiki`, celebrations via `canvas-confetti`.
 
-## Sub-theme: Hacker terminal (`.hacker`)
+## Sub-theme: Hacker terminal (`.dark.hacker`)
 
-Scoped to the Ethical Hacking Arsenal only. Near-black `#04070a` ground, green phosphor grid
-(`140 90% 50%`), animated CRT scanlines, monospace type, blinking `.term-cursor`, and a
-green-recolored `.prose` for AI guide content. This is an intentional second visual world under
-the same voice (deep ground, single live signal) — brand register, and the one place monospace
-is earned rather than decorative. It is the strongest existing candidate to push further.
+Scoped to the Ethical Hacking Arsenal only. Near-black `#04070a` ground, green phosphor
+(`140 90% 50%`), CRT scanlines, Martian Mono, blinking `.term-cursor`. Inside the bright app
+it shows up as a dark "secret level" door (dashboard rail, landing teaser).

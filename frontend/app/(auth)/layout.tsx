@@ -1,9 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
-import { Sparkles } from "lucide-react";
 import { useBootstrapUser } from "@/hooks/useUser";
+import { Mascot } from "@/components/playground/Mascot";
 import { AuthFormProvider } from "./auth-form-context";
 
 // Animated cartoon characters — listen to window mousemove, so client-only.
@@ -17,93 +18,64 @@ const AnimatedCharacters = dynamic(
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   useBootstrapUser();
+  const pathname = usePathname() ?? "";
+  const onRegister = pathname.startsWith("/register");
 
   return (
     <AuthFormProvider>
-      <main className="grid min-h-[100svh] lg:grid-cols-2">
-        {/* Left side — the Signal world: deep ink, neon grid floor, ghost
-            word, with the animated characters standing on the horizon.
+      <main className="grid min-h-[100svh] bg-background lg:grid-cols-2">
+        {/* Left side — the crew's playground: a soft sky, a big friendly
+            line, and the characters standing on a chunky green hill.
             Hidden on mobile so the form has all the room. */}
-        <div className="relative hidden flex-col justify-between overflow-hidden bg-background p-12 lg:flex">
-          {/* Ghost word behind everything */}
-          <div
-            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
-            aria-hidden
-          >
-            <span className="ghost-word text-[11vw] leading-none">STREAK</span>
-          </div>
-          {/* Neon perspective floor the characters stand on */}
-          <div className="grid-scene" aria-hidden>
-            <div className="grid-floor" />
-          </div>
-          {/* Cyan + violet blooms */}
-          <div
-            className="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-primary/15 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -right-20 top-8 h-72 w-72 rounded-full bg-violet-500/15 blur-3xl"
-            aria-hidden
-          />
+        <div className="relative hidden flex-col overflow-hidden bg-muted lg:flex">
+          <div className="relative z-10 px-12 pt-10">
+            <Link
+              href="/"
+              className="focus-ring inline-flex rounded-xl font-display text-2xl text-primary"
+            >
+              SkillStreak<span className="ml-1.5 text-foreground">AI</span>
+            </Link>
 
-          {/* Brand mark */}
-          <Link
-            href="/"
-            className="relative z-10 inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/30 bg-primary/10">
-              <Sparkles className="h-4 w-4 text-primary" />
-            </div>
-            <span>
-              <span className="gradient-text">SkillStreak</span> AI
-            </span>
-          </Link>
+            <h2 className="mt-14 max-w-md font-display text-5xl leading-[1.05] text-foreground [text-wrap:balance]">
+              Your <span className="text-energy">streak</span> is waiting.
+            </h2>
+            <p className="mt-4 max-w-sm text-lg font-semibold text-muted-foreground [text-wrap:pretty]">
+              The crew watches you type. They look away for passwords — promise.
+            </p>
+          </div>
 
-          {/* Tagline + characters — the crew reacts while you type */}
-          <div className="relative z-10 flex flex-1 flex-col justify-end">
-            <div className="mb-6">
-              <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary">
-                System online
-              </p>
-              <h2 className="mt-2 max-w-sm font-display text-3xl font-semibold tracking-tight text-foreground [text-wrap:balance]">
-                Your streak is waiting.
-              </h2>
-              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                The crew watches you type. They look away for passwords —
-                promise.
-              </p>
-            </div>
-            <div className="flex items-end justify-center">
+          {/* Characters on the hill */}
+          <div className="relative mt-auto flex justify-center">
+            <div className="origin-bottom scale-[0.72] xl:scale-90 2xl:scale-100">
               <AnimatedCharacters />
             </div>
           </div>
-
-          {/* Footer */}
-          <div className="relative z-10 mt-8 flex items-center gap-6 text-xs text-muted-foreground">
-            <span>© SkillStreak AI</span>
-            <Link href="/" className="transition hover:text-foreground">
-              Home
-            </Link>
-            <span>v0.7.0</span>
+          <div className="relative z-10 border-t-[10px] border-primary-bright bg-primary px-12 pb-6 pt-4">
+            <div className="flex items-center gap-6 text-sm font-extrabold text-white">
+              <span>© SkillStreak AI</span>
+              <Link href="/" className="focus-ring rounded-md hover:underline">
+                Home
+              </Link>
+              <span>v0.7.0</span>
+            </div>
           </div>
         </div>
 
         {/* Right side — form */}
-        <div className="relative flex items-center justify-center bg-background px-4 py-16">
+        <div className="relative flex items-center justify-center px-4 py-12 sm:py-16">
           <div className="w-full max-w-md">
-            {/* Mobile-only brand mark (left panel hidden < lg) */}
-            <Link
-              href="/"
-              className="mb-8 flex items-center justify-center gap-2 text-sm text-muted-foreground transition hover:text-foreground lg:hidden"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="gradient-text font-semibold">SkillStreak</span>
-              <span>AI</span>
-            </Link>
-
-            <div className="rounded-2xl border border-border bg-card/85 p-8 shadow-2xl">
-              {children}
+            {/* Mobile-only brand + mascot (left panel hidden < lg) */}
+            <div className="mb-6 flex flex-col items-center gap-4 lg:hidden">
+              <Link href="/" className="focus-ring rounded-xl font-display text-2xl text-primary">
+                SkillStreak<span className="ml-1.5 text-foreground">AI</span>
+              </Link>
+              <Mascot
+                size={84}
+                message={onRegister ? "A new learner! Let's get you set up." : "Welcome back! Your streak missed you."}
+              />
             </div>
+
+            <div className="card-chunky p-6 sm:p-8">{children}</div>
           </div>
         </div>
       </main>

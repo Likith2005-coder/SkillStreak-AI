@@ -2,11 +2,11 @@
 
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChatMessage, Intent } from "@/lib/api";
 import { TypingIndicator } from "./TypingIndicator";
 import { ShikiCodeBlock } from "@/components/shared/ShikiCodeBlock";
+import { SignalBotStatic } from "@/components/3d/SignalBotStatic";
 
 type Props = {
   message: ChatMessage & { streaming?: boolean };
@@ -33,21 +33,22 @@ export function MessageBubble({ message }: Props) {
       )}
     >
       {!isUser && (
-        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
-          <Bot className="h-3.5 w-3.5" />
-        </div>
+        <span aria-hidden className="mt-0.5 h-10 w-10 shrink-0 rounded-full bg-grape/10 p-0.5">
+          <SignalBotStatic className="h-full w-full" />
+        </span>
       )}
 
       <div
         className={cn(
-          "max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm",
+          "min-w-0 max-w-[85%] rounded-2xl px-4 py-3 text-[0.95rem]",
           isUser
-            ? "bg-gradient-to-br from-indigo-500 to-violet-500 text-white"
-            : "border border-border bg-card/60 text-foreground"
+            ? "rounded-br-md bg-secondary font-semibold text-white"
+            : "rounded-tl-md border-2 border-b-4 border-border bg-card text-foreground"
         )}
+        style={isUser ? { boxShadow: "0 4px 0 hsl(var(--secondary-shade))" } : undefined}
       >
         {!isUser && message.intent && (
-          <div className="mb-2 inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+          <div className="mb-2 inline-flex items-center rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-extrabold text-grape">
             {INTENT_LABEL[message.intent]}
           </div>
         )}
@@ -57,19 +58,13 @@ export function MessageBubble({ message }: Props) {
         ) : isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
         ) : (
-          <article className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-headings:mt-4 prose-headings:mb-2 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none">
+          <article className="prose prose-sm max-w-none font-medium prose-headings:mb-2 prose-headings:mt-4 prose-headings:font-black prose-headings:text-foreground prose-p:leading-relaxed prose-p:text-foreground prose-a:font-bold prose-a:text-secondary prose-strong:font-extrabold prose-strong:text-foreground prose-code:text-foreground prose-li:text-foreground prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
               {message.content}
             </ReactMarkdown>
           </article>
         )}
       </div>
-
-      {isUser && (
-        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-card/60 text-muted-foreground">
-          <User className="h-3.5 w-3.5" />
-        </div>
-      )}
     </div>
   );
 }
@@ -92,7 +87,7 @@ const mdComponents: Components = {
     if (isInline) {
       return (
         <code
-          className="rounded bg-muted/60 px-1 py-0.5 text-[0.85em] font-mono"
+          className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.85em] font-semibold"
           {...rest}
         >
           {children}

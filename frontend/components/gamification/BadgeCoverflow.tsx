@@ -8,7 +8,8 @@
  *
  * Perf: pure CSS 3D transforms with transitions — zero per-frame JS. The
  * gentle autoplay stops the moment the user interacts and pauses on hover.
- * Reduced-motion falls back to the flat grid (BadgeGallery).
+ * Reduced-motion falls back to the flat grid (BadgeGallery). Cards are
+ * chunky white tiles with a coloured medal; locked ones are grey.
  */
 
 import {
@@ -19,57 +20,17 @@ import {
   type CSSProperties,
 } from "react";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
-import {
-  Award,
-  ChevronLeft,
-  ChevronRight,
-  Flame,
-  Footprints,
-  Globe2,
-  Lock,
-  Moon,
-  Rocket,
-  Sunrise,
-  Trophy,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Badge } from "@/lib/api";
-import { BadgeGallery } from "./BadgeGallery";
-
-const ICONS: Record<string, LucideIcon> = {
-  footprints: Footprints,
-  flame: Flame,
-  trophy: Trophy,
-  award: Award,
-  rocket: Rocket,
-  "globe-2": Globe2,
-  moon: Moon,
-  sunrise: Sunrise,
-};
-
-/** Per-badge accent so each card feels like its own trophy, not a clone. */
-const ACCENTS: Record<
-  string,
-  { from: string; to: string; text: string; glow: string }
-> = {
-  footprints: { from: "from-cyan-500/25", to: "to-sky-500/10", text: "text-cyan-700", glow: "0 0 60px -10px rgba(34,211,238,0.55)" },
-  flame: { from: "from-orange-500/25", to: "to-amber-500/10", text: "text-orange-700", glow: "0 0 60px -10px rgba(251,146,60,0.55)" },
-  trophy: { from: "from-rose-500/25", to: "to-pink-500/10", text: "text-rose-700", glow: "0 0 60px -10px rgba(251,113,133,0.55)" },
-  award: { from: "from-violet-500/25", to: "to-purple-500/10", text: "text-violet-700", glow: "0 0 60px -10px rgba(167,139,250,0.55)" },
-  rocket: { from: "from-emerald-500/25", to: "to-teal-500/10", text: "text-emerald-700", glow: "0 0 60px -10px rgba(52,211,153,0.55)" },
-  "globe-2": { from: "from-blue-500/25", to: "to-indigo-500/10", text: "text-blue-700", glow: "0 0 60px -10px rgba(96,165,250,0.55)" },
-  moon: { from: "from-indigo-500/25", to: "to-violet-500/10", text: "text-indigo-700", glow: "0 0 60px -10px rgba(129,140,248,0.55)" },
-  sunrise: { from: "from-amber-500/25", to: "to-yellow-500/10", text: "text-amber-700", glow: "0 0 60px -10px rgba(251,191,36,0.55)" },
-};
-
-const FALLBACK_ACCENT = ACCENTS.award;
+import { BadgeGallery, BadgeHeader } from "./BadgeGallery";
+import { Medal, toneFor } from "./Medal";
 
 // Coverflow geometry — fixed internals.
 const PERSPECTIVE = 1600;
-const CARD_W = 290;
-const CARD_H = 340;
-const GAP_X = 205; // horizontal spread per step
+const CARD_W = 260;
+const CARD_H = 320;
+const GAP_X = 190; // horizontal spread per step
 const DEPTH = 230; // how far neighbours fall back
 const TILT_Y = 16; // rotateY per step
 const TILT_Z = 2.5; // subtle rotateZ per step
@@ -141,29 +102,10 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
   // Reduced motion (or a degenerate list) → the calm flat grid.
   if (reduce || n === 0) return <BadgeGallery badges={badges} />;
 
-  const activeBadge = badges[active];
-  const activeAccent = ACCENTS[activeBadge.icon] ?? FALLBACK_ACCENT;
-
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5">
-      {/* ambient bloom tinted to the active badge */}
-      <div
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br opacity-40 blur-3xl transition-colors duration-700",
-          activeAccent.from,
-          activeAccent.to
-        )}
-      />
-
-      <div className="relative flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium">Badges</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {earnedCount} of {n} earned
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5">
+    <div className="card-chunky relative overflow-hidden p-5">
+      <BadgeHeader earned={earnedCount} total={n}>
+        <div className="flex shrink-0 items-center gap-2">
           <CarouselArrow
             dir={-1}
             onClick={() => {
@@ -179,7 +121,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
             }}
           />
         </div>
-      </div>
+      </BadgeHeader>
 
       {/* ── The 3D stage ── */}
       <div
@@ -190,7 +132,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
         onKeyDown={onKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="focus-ring relative mt-2 flex h-[400px] items-center justify-center rounded-2xl"
+        className="focus-ring relative mt-2 flex h-[370px] items-center justify-center rounded-2xl"
         style={{ perspective: `${PERSPECTIVE}px` }}
       >
         <div
@@ -210,8 +152,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
             const visible = ax <= MAX_VISIBLE;
             const isActive = rel === 0;
             const sc = Math.max(0.4, 1 - ax * SCALE_STEP);
-            const accent = ACCENTS[b.icon] ?? FALLBACK_ACCENT;
-            const Icon = ICONS[b.icon] ?? Award;
+            const tone = toneFor(b.icon);
             const earned = !!b.earnedAt;
 
             const cardStyle: CSSProperties = {
@@ -222,11 +163,10 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
               height: CARD_H,
               transformOrigin: "center center",
               transform: `translate(-50%, -50%) translateX(${rel * GAP_X}px) translateZ(${-ax * DEPTH}px) rotateY(${-rel * TILT_Y}deg) rotateZ(${rel * TILT_Z}deg) scale(${sc})`,
-              transition: `transform ${MOVE_DUR}s ${EASE}, opacity ${MOVE_DUR}s ${EASE}, box-shadow ${MOVE_DUR}s ${EASE}`,
+              transition: `transform ${MOVE_DUR}s ${EASE}, opacity ${MOVE_DUR}s ${EASE}`,
               opacity: visible ? 1 : 0,
               pointerEvents: visible ? "auto" : "none",
               cursor: isActive ? "default" : "pointer",
-              boxShadow: isActive && earned ? accent.glow : "0 20px 50px -20px rgba(0,0,0,0.6)",
             };
 
             return (
@@ -236,43 +176,24 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
                 onClick={() => handleCardClick(i)}
                 aria-label={b.name}
                 aria-hidden={!visible}
-                className={cn(
-                  "overflow-hidden rounded-2xl border bg-gradient-to-br",
-                  earned
-                    ? cn("border-white/15", accent.from, accent.to, "bg-card/80")
-                    : "border-border/70 from-card/80 to-card/60"
-                )}
+                className="overflow-hidden rounded-[1.5rem] border-2 border-b-[6px] border-border bg-card"
               >
-                {/* inner surface */}
-                <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
-                  <div
-                    className={cn(
-                      "flex h-20 w-20 items-center justify-center rounded-full ring-1",
-                      earned
-                        ? cn("bg-white/10 ring-white/20", accent.text)
-                        : "bg-muted/30 text-muted-foreground ring-border/60"
-                    )}
-                  >
-                    {earned ? (
-                      <Icon className="h-9 w-9" />
-                    ) : (
-                      <Lock className="h-7 w-7" />
-                    )}
-                  </div>
+                {/* coloured top band — the ribbon the medal hangs from */}
+                <div aria-hidden className={cn("absolute inset-x-0 top-0 h-20", earned ? tone.tint : "bg-muted")} />
+                <div className="relative flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+                  <Medal icon={b.icon} earned={earned} size="lg" />
                   <div>
-                    <div className="text-lg font-bold tracking-tight text-foreground">
+                    <div className={cn("text-xl font-black", earned ? "text-foreground" : "text-muted-foreground")}>
                       {b.name}
                     </div>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                    <p className="mt-1.5 text-sm font-semibold leading-snug text-muted-foreground">
                       {b.description}
                     </p>
                   </div>
                   <span
                     className={cn(
-                      "rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider",
-                      earned
-                        ? cn("border-white/20 bg-white/10", accent.text)
-                        : "border-border bg-muted/20 text-muted-foreground"
+                      "rounded-full px-3 py-1 text-xs font-extrabold",
+                      earned ? cn(tone.tint, tone.text) : "bg-muted text-muted-foreground"
                     )}
                   >
                     {earned
@@ -284,9 +205,9 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
                 {/* dim veil over non-active cards */}
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-black"
+                  className="pointer-events-none absolute inset-0 bg-white"
                   style={{
-                    opacity: isActive ? 0 : 0.45,
+                    opacity: isActive ? 0 : 0.5,
                     transition: `opacity ${MOVE_DUR}s ${EASE}`,
                   }}
                 />
@@ -297,19 +218,23 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
       </div>
 
       {/* ── Dots ── */}
-      <div className="relative mt-1 flex items-center justify-center gap-1.5">
+      <div className="relative mt-1 flex flex-wrap items-center justify-center">
         {badges.map((b, i) => (
           <button
             key={b.slug}
+            type="button"
             aria-label={`Go to ${b.name}`}
+            aria-current={i === active ? "true" : undefined}
             onClick={() => handleCardClick(i)}
-            className={cn(
-              "h-1.5 rounded-full transition-all duration-300",
-              i === active
-                ? "w-6 bg-primary"
-                : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60"
-            )}
-          />
+            className="focus-ring flex h-8 items-center justify-center rounded-full px-1"
+          >
+            <span
+              className={cn(
+                "block h-2.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
+                i === active ? "w-7 bg-primary-bright" : "w-2.5 bg-border hover:bg-muted-foreground/50"
+              )}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -323,9 +248,9 @@ function CarouselArrow({ dir, onClick }: { dir: -1 | 1; onClick: () => void }) {
       type="button"
       aria-label={dir === -1 ? "Previous badge" : "Next badge"}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card/85 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+      className="focus-ring flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-border bg-card text-muted-foreground transition-[transform,box-shadow] duration-100 [box-shadow:0_4px_0_hsl(var(--border))] hover:bg-muted hover:text-foreground active:translate-y-[4px] active:[box-shadow:none] motion-reduce:transition-none"
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="h-5 w-5" strokeWidth={3} />
     </button>
   );
 }

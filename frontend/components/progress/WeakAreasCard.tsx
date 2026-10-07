@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "next-view-transitions";
-import { AlertTriangle, ArrowRight } from "lucide-react";
+import { ChevronRight, PartyPopper, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styleFor } from "@/lib/domain-style";
 import type { WeakArea } from "@/lib/api";
@@ -10,38 +10,48 @@ type Props = { items: WeakArea[] };
 
 export function WeakAreasCard({ items }: Props) {
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-5">
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <AlertTriangle className="h-4 w-4 text-amber-600" />
-        Weak areas
+    <div className="card-chunky h-full p-5">
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden
+          className="flex h-11 w-11 shrink-0 rotate-6 items-center justify-center rounded-2xl bg-destructive-bright"
+          style={{ boxShadow: "0 4px 0 hsl(var(--destructive-shade))" }}
+        >
+          <Target className="h-6 w-6 text-white" strokeWidth={2.6} />
+        </span>
+        <div>
+          <h3 className="text-lg font-black text-foreground">Weak areas</h3>
+          <p className="text-sm font-bold text-muted-foreground">
+            Best score below 60%. Retake to clear them.
+          </p>
+        </div>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Topics where your best score is below 60%. Re-take the quiz to clear them.
-      </p>
 
       {items.length === 0 ? (
-        <div className="mt-4 rounded-xl border border-dashed border-border bg-card/30 p-4 text-center text-xs text-muted-foreground">
-          Nothing flagged yet. Keep going.
+        <div className="mt-5 flex flex-col items-center rounded-2xl bg-primary/10 px-4 py-6 text-center">
+          <PartyPopper className="h-8 w-8 text-primary" strokeWidth={2.4} aria-hidden />
+          <p className="mt-2 text-base font-black text-primary-shade">Nothing flagged. Nice work!</p>
+          <p className="mt-0.5 text-sm font-bold text-primary-shade">Keep going and keep it that way.</p>
         </div>
       ) : (
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-5 space-y-2.5">
           {items.map((w) => {
             const s = styleFor(w.domain.color);
             return (
               <li key={w.topicId}>
                 <Link
                   href={`/topic/${w.topicId}`}
-                  className="group flex items-center justify-between gap-3 rounded-xl border border-border bg-card/80 px-3 py-2.5 transition hover:border-primary/40 hover:bg-card"
+                  className="card-press focus-ring group flex min-h-[56px] items-center justify-between gap-3 rounded-2xl border-2 border-b-4 border-border bg-card px-4 py-2.5 transition-colors hover:bg-muted/60"
                 >
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-foreground">{w.title}</div>
-                    <div className={cn("mt-0.5 text-[11px]", s.text)}>{w.domain.name}</div>
+                    <div className="truncate text-sm font-extrabold text-foreground">{w.title}</div>
+                    <div className={cn("mt-0.5 text-xs font-bold", s.text)}>{w.domain.name}</div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700">
+                    <span className="rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-extrabold tabular-nums text-destructive-text">
                       {w.bestScore ?? 0}/5
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-0.5" strokeWidth={3} aria-hidden />
                   </div>
                 </Link>
               </li>

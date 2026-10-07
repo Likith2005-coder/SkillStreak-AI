@@ -6,20 +6,21 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Bell,
+  Check,
   Flame,
+  Gem,
   Loader2,
   LogOut,
   Mail,
   Snowflake,
-  Sparkles,
+  Star,
   Target,
-  Trophy,
   User,
+  type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PageHero } from "@/components/shared/PageHero";
 import { Label } from "@/components/ui/label";
 import {
   apiErrorMessage,
@@ -172,39 +173,38 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="container max-w-3xl px-4 py-10">
+    <main className="container max-w-3xl px-4 py-8">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+        className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-extrabold text-muted-foreground transition hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4" strokeWidth={3} />
         Back to dashboard
       </Link>
 
-      <PageHero
-        className="mt-4"
-        eyebrow="Account"
-        icon={<Sparkles className="h-3.5 w-3.5 text-primary" />}
-        title="Settings"
-        subtitle="Profile, preferences, notifications, and account actions."
-        ghost="CONFIG"
-      />
+      <header className="mt-2">
+        <h1 className="font-display text-3xl text-foreground sm:text-4xl">Settings</h1>
+        <p className="mt-1 text-base font-semibold text-muted-foreground">
+          Profile, preferences, notifications, and account actions.
+        </p>
+      </header>
 
       <section className="mt-8 space-y-6">
         {/* ── Account info (read-only) ─────────────────────── */}
         <SettingCard
-          icon={<User className="h-4 w-4 text-primary" />}
+          icon={User}
+          face="bg-secondary-bright"
+          edge="hsl(var(--secondary-shade))"
           title="Account"
           hint="Your profile snapshot."
         >
-          <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+          <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Field label="Name" value={user.name} />
-            <Field label="Email" value={user.email} />
             <Field
               label="Role"
               value={
                 user.role === "admin" ? (
-                  <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+                  <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-extrabold text-grape">
                     Admin
                   </span>
                 ) : (
@@ -213,72 +213,90 @@ export default function SettingsPage() {
               }
             />
             <Field
+              label="Email"
+              className="col-span-2 sm:col-span-1"
+              value={<span className="break-all">{user.email}</span>}
+            />
+            <Field
+              label="Level"
+              value={
+                <span className="inline-flex items-center gap-1.5 text-grape">
+                  <Star className="h-4 w-4" fill="currentColor" aria-hidden />
+                  Level {user.level}
+                </span>
+              }
+            />
+            <Field
+              label="Total XP"
+              value={
+                <span className="inline-flex items-center gap-1.5 tabular-nums text-xp">
+                  <Gem className="h-4 w-4" fill="currentColor" aria-hidden />
+                  {user.xp.toLocaleString()}
+                </span>
+              }
+            />
+            <Field
               label="Member since"
+              className="col-span-2 sm:col-span-1"
               value={new Date(user.createdAt).toLocaleDateString(undefined, {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
               })}
             />
-            <Field
-              label="Level"
-              value={
-                <span className="inline-flex items-center gap-1.5">
-                  <Trophy className="h-3.5 w-3.5 text-amber-600" />
-                  Lvl {user.level}
-                </span>
-              }
-            />
-            <Field
-              label="Total XP"
-              value={<span className="tabular-nums">{user.xp.toLocaleString()}</span>}
-            />
           </dl>
         </SettingCard>
 
         {/* ── Streak rescue ─────────────────────────────────── */}
         <SettingCard
-          icon={<Flame className="h-4 w-4 text-orange-600" />}
+          icon={Flame}
+          face="bg-energy-bright"
+          edge="hsl(var(--energy-shade))"
           title="Streak"
           hint="Use a freeze proactively to protect tomorrow's day."
         >
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold tabular-nums tracking-tight">
+                <span className="font-display text-5xl tabular-nums text-energy">
                   {streak?.currentStreak ?? "—"}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-base font-extrabold text-muted-foreground">
                   day{(streak?.currentStreak ?? 0) === 1 ? "" : "s"} current
                 </span>
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">
+              <div className="mt-1 text-sm font-bold text-muted-foreground">
                 Longest streak: {streak?.longestStreak ?? "—"}
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
                 {Array.from({ length: streak?.freezesAvailable ?? 0 }).map((_, i) => (
-                  <div
+                  <span
                     key={i}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-700"
+                    title="Streak freeze"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-bright text-white"
+                    style={{ boxShadow: "0 4px 0 hsl(var(--secondary-shade))" }}
                   >
-                    <Snowflake className="h-3.5 w-3.5" />
-                  </div>
+                    <Snowflake className="h-5 w-5" strokeWidth={2.6} aria-hidden />
+                    <span className="sr-only">Streak freeze available</span>
+                  </span>
                 ))}
                 {(streak?.freezesAvailable ?? 0) === 0 && (
-                  <span className="text-xs text-muted-foreground">No freezes — refill on Monday</span>
+                  <span className="text-sm font-bold text-muted-foreground">No freezes. They refill on Monday.</span>
                 )}
               </div>
               <Button
-                size="sm"
-                variant="outline"
+                variant="secondary"
                 onClick={handleUseFreeze}
                 disabled={usingFreeze || !streak || streak.freezesAvailable <= 0}
               >
-                {usingFreeze && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
-                <Snowflake className="h-4 w-4" />
+                {usingFreeze ? (
+                  <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+                ) : (
+                  <Snowflake className="h-4 w-4" strokeWidth={2.6} />
+                )}
                 Use a freeze
               </Button>
             </div>
@@ -287,11 +305,13 @@ export default function SettingsPage() {
 
         {/* ── Learning preferences ──────────────────────────── */}
         <SettingCard
-          icon={<Target className="h-4 w-4 text-violet-600" />}
+          icon={Target}
+          face="bg-grape-bright"
+          edge="hsl(var(--grape-shade))"
           title="Learning preferences"
           hint="Adjust what the AI tutor knows about your level and goals."
         >
-          <div className="mt-5 space-y-5">
+          <div className="mt-6 space-y-6">
             <RadioGroup
               label="Prior level"
               options={PRIOR_LEVELS}
@@ -302,11 +322,9 @@ export default function SettingsPage() {
             <RadioGroup label="Pace" options={PACES} value={pace} onChange={setPace} />
 
             {domains.length > 0 && (
-              <div>
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Preferred domains
-                </Label>
-                <p className="mt-1 text-[11px] text-muted-foreground">
+              <fieldset>
+                <legend className="text-base font-black text-foreground">Preferred domains</legend>
+                <p className="mt-0.5 text-sm font-semibold text-muted-foreground">
                   Used by the recommender to prioritise your next topic.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -317,29 +335,31 @@ export default function SettingsPage() {
                       <button
                         key={d.slug}
                         type="button"
+                        aria-pressed={active}
                         onClick={() =>
                           setPreferredDomains((prev) =>
                             active ? prev.filter((x) => x !== d.slug) : [...prev, d.slug]
                           )
                         }
                         className={cn(
-                          "rounded-full border px-3 py-1 text-xs transition",
+                          "focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-2xl border-2 border-b-4 px-4 py-2 text-sm font-extrabold transition-[transform,border-width,background-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
                           active
-                            ? `${s.badgeBg} border-transparent`
-                            : "border-border bg-card/80 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                            ? cn(s.badgeBg)
+                            : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
+                        {active && <Check className="h-4 w-4" strokeWidth={3.5} aria-hidden />}
                         {d.name}
                       </button>
                     );
                   })}
                 </div>
-              </div>
+              </fieldset>
             )}
           </div>
 
-          <div className="mt-6 flex justify-end">
-            <Button onClick={handleSavePrefs} disabled={savingPrefs}>
+          <div className="mt-7 flex justify-end">
+            <Button onClick={handleSavePrefs} disabled={savingPrefs} className="w-full uppercase sm:w-auto">
               {savingPrefs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {savingPrefs ? "Saving…" : "Save preferences"}
             </Button>
@@ -348,34 +368,38 @@ export default function SettingsPage() {
 
         {/* ── Notifications (existing) ──────────────────────── */}
         <SettingCard
-          icon={<Bell className="h-4 w-4 text-orange-600" />}
+          icon={Bell}
+          face="bg-xp-bright"
+          edge="hsl(var(--xp-shade))"
           title="Notifications"
           hint="Email reminders and weekly summary."
         >
-          <div className="mt-5 space-y-5">
+          <div className="mt-6 space-y-5">
             <div className="max-w-xs">
-              <Label htmlFor="reminderTime">Daily reminder time (UTC)</Label>
+              <Label htmlFor="reminderTime" className="text-base font-black text-foreground">
+                Daily reminder time (UTC)
+              </Label>
               <Input
                 id="reminderTime"
                 type="time"
-                className="mt-1.5"
+                className="mt-2 h-12 rounded-2xl border-2 border-b-4 border-border bg-card px-4 text-base font-bold focus-visible:border-secondary-bright focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
               />
-              <p className="mt-1.5 text-[11px] text-muted-foreground">
+              <p className="mt-2 text-sm font-semibold text-muted-foreground">
                 {reminderTime
                   ? `Reminder set for ${reminderTime} UTC if your streak is at risk.`
                   : "Leave blank to opt out of streak reminders."}
               </p>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-border bg-card/80 p-4">
+            <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-border p-4">
               <div>
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Mail className="h-4 w-4 text-cyan-600" />
+                <div id="digest-label" className="flex items-center gap-2 text-base font-black text-foreground">
+                  <Mail className="h-5 w-5 text-secondary" strokeWidth={2.6} aria-hidden />
                   Weekly digest
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-0.5 text-sm font-semibold text-muted-foreground">
                   Sunday email summarising your week.
                 </p>
               </div>
@@ -384,45 +408,49 @@ export default function SettingsPage() {
                 type="button"
                 role="switch"
                 aria-checked={digestEnabled}
+                aria-labelledby="digest-label"
                 onClick={() => setDigestEnabled((v) => !v)}
                 className={cn(
-                  "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition",
-                  digestEnabled ? "bg-primary" : "bg-muted"
+                  "focus-ring relative inline-flex h-9 w-16 shrink-0 items-center rounded-full border-2 transition-colors motion-reduce:transition-none",
+                  digestEnabled ? "border-primary-shade bg-primary-bright" : "border-border bg-muted"
                 )}
               >
                 <span
                   className={cn(
-                    "inline-block h-5 w-5 transform rounded-full bg-white shadow transition",
-                    digestEnabled ? "translate-x-5" : "translate-x-0.5"
+                    "inline-block h-7 w-7 rounded-full bg-white transition-transform motion-reduce:transition-none",
+                    digestEnabled ? "translate-x-[1.85rem]" : "translate-x-0.5"
                   )}
+                  style={{ boxShadow: "0 2px 0 hsl(var(--border))" }}
                 />
               </button>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
-            <Button onClick={handleSaveNotifs} disabled={savingNotifs}>
+          <div className="mt-7 flex justify-end">
+            <Button onClick={handleSaveNotifs} disabled={savingNotifs} className="w-full uppercase sm:w-auto">
               {savingNotifs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {savingNotifs ? "Saving…" : "Save notifications"}
             </Button>
           </div>
 
-          <p className="mt-4 text-center text-[11px] text-muted-foreground">
+          <p className="mt-4 text-sm font-semibold text-muted-foreground">
             Email actually sends only if the backend has{" "}
-            <code className="rounded bg-card px-1 py-0.5 text-[10px]">RESEND_API_KEY</code>{" "}
+            <code className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold text-foreground">RESEND_API_KEY</code>{" "}
             set. Otherwise preferences are saved but emails are stubbed.
           </p>
         </SettingCard>
 
         {/* ── Danger zone ───────────────────────────────────── */}
         <SettingCard
-          icon={<LogOut className="h-4 w-4 text-rose-600" />}
+          icon={LogOut}
+          face="bg-destructive-bright"
+          edge="hsl(var(--destructive-shade))"
           title="Account actions"
           hint="Sign out of this browser."
         >
-          <div className="mt-4 flex justify-end">
-            <Button variant="destructive" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
+          <div className="mt-5 flex justify-end">
+            <Button variant="destructive" onClick={handleSignOut} className="w-full uppercase sm:w-auto">
+              <LogOut className="h-4 w-4" strokeWidth={2.6} />
               Sign out
             </Button>
           </div>
@@ -433,35 +461,45 @@ export default function SettingsPage() {
 }
 
 function SettingCard({
-  icon,
+  icon: Icon,
+  face,
+  edge,
   title,
   hint,
   children,
 }: {
-  icon: React.ReactNode;
+  icon: LucideIcon;
+  face: string;
+  edge: string;
   title: string;
   hint: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-6">
-      <div className="flex items-center gap-2 text-sm font-medium">
-        {icon}
-        {title}
+    <div className="card-chunky p-5 sm:p-6">
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden
+          className={cn("flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-2xl", face)}
+          style={{ boxShadow: `0 4px 0 ${edge}` }}
+        >
+          <Icon className="h-6 w-6 text-white" strokeWidth={2.6} />
+        </span>
+        <div>
+          <h2 className="text-xl font-black text-foreground">{title}</h2>
+          <p className="text-sm font-semibold text-muted-foreground">{hint}</p>
+        </div>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
       {children}
     </div>
   );
 }
 
-function Field({ label, value }: { label: string; value: React.ReactNode }) {
+function Field({ label, value, className }: { label: string; value: React.ReactNode; className?: string }) {
   return (
-    <div>
-      <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm text-foreground">{value}</dd>
+    <div className={cn("min-w-0 rounded-2xl bg-muted px-4 py-3", className)}>
+      <dt className="text-xs font-extrabold text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 text-base font-black text-foreground">{value}</dd>
     </div>
   );
 }
@@ -478,31 +516,30 @@ function RadioGroup<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div>
-      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-        {label}
-      </Label>
-      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+    <fieldset>
+      <legend className="text-base font-black text-foreground">{label}</legend>
+      <div className="mt-2 grid gap-2.5 sm:grid-cols-3">
         {options.map((opt) => {
           const active = value === opt.value;
           return (
             <button
               key={opt.value}
               type="button"
+              aria-pressed={active}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "rounded-xl border p-3 text-left transition",
+                "focus-ring rounded-2xl border-2 border-b-4 p-3.5 text-left transition-[transform,border-width,background-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
                 active
-                  ? "border-primary/60 bg-primary/10"
-                  : "border-border bg-card/80 hover:border-primary/40"
+                  ? "border-secondary-bright bg-secondary/10"
+                  : "border-border bg-card hover:bg-muted"
               )}
             >
-              <div className="text-sm font-medium text-foreground">{opt.label}</div>
-              <div className="mt-0.5 text-[11px] text-muted-foreground">{opt.hint}</div>
+              <div className={cn("text-base font-black", active ? "text-secondary-shade" : "text-foreground")}>{opt.label}</div>
+              <div className="mt-0.5 text-sm font-semibold text-muted-foreground">{opt.hint}</div>
             </button>
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }

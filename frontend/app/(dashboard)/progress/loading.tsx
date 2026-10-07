@@ -1,5 +1,5 @@
-import { PageLoader } from "@/components/shared/PageLoader";
+import { ProgressSkeleton } from "@/components/progress/ProgressSkeleton";
 
 export default function Loading() {
-  return <PageLoader hint="Crunching analytics…" />;
+  return <ProgressSkeleton />;
 }

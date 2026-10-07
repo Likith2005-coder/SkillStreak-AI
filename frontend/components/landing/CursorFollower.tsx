@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Soft glowing orb that trails the cursor on the landing page. Uses
+ * A faint sky-blue pool of light that trails the cursor on the landing page. Uses
  * framer-motion's motion values + spring so movement is smooth and runs
  * entirely on the compositor — no React state per pointermove frame.
  *
@@ -49,7 +49,7 @@ export function CursorFollower() {
         // competes with scroll — dropping it keeps the same soft look for free.
         willChange: "transform",
         background:
-          "radial-gradient(closest-side, hsl(290 75% 60% / 0.22), hsl(243 75% 59% / 0.11) 40%, transparent 70%)",
+          "radial-gradient(closest-side, hsl(var(--secondary-bright) / 0.10), hsl(var(--primary-bright) / 0.05) 45%, transparent 70%)",
       }}
     />
   );

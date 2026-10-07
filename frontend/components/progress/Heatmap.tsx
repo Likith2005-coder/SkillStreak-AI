@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HeatmapData } from "@/lib/api";
 
@@ -7,7 +8,7 @@ type Props = {
   data: HeatmapData;
 };
 
-const WEEKDAY_LABELS = ["Mon", "Wed", "Fri"];
+const WEEKDAY_LABELS = ["Sun", "", "Tue", "", "Thu", "", "Sat"];
 
 export function Heatmap({ data }: Props) {
   // Group days into columns (weeks). Pad the start so the first column begins on Sunday.
@@ -33,30 +34,39 @@ export function Heatmap({ data }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium">Last 90 days</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {data.totalActiveDays} active day{data.totalActiveDays === 1 ? "" : "s"} ·{" "}
-            {data.totalActions} action{data.totalActions === 1 ? "" : "s"}
-          </p>
+    <div className="card-chunky h-full p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-2xl bg-primary-bright"
+            style={{ boxShadow: "0 4px 0 hsl(var(--primary-shade))" }}
+          >
+            <CalendarDays className="h-6 w-6 text-white" strokeWidth={2.6} />
+          </span>
+          <div>
+            <h3 className="text-lg font-black text-foreground">Last 90 days</h3>
+            <p className="text-sm font-bold text-muted-foreground">
+              {data.totalActiveDays} active day{data.totalActiveDays === 1 ? "" : "s"} ·{" "}
+              {data.totalActions} action{data.totalActions === 1 ? "" : "s"}
+            </p>
+          </div>
         </div>
         <Legend />
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto">
+      <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
         {/* Weekday labels */}
-        <div className="hidden flex-col justify-between pt-1 text-[10px] text-muted-foreground sm:flex">
-          {WEEKDAY_LABELS.map((d) => (
-            <span key={d} className="h-3 leading-3">
+        <div className="hidden flex-col gap-1 text-[11px] font-bold text-muted-foreground sm:flex">
+          {WEEKDAY_LABELS.map((d, i) => (
+            <span key={i} className="h-5 leading-5">
               {d}
             </span>
           ))}
         </div>
-        <div className="flex gap-[3px]">
+        <div className="flex gap-1">
           {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
+            <div key={wi} className="flex flex-col gap-1">
               {week.map((day, di) => (
                 <Cell key={di} day={day} />
               ))}
@@ -69,7 +79,7 @@ export function Heatmap({ data }: Props) {
 }
 
 function Cell({ day }: { day: { date: string; count: number } | null }) {
-  if (!day) return <div className="h-3 w-3" aria-hidden />;
+  if (!day) return <div className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />;
   const tone = bucket(day.count);
   const label = formatLabel(day.date, day.count);
   return (
@@ -77,7 +87,7 @@ function Cell({ day }: { day: { date: string; count: number } | null }) {
       title={label}
       aria-label={label}
       className={cn(
-        "h-3 w-3 rounded-sm transition-transform hover:scale-150",
+        "h-4 w-4 rounded-[5px] transition-transform hover:scale-125 motion-reduce:transition-none sm:h-5 sm:w-5",
         TONE_BG[tone]
       )}
     />
@@ -92,12 +102,13 @@ function bucket(count: number): 0 | 1 | 2 | 3 | 4 {
   return 4;
 }
 
+// Activity is progress, so the scale climbs through the brand greens.
 const TONE_BG: Record<0 | 1 | 2 | 3 | 4, string> = {
-  0: "bg-muted/30",
-  1: "bg-indigo-500/30",
-  2: "bg-indigo-500/55",
-  3: "bg-violet-500/75",
-  4: "bg-fuchsia-500",
+  0: "bg-muted ring-1 ring-inset ring-border",
+  1: "bg-primary-bright/30",
+  2: "bg-primary-bright/60",
+  3: "bg-primary-bright",
+  4: "bg-primary",
 };
 
 function formatLabel(iso: string, count: number): string {
@@ -108,12 +119,12 @@ function formatLabel(iso: string, count: number): string {
 
 function Legend() {
   return (
-    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-      <span>Less</span>
+    <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground" aria-hidden>
+      <span className="mr-0.5">Less</span>
       {([0, 1, 2, 3, 4] as const).map((t) => (
-        <span key={t} className={cn("h-3 w-3 rounded-sm", TONE_BG[t])} />
+        <span key={t} className={cn("h-4 w-4 rounded-[5px]", TONE_BG[t])} />
       ))}
-      <span>More</span>
+      <span className="ml-0.5">More</span>
     </div>
   );
 }

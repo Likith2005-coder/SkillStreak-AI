@@ -18,7 +18,8 @@ export function FinalCTA() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-cyan-600 via-violet-600 to-violet-600 px-6 py-16 text-center text-white shadow-2xl shadow-violet-500/20 sm:px-12 sm:py-20"
+        className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-grape px-6 py-16 text-center text-white sm:px-12 sm:py-20"
+        style={{ boxShadow: "0 8px 0 hsl(var(--grape-shade))" }}
       >
         {/* Decorative blobs */}
         <div
@@ -44,7 +45,7 @@ export function FinalCTA() {
           <h3 className="mx-auto mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight md:text-5xl">
             Your first streak is one click away.
           </h3>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-white/85 md:text-base">
+          <p className="mx-auto mt-4 max-w-xl text-sm text-white md:text-base">
             Sign up in 60 seconds. Start with the topic the AI tutor recommends.
           </p>
 

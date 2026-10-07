@@ -3,22 +3,25 @@
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
-import { ArrowRight, Play, Sparkles, Target, Zap } from "lucide-react";
+import { ChevronRight, Gem, Play, Target } from "lucide-react";
 import {
   apiErrorMessage,
   fetchRecommendations,
   type RecommendedTopic,
 } from "@/lib/api";
 import { DomainIcon } from "@/components/shared/DomainIcon";
-import { hexFor, styleFor } from "@/lib/domain-style";
+import { styleFor } from "@/lib/domain-style";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 /**
- * "Up Next" — the recommendation band. The top pick gets a featured hero
- * card that actually sells the topic: what it is (summary), why it's here
- * (embedding match %), and what it pays (real XP amounts from the backend:
- * 10 for the topic, up to 25 for a perfect quiz). The rest queue up beside
- * it as numbered rows, playlist-style.
+ * "Up next" — the recommendation band. The top pick gets a featured chunky
+ * card that sells the topic: what it is (summary), why it's here (embedding
+ * match %), and what it pays (real XP amounts from the backend: 10 for the
+ * topic, up to 25 for a perfect quiz). The rest queue up beside it as
+ * pressable rows.
  */
 export function RecommendedNext() {
   const [items, setItems] = useState<RecommendedTopic[] | null>(null);
@@ -41,42 +44,42 @@ export function RecommendedNext() {
   const personalized = items?.[0]?.reason === "personalized";
 
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-5">
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-medium">
-          <Sparkles className="h-4 w-4 text-primary" />
-          Up next for you
-        </h3>
+    <div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-2xl font-black text-foreground">Up next for you</h2>
         {personalized && (
-          <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+          <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-extrabold text-grape">
             Personalized
           </span>
         )}
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="-mt-1 mb-4 text-sm font-semibold text-muted-foreground">
         {personalized
-          ? "Closest topics to what you've already learned, by embedding similarity."
+          ? "Closest topics to what you've already learned."
           : "Foundations to start with."}
       </p>
 
       {!items ? (
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
           {/* minmax(0,...) lets columns shrink below their content width.
               Without it a long truncated title set the track width and pushed
               the whole dashboard to ~760px on phones, zooming the page out. */}
-          <div className="h-56 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
+          <div className="card-chunky h-64 animate-pulse motion-reduce:animate-none" />
           <div className="grid gap-2.5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-16 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
+              <div key={i} className="h-[76px] animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
             ))}
           </div>
         </div>
       ) : items.length === 0 ? (
-        <div className="mt-4 rounded-xl border border-dashed border-border bg-card/30 p-4 text-center text-xs text-muted-foreground">
-          You’re all caught up. 🏁
+        <div className="card-chunky p-6 text-center">
+          <p className="text-lg font-black text-foreground">You&apos;re all caught up!</p>
+          <p className="mt-1 text-sm font-semibold text-muted-foreground">
+            New recommendations appear as you finish topics.
+          </p>
         </div>
       ) : (
-        <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr]">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
           <HeroPick item={items[0]} />
           {items.length > 1 && (
             <ul className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2.5">
@@ -93,8 +96,8 @@ export function RecommendedNext() {
 
 /** Featured card for the #1 pick — summary, match %, XP bounty, big CTA. */
 function HeroPick({ item }: { item: RecommendedTopic }) {
+  const reduce = useReducedMotionSafe();
   const s = styleFor(item.domain.color);
-  const [hexFrom, hexTo] = hexFor(item.domain.color);
   const match =
     item.reason === "personalized" && item.similarity > 0
       ? Math.round(item.similarity * 100)
@@ -102,140 +105,89 @@ function HeroPick({ item }: { item: RecommendedTopic }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: reduce ? 0 : 0.3, ease: EASE }}
+      className="min-w-0"
     >
       <Link
         href={`/topic/${item.topicId}`}
-        className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/10 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-xl"
-        style={{
-          background: `linear-gradient(135deg, ${hexFrom}1f, transparent 55%), linear-gradient(to bottom right, ${hexTo}0d, transparent)`,
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06)`,
-        }}
+        className="card-chunky card-press focus-ring group flex h-full flex-col overflow-hidden"
       >
-        {/* accent bloom in the corner */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full blur-3xl transition-opacity duration-300 group-hover:opacity-100"
-          style={{ background: `${hexFrom}2e`, opacity: 0.7 }}
-        />
-
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            <span className="relative flex h-2 w-2">
-              <span
-                className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-full opacity-60"
-                style={{ background: hexFrom }}
-              />
-              <span
-                className="relative inline-flex h-2 w-2 rounded-full"
-                style={{ background: hexFrom }}
-              />
-            </span>
-            Up next
-          </div>
-          {match !== null && (
-            <span
-              className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums"
-              style={{
-                borderColor: `${hexFrom}4d`,
-                background: `${hexFrom}1a`,
-                color: hexFrom,
-              }}
-            >
-              <Target className="h-3 w-3" />
-              {match}% match
-            </span>
-          )}
-        </div>
-
-        <div className="relative mt-4 flex items-center gap-3">
-          <div
-            className={cn(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-110",
-              s.iconBg
-            )}
-          >
+        {/* domain-tinted top band */}
+        <div className={cn("flex items-center gap-3 px-5 pb-4 pt-5", s.iconBg)}>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card">
             <DomainIcon name={item.domain.icon} className={cn("h-6 w-6", s.text)} />
-          </div>
-          <div className="min-w-0">
-            <div className={cn("text-[10px] uppercase tracking-wider", s.text)}>
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className={cn("truncate text-sm font-extrabold", s.text)}>
               {item.domain.name} · {item.phase}
             </div>
-            <div className="mt-0.5 text-xl font-semibold tracking-tight text-foreground">
+            <div className="mt-0.5 text-xl font-black leading-tight text-foreground [text-wrap:balance]">
               {item.title}
             </div>
           </div>
         </div>
 
-        {item.summary && (
-          <p className="relative mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-            {item.summary}
-          </p>
-        )}
+        <div className="flex flex-1 flex-col p-5 pt-4">
+          {match !== null && (
+            <span className="mb-2 inline-flex w-fit items-center gap-1 rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-extrabold tabular-nums text-secondary">
+              <Target className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+              {match}% match
+            </span>
+          )}
+          {item.summary && (
+            <p className="line-clamp-3 text-sm font-semibold leading-relaxed text-muted-foreground">
+              {item.summary}
+            </p>
+          )}
 
-        <div className="relative mt-auto flex items-center justify-between gap-3 pt-4">
-          {/* real numbers: topic_complete 10 XP + quiz_perfect 25 XP */}
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-[11px] font-medium text-amber-700">
-            <Zap className="h-3.5 w-3.5" />
-            Up to 35 XP
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-4 py-2 text-sm font-semibold text-white shadow-lg transition-transform duration-300 group-hover:translate-x-0.5",
-              s.gradientFrom,
-              s.gradientTo
-            )}
-          >
-            <Play className="h-3.5 w-3.5 fill-current" />
-            Start topic
-          </span>
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4">
+            {/* real numbers: topic_complete 10 XP + quiz_perfect 25 XP */}
+            <span className="inline-flex items-center gap-1.5 text-sm font-black text-xp">
+              <Gem className="h-4 w-4" fill="currentColor" aria-hidden />
+              Up to 35 XP
+            </span>
+            <span className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-5 text-sm font-black uppercase tracking-wide text-primary-foreground [box-shadow:0_4px_0_hsl(var(--primary-shade))] group-hover:brightness-[1.06]">
+              <Play className="h-4 w-4" fill="currentColor" aria-hidden />
+              Start topic
+            </span>
+          </div>
         </div>
       </Link>
     </motion.div>
   );
 }
 
-/** Compact numbered row for queue positions 2+. */
+/** Compact row for queue positions 2+. */
 function QueueRow({ item, index }: { item: RecommendedTopic; index: number }) {
+  const reduce = useReducedMotionSafe();
   const s = styleFor(item.domain.color);
   return (
     <motion.li
-      initial={{ opacity: 0, y: 6 }}
+      initial={reduce ? false : { opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, delay: index * 0.05 }}
+      transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : index * 0.05, ease: EASE }}
+      className="min-w-0"
     >
       <Link
         href={`/topic/${item.topicId}`}
-        className="group relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-border bg-card/80 p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10"
+        className="card-press focus-ring group flex items-center gap-3 rounded-2xl border-2 border-b-4 border-border bg-card p-3 transition-colors hover:bg-muted/60"
       >
-        {/* queue number — gives the list a "next up" playlist feel */}
-        <span className="font-mono text-lg font-bold tabular-nums text-muted-foreground/30 transition-colors group-hover:text-primary/60">
-          {String(index + 1).padStart(2, "0")}
+        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl", s.iconBg)}>
+          <DomainIcon name={item.domain.icon} className={cn("h-5 w-5", s.text)} />
         </span>
-        <div
-          className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1 ring-white/5 transition-transform duration-300 group-hover:scale-110",
-            s.iconBg
-          )}
-        >
-          <DomainIcon name={item.domain.icon} className={cn("h-4.5 w-4.5", s.text)} />
-        </div>
         <div className="min-w-0 flex-1">
-          <div className={cn("text-[10px] uppercase tracking-wider", s.text)}>
+          <div className={cn("truncate text-xs font-extrabold", s.text)}>
             {item.domain.name} · {item.phase}
           </div>
-          <div className="mt-0.5 truncate text-sm font-medium text-foreground">
-            {item.title}
-          </div>
-          {item.summary && (
-            <div className="mt-0.5 truncate text-xs text-muted-foreground">
-              {item.summary}
-            </div>
-          )}
+          <div className="truncate text-base font-extrabold text-foreground">{item.title}</div>
         </div>
-        <ArrowRight className="h-4 w-4 shrink-0 -translate-x-1 text-muted-foreground opacity-50 transition-all duration-300 group-hover:translate-x-0 group-hover:text-primary group-hover:opacity-100" />
+        <ChevronRight
+          className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+          strokeWidth={3}
+          aria-hidden
+        />
       </Link>
     </motion.li>
   );

@@ -8,19 +8,22 @@
  * other when the user starts typing, and one of them peeks at the password
  * when it's revealed).
  *
- * Recoloured from the source's purple/orange/yellow palette to SkillStreak's
- * indigo / violet / fuchsia / cyan brand colours.
+ * Coloured with the Playground theme's bright grape / blue / orange / gold.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { useAuthForm } from "@/app/(auth)/auth-form-context";
 
-// Brand-aligned palette for the four characters
-const COLOR_VIOLET = "#8b5cf6"; // back-most tall block
-const COLOR_SLATE = "#1e293b";  // middle tall block
-const COLOR_FUCHSIA = "#d946ef"; // front semi-circle
-const COLOR_CYAN = "#22d3ee";   // front-right rectangle
-const COLOR_PUPIL = "#0f172a";  // dark pupils + mouth
+// Playground palette — illustration uses the *bright* tones; the slate
+// character becomes a blue one so the crew reads as cheerful, not moody.
+const COLOR_VIOLET = "hsl(var(--grape-bright))"; // back-most tall block
+const COLOR_SLATE = "hsl(var(--secondary-bright))"; // middle tall block
+const COLOR_FUCHSIA = "hsl(var(--energy-bright))"; // front semi-circle
+const COLOR_CYAN = "hsl(var(--xp-bright))"; // front-right rectangle
+const COLOR_PUPIL = "hsl(var(--foreground))"; // dark pupils + mouth
+// A darker right-hand side on every body: the same chunky "3D edge" the
+// buttons and tiles carry.
+const BODY_EDGE = "inset -12px 0 0 rgba(0, 0, 0, 0.08)";
 
 // ───────────────────────────────────────────────────────────
 // Pupil + EyeBall primitives
@@ -294,7 +297,8 @@ export function AnimatedCharacters() {
           width: 180,
           height: isTyping || (passwordLength > 0 && !passwordVisible) ? 440 : 400,
           backgroundColor: COLOR_VIOLET,
-          borderRadius: "10px 10px 0 0",
+          boxShadow: BODY_EDGE,
+          borderRadius: "28px 28px 0 0",
           zIndex: 1,
           transform: passwordRevealed
             ? "skewX(0deg)"
@@ -349,7 +353,8 @@ export function AnimatedCharacters() {
           width: 120,
           height: 310,
           backgroundColor: COLOR_SLATE,
-          borderRadius: "8px 8px 0 0",
+          boxShadow: BODY_EDGE,
+          borderRadius: "22px 22px 0 0",
           zIndex: 2,
           transform: passwordRevealed
             ? "skewX(0deg)"
@@ -404,6 +409,7 @@ export function AnimatedCharacters() {
           width: 240,
           height: 200,
           backgroundColor: COLOR_FUCHSIA,
+          boxShadow: BODY_EDGE,
           borderRadius: "120px 120px 0 0",
           zIndex: 3,
           transform: passwordRevealed
@@ -433,6 +439,7 @@ export function AnimatedCharacters() {
           width: 140,
           height: 230,
           backgroundColor: COLOR_CYAN,
+          boxShadow: BODY_EDGE,
           borderRadius: "70px 70px 0 0",
           zIndex: 4,
           transform: passwordRevealed

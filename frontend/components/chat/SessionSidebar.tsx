@@ -36,33 +36,33 @@ export function SessionSidebar() {
   }, [sessions, query]);
 
   return (
-    <aside className="flex h-full w-72 flex-col border-r border-border bg-card/30">
-      <div className="border-b border-border p-3">
+    <aside className="flex h-full w-72 flex-col border-r-2 border-border bg-background">
+      <div className="p-3 pb-1">
         <Button
-          size="sm"
-          className="w-full"
+          variant="secondary"
+          className="w-full uppercase"
           onClick={() => start({})}
         >
-          <MessageSquarePlus className="h-4 w-4" />
+          <MessageSquarePlus className="h-5 w-5" strokeWidth={2.6} />
           New chat
         </Button>
       </div>
 
-      <div className="border-b border-border p-3">
+      <div className="p-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={2.6} />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search chats…"
-            className="h-9 pl-8 text-sm"
+            className="h-11 rounded-2xl border-2 bg-card pl-9 text-sm font-semibold focus-visible:border-secondary-bright focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
       </div>
 
-      <ul className="flex-1 overflow-y-auto py-1">
+      <ul className="flex-1 overflow-y-auto pb-3">
         {filtered.length === 0 && (
-          <li className="px-3 py-6 text-center text-xs text-muted-foreground">
+          <li className="px-3 py-6 text-center text-sm font-bold text-muted-foreground">
             {sessions.length === 0
               ? "No conversations yet."
               : "No matches."}
@@ -75,10 +75,10 @@ export function SessionSidebar() {
             <li key={session.id}>
               <div
                 className={cn(
-                  "group mx-2 my-1 flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition",
+                  "group mx-3 my-1.5 flex items-center gap-1 rounded-2xl border-2 px-3 py-2 text-sm transition-colors",
                   isActive
-                    ? "bg-card text-foreground ring-1 ring-inset ring-primary/30"
-                    : "text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                    ? "border-secondary-bright bg-secondary/10 text-foreground"
+                    : "border-transparent text-foreground hover:bg-muted"
                 )}
               >
                 {isEditing ? (
@@ -93,7 +93,7 @@ export function SessionSidebar() {
                           setEditingId(null);
                         } else if (e.key === "Escape") setEditingId(null);
                       }}
-                      className="h-7 text-xs"
+                      className="h-9 rounded-xl border-2 text-sm font-semibold"
                     />
                     <button
                       type="button"
@@ -102,17 +102,17 @@ export function SessionSidebar() {
                         setEditingId(null);
                       }}
                       aria-label="Save"
-                      className="text-emerald-600 hover:text-emerald-700"
+                      className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-primary hover:bg-primary/10"
                     >
-                      <Check className="h-4 w-4" />
+                      <Check className="h-5 w-5" strokeWidth={3} />
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
                       aria-label="Cancel"
-                      className="text-muted-foreground hover:text-foreground"
+                      className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-5 w-5" strokeWidth={3} />
                     </button>
                   </>
                 ) : (
@@ -120,11 +120,11 @@ export function SessionSidebar() {
                     <button
                       type="button"
                       onClick={() => open(session.id)}
-                      className="min-w-0 flex-1 text-left"
+                      className="focus-ring min-w-0 flex-1 rounded-lg py-0.5 text-left"
                     >
-                      <div className="truncate text-sm font-medium">{session.title}</div>
+                      <div className={cn("truncate text-sm font-extrabold", isActive && "text-secondary")}>{session.title}</div>
                       {session.topicTitle && (
-                        <div className="truncate text-[11px] text-muted-foreground/80">
+                        <div className="truncate text-xs font-semibold text-muted-foreground">
                           {session.topicTitle}
                         </div>
                       )}
@@ -137,9 +137,9 @@ export function SessionSidebar() {
                         setEditValue(session.title);
                       }}
                       aria-label="Rename"
-                      className="opacity-0 transition group-hover:opacity-100 hover:text-foreground"
+                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-card hover:text-foreground focus-visible:opacity-100"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-4 w-4" strokeWidth={2.6} />
                     </button>
                     <button
                       type="button"
@@ -148,9 +148,9 @@ export function SessionSidebar() {
                         if (confirm("Delete this conversation?")) remove(session.id);
                       }}
                       aria-label="Delete"
-                      className="opacity-0 transition group-hover:opacity-100 hover:text-destructive-text"
+                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-card hover:text-destructive-text focus-visible:opacity-100"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" strokeWidth={2.6} />
                     </button>
                   </>
                 )}

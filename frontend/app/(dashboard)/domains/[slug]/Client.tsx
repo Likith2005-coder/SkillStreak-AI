@@ -10,6 +10,8 @@ import {
   ArrowRight,
   BookOpen,
   Briefcase,
+  ChevronRight,
+  Clock,
   Compass,
   Loader2,
   Lock,
@@ -30,9 +32,11 @@ import {
 } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
 import { styleFor } from "@/lib/domain-style";
-import { DomainIcon } from "@/components/shared/DomainIcon";
+import { DomainTile, domainPalette } from "@/components/shared/DomainIcon";
 import { WindingRoadmap } from "@/components/roadmap/WindingRoadmap";
 import { AssessmentIntro, AssessmentWizard } from "@/components/domains/AssessmentWizard";
+import { Mascot } from "@/components/playground/Mascot";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type ProgressStatus = "not_started" | "in_progress" | "completed";
@@ -108,11 +112,11 @@ export default function RoadmapPage() {
 
   if (error) {
     return (
-      <main className="container px-4 py-10">
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
+      <main className="container px-4 py-8">
+        <BackToDomains />
+        <div className="mt-4 rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
           {error}
         </div>
-        <BackToDomains />
       </main>
     );
   }
@@ -122,14 +126,10 @@ export default function RoadmapPage() {
     // morphs into it) and load the trail underneath.
     const preview = cachedDomain(slug);
     return (
-      <main className="container px-4 py-10 text-muted-foreground">
-        {preview && (
-          <>
-            <BackToDomains />
-            <DomainHeader data={preview} colorStyle={styleFor(preview.color)} />
-          </>
-        )}
-        <Loader2 className="mt-10 h-5 w-5 animate-spin motion-reduce:animate-none" />
+      <main className="container px-4 py-8">
+        <BackToDomains />
+        {preview ? <DomainHeader data={preview} /> : <HeaderSkeleton />}
+        <TrailSkeleton />
       </main>
     );
   }
@@ -141,18 +141,18 @@ export default function RoadmapPage() {
   // then a personalized plan. The learner can always skip to the trail.
   if (hasPlan === null && !skippedAssessment) {
     return (
-      <main className="container px-4 py-10 text-muted-foreground">
+      <main className="container px-4 py-8">
         <BackToDomains />
-        <DomainHeader data={data} colorStyle={s} />
-        <Loader2 className="mt-10 h-5 w-5 animate-spin motion-reduce:animate-none" />
+        <DomainHeader data={data} />
+        <TrailSkeleton />
       </main>
     );
   }
   if (hasPlan === false && !skippedAssessment) {
     return (
-      <main className="container px-4 py-10">
+      <main className="container px-4 py-8">
         <BackToDomains />
-        <DomainHeader data={data} colorStyle={s} />
+        <DomainHeader data={data} />
         <div className="mt-10 sm:mt-14">
           {assessStage === "intro" ? (
             <AssessmentIntro
@@ -171,8 +171,8 @@ export default function RoadmapPage() {
               onSkip={() => setSkippedAssessment(true)}
             />
           ) : (
-            <div className="flex items-center justify-center gap-3 py-16 text-muted-foreground">
-              <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" /> Preparing your questions…
+            <div className="flex items-center justify-center gap-3 py-16 text-base font-bold text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin text-grape motion-reduce:animate-none" /> Preparing your questions…
             </div>
           )}
         </div>
@@ -183,28 +183,23 @@ export default function RoadmapPage() {
   // Non-curated domains: friendly placeholder pointing to the chatbot.
   if (!data.roadmap) {
     return (
-      <main className="container px-4 py-10">
+      <main className="container px-4 py-8">
         <BackToDomains />
-        <DomainHeader data={data} colorStyle={s} />
+        <DomainHeader data={data} />
 
-        <section className="mt-10 rounded-2xl border border-border bg-card/80 p-8 text-center">
-          <MessageCircle className={cn("mx-auto h-10 w-10", s.text)} />
-          <h2 className="mt-4 text-lg font-semibold">Roadmap on demand</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+        <section className="card-chunky mx-auto mt-10 flex max-w-2xl flex-col items-center p-8 text-center">
+          <Mascot size={96} />
+          <h2 className="mt-4 font-display text-2xl text-foreground">Roadmap on demand</h2>
+          <p className="mx-auto mt-2 max-w-md text-base font-semibold text-muted-foreground">
             We don&apos;t have a curated roadmap for this domain yet. Open the AI
             tutor and ask for one — it&apos;ll generate a personalized path on the fly.
           </p>
-          <Link
-            href={`/chatbot?domain=${data.slug}`}
-            className={cn(
-              "mt-6 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90",
-              s.gradientFrom,
-              s.gradientTo
-            )}
-          >
-            Ask the AI tutor
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <Button asChild variant="grape" size="lg" className="mt-6 uppercase">
+            <Link href={`/chatbot?domain=${data.slug}`}>
+              <MessageCircle className="h-5 w-5" />
+              Ask the AI tutor
+            </Link>
+          </Button>
         </section>
       </main>
     );
@@ -215,66 +210,60 @@ export default function RoadmapPage() {
   const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
 
   const grouped = groupTopics(data.roadmap.topics);
+  const phases = (["foundations", "core", "advanced"] as const).filter((p) => grouped[p].length > 0);
 
   return (
-    <main className="container px-4 py-10">
+    <main className="container px-4 py-8">
       <BackToDomains />
-      <DomainHeader
-        data={data}
-        colorStyle={s}
-        progress={{ completed: completedCount, total, percent }}
-      />
+      <DomainHeader data={data} progress={{ completed: completedCount, total, percent }} />
 
-      {/* Personal plan strip — jump back into the AI-designed plan */}
-      {hasPlan && (
-        <Link
-          href={`/domains/${data.slug}/plan`}
-          className="mt-6 flex items-center gap-3 rounded-2xl border border-violet-500/25 bg-violet-500/[0.07] px-5 py-3.5 transition-colors hover:border-violet-400/45 hover:bg-violet-500/[0.12]"
-        >
-          <Sparkles className="h-4 w-4 shrink-0 text-violet-700" />
-          <span className="flex-1 text-sm text-foreground/90">
-            <span className="font-semibold">Your personalized plan</span>
-            <span className="text-muted-foreground">
-              {" "}
-              — phases, resources, projects and your capstone build.
+      <div className="mx-auto max-w-3xl">
+        {/* Personal plan strip — jump back into the AI-designed plan */}
+        {hasPlan && (
+          <Link
+            href={`/domains/${data.slug}/plan`}
+            className="card-chunky card-press focus-ring group mt-6 flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
+          >
+            <span
+              aria-hidden
+              className="flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-xl bg-grape-bright"
+              style={{ boxShadow: "0 4px 0 hsl(var(--grape-shade))" }}
+            >
+              <Sparkles className="h-5 w-5 text-white" strokeWidth={2.6} />
             </span>
-          </span>
-          <ArrowRight className="h-4 w-4 shrink-0 text-violet-700" />
-        </Link>
-      )}
+            <span className="min-w-0 flex-1">
+              <span className="block text-base font-black text-foreground">Your personalized plan</span>
+              <span className="block text-sm font-semibold text-muted-foreground">
+                Phases, resources, projects and your capstone build.
+              </span>
+            </span>
+            <ChevronRight
+              className="h-5 w-5 shrink-0 text-grape transition-transform group-hover:translate-x-0.5"
+              strokeWidth={3}
+            />
+          </Link>
+        )}
 
-      <InterviewUnlockCTA
-        slug={data.slug}
-        completed={completedCount}
-        total={total}
-      />
+        <InterviewUnlockCTA slug={data.slug} completed={completedCount} total={total} />
+      </div>
 
-      <div className="mt-10 space-y-12">
-        {(["foundations", "core", "advanced"] as const).map((phase) => {
-          const topics = grouped[phase];
-          if (topics.length === 0) return null;
-          return (
-            <section key={phase}>
-              <PhaseHeader phase={phase} count={topics.length} />
-              <div className="mt-8">
-                <WindingRoadmap
-                  topics={topics}
-                  progressMap={progressByTopic}
-                  color={data.color}
-                />
-              </div>
-            </section>
-          );
-        })}
+      <div className="mt-12 space-y-14">
+        {phases.map((phase, i) => (
+          <section key={phase} aria-labelledby={`phase-${phase}`}>
+            <PhaseHeader phase={phase} index={i} count={grouped[phase].length} colorStyle={s} />
+            {/* room for the current node's floating START bubble */}
+            <div className="mt-12">
+              <WindingRoadmap topics={grouped[phase]} progressMap={progressByTopic} color={data.color} />
+            </div>
+          </section>
+        ))}
       </div>
 
       {/* The trail's destination: finish every topic and the road opens
           into your personalized career map for this domain. */}
-      <CareerUnlockCTA
-        slug={data.slug}
-        completed={completedCount}
-        total={total}
-      />
+      <div className="mx-auto max-w-3xl">
+        <CareerUnlockCTA slug={data.slug} completed={completedCount} total={total} />
+      </div>
     </main>
   );
 }
@@ -283,102 +272,151 @@ function BackToDomains() {
   return (
     <Link
       href="/domains"
-      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+      className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
     >
-      <ArrowLeft className="h-4 w-4" />
+      <ArrowLeft className="h-4 w-4" strokeWidth={3} />
       All domains
     </Link>
   );
 }
 
+/**
+ * The domain's unit banner: a solid slab in the domain's face colour with a
+ * 3D bottom edge, like the dashboard's "next up" banner. It carries the
+ * same view-transition names as the domains-grid card, so the card morphs
+ * straight into it.
+ */
 function DomainHeader({
   data,
-  colorStyle,
   progress,
 }: {
   // Only fields every domain has, so the header can render from the cached
   // summary before the full roadmap has loaded.
   data: Domain;
-  colorStyle: ReturnType<typeof styleFor>;
   progress?: { completed: number; total: number; percent: number };
 }) {
+  const p = domainPalette(data.color);
+  const pill = "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white";
   return (
     <header
-      style={{ viewTransitionName: `domain-card-${data.slug}` }}
-      className="mt-4 flex flex-col gap-6 rounded-2xl border border-border bg-card/80 p-6 sm:flex-row sm:items-center"
+      style={{
+        viewTransitionName: `domain-card-${data.slug}`,
+        background: p.face,
+        boxShadow: `0 6px 0 ${p.shade}`,
+      }}
+      className="mt-2 flex flex-col gap-5 rounded-[1.5rem] p-6 text-white sm:flex-row sm:items-center sm:gap-6 sm:p-7"
     >
-      <div
+      <DomainTile
+        name={data.icon}
+        color={data.color}
+        tone="white"
+        size={72}
+        tilt={-6}
         style={{ viewTransitionName: `domain-icon-${data.slug}` }}
-        className={cn(
-          "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl",
-          colorStyle.iconBg
-        )}
-      >
-        <DomainIcon name={data.icon} className={cn("h-7 w-7", colorStyle.text)} />
-      </div>
+      />
 
-      <div className="flex-1">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <BookOpen className="h-3.5 w-3.5" />
-          {data.isCurated ? "Curated roadmap" : "On-demand"}
-          <span className="opacity-40">·</span>
-          <span className="capitalize">{data.difficulty}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className={pill} style={{ background: p.shade }}>
+            <BookOpen className="h-3.5 w-3.5" aria-hidden />
+            {data.isCurated ? "Curated roadmap" : "On-demand"}
+          </span>
+          <span className={cn(pill, "capitalize")} style={{ background: p.shade }}>
+            {data.difficulty}
+          </span>
           {data.roadmap && (
-            <>
-              <span className="opacity-40">·</span>
-              <span>~{data.roadmap.estimatedDays} days</span>
-            </>
+            <span className={pill} style={{ background: p.shade }}>
+              <Clock className="h-3.5 w-3.5" aria-hidden />~{data.roadmap.estimatedDays} days
+            </span>
           )}
         </div>
         <MorphTextStyle slugs={[data.slug]} />
         <h1
           style={{ viewTransitionName: `domain-title-${data.slug}` }}
-          className="mt-2 w-fit text-2xl font-semibold tracking-tight sm:text-3xl"
+          className="mt-3 w-fit font-display text-3xl leading-tight sm:text-4xl"
         >
           {data.name}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">{data.description}</p>
+        <p className="mt-2 max-w-2xl text-base font-semibold text-white">{data.description}</p>
       </div>
 
       {progress && (
-        <div className="w-full sm:w-auto sm:min-w-[180px]">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Progress</span>
-            <span className="tabular-nums">
-              {progress.completed} / {progress.total}
+        <div className="w-full sm:w-auto sm:min-w-[200px]">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-sm font-extrabold">Progress</span>
+            <span className="font-display text-xl tabular-nums">
+              {progress.completed}/{progress.total}
             </span>
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted/40">
+          <div
+            className="mt-2 h-4 overflow-hidden rounded-full"
+            style={{ background: p.shade }}
+            role="progressbar"
+            aria-valuenow={progress.percent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${progress.completed} of ${progress.total} topics complete`}
+          >
             <div
-              className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-500", colorStyle.gradientFrom, colorStyle.gradientTo)}
-              style={{ width: `${progress.percent}%` }}
+              className="h-full rounded-full bg-white transition-[width] duration-500 motion-reduce:transition-none"
+              style={{ width: `${progress.percent === 0 ? 0 : Math.max(progress.percent, 6)}%` }}
             />
           </div>
-          <div className="mt-1 text-right text-xs text-muted-foreground tabular-nums">
-            {progress.percent}%
-          </div>
+          <div className="mt-1.5 text-right text-sm font-extrabold tabular-nums">{progress.percent}% complete</div>
         </div>
       )}
     </header>
   );
 }
 
+function HeaderSkeleton() {
+  return <div className="mt-2 h-[180px] animate-pulse rounded-[1.5rem] bg-muted motion-reduce:animate-none" aria-hidden />;
+}
+
+function TrailSkeleton() {
+  const offsets = [0, 70, 100, 70, 0];
+  return (
+    <div className="mt-12 flex flex-col items-center gap-10" aria-label="Loading the trail" role="status">
+      {offsets.map((x, i) => (
+        <div
+          key={i}
+          className="relative h-20 w-20 animate-pulse rounded-full bg-muted motion-reduce:animate-none"
+          style={{ left: x, boxShadow: "0 7px 0 hsl(var(--border))" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function PhaseHeader({
   phase,
+  index,
   count,
+  colorStyle,
 }: {
   phase: RoadmapTopic["phase"];
+  index: number;
   count: number;
+  colorStyle: ReturnType<typeof styleFor>;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-      <div>
-        <h2 className="text-lg font-semibold tracking-tight">{PHASE_LABEL[phase]}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{PHASE_DESCRIPTION[phase]}</p>
+    <div className="mx-auto max-w-3xl text-center">
+      <div className="flex items-center gap-4">
+        <span aria-hidden className="h-[3px] flex-1 rounded-full bg-border" />
+        <h2 id={`phase-${phase}`} className="font-display text-2xl text-foreground sm:text-3xl">
+          {PHASE_LABEL[phase]}
+        </h2>
+        <span aria-hidden className="h-[3px] flex-1 rounded-full bg-border" />
       </div>
-      <span className="text-xs uppercase tracking-wider text-muted-foreground tabular-nums">
-        {count} topics
-      </span>
+      <p className="mt-1.5 text-sm font-semibold text-muted-foreground">{PHASE_DESCRIPTION[phase]}</p>
+      <div className="mt-3 flex justify-center gap-1.5">
+        <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-extrabold", colorStyle.iconBg, colorStyle.text)}>
+          Section {index + 1}
+        </span>
+        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold tabular-nums text-foreground">
+          {count} topics
+        </span>
+      </div>
     </div>
   );
 }
@@ -391,6 +429,120 @@ function groupTopics(topics: RoadmapTopic[]): Record<RoadmapTopic["phase"], Road
   };
   for (const t of topics) out[t.phase].push(t);
   return out;
+}
+
+/* ── Unlockables: interview prep and the career map ─────────────────── */
+
+const UNLOCK_TONES = {
+  grape: { face: "bg-grape", shade: "hsl(var(--grape-shade))", text: "text-grape", fill: "bg-grape-bright" },
+  primary: { face: "bg-primary", shade: "hsl(var(--primary-shade))", text: "text-primary", fill: "bg-primary-bright" },
+} as const;
+
+/**
+ * Shared look for both unlockables. Unlocked: a solid role-coloured slab with
+ * a white pressable "button". Locked: a plain chunky card with a lock tile and
+ * a juicy bar showing how close the learner is.
+ */
+function UnlockCard({
+  unlocked,
+  href,
+  tone,
+  icon: Icon,
+  pillText,
+  title,
+  body,
+  cta,
+  lockedTitle,
+  lockedBody,
+  completed,
+  total,
+  className,
+}: {
+  unlocked: boolean;
+  href: string;
+  tone: keyof typeof UNLOCK_TONES;
+  icon: typeof Briefcase;
+  pillText: string;
+  title: string;
+  body: string;
+  cta: string;
+  lockedTitle: string;
+  lockedBody: string;
+  completed: number;
+  total: number;
+  className?: string;
+}) {
+  const t = UNLOCK_TONES[tone];
+  const left = Math.max(0, total - completed);
+  const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  if (unlocked) {
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "focus-ring group block rounded-[1.5rem] p-6 text-white transition-transform duration-100 active:translate-y-[3px] motion-reduce:transition-none",
+          t.face,
+          className
+        )}
+        style={{ boxShadow: `0 6px 0 ${t.shade}` }}
+      >
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+          <span
+            aria-hidden
+            className="flex h-14 w-14 shrink-0 -rotate-6 items-center justify-center rounded-2xl bg-white"
+            style={{ boxShadow: "0 5px 0 rgba(0,0,0,0.22)" }}
+          >
+            <Icon className={cn("h-7 w-7", t.text)} strokeWidth={2.6} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white"
+              style={{ background: t.shade }}
+            >
+              <Sparkles className="h-3.5 w-3.5" aria-hidden />
+              {pillText}
+            </span>
+            <h3 className="mt-2 font-display text-2xl leading-tight [text-wrap:balance]">{title}</h3>
+            <p className="mt-1.5 max-w-2xl text-sm font-semibold text-white">{body}</p>
+          </div>
+          <span
+            className={cn(
+              "inline-flex h-12 shrink-0 items-center justify-center gap-2 self-start rounded-2xl bg-white px-6 text-sm font-black uppercase tracking-wide sm:self-center",
+              t.text
+            )}
+            style={{ boxShadow: `0 4px 0 ${t.shade}` }}
+          >
+            {cta}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={3} />
+          </span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <div className={cn("card-chunky flex items-start gap-4 p-5", className)}>
+      <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted">
+        <Lock className="h-6 w-6 text-muted-foreground" strokeWidth={2.6} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-base font-black text-foreground">{lockedTitle}</h3>
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">Locked</span>
+        </div>
+        <p className="mt-1 text-sm font-semibold text-muted-foreground">{lockedBody}</p>
+        <div className="mt-3 flex items-center gap-3">
+          <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden>
+            <div className={cn("h-full rounded-full", t.fill)} style={{ width: `${pct === 0 ? 0 : Math.max(pct, 4)}%` }} />
+          </div>
+          <span className={cn("shrink-0 text-xs font-extrabold", t.text)}>
+            {left === 0 ? "Finish your last topic!" : `${left} ${left === 1 ? "topic" : "topics"} to go`}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function InterviewUnlockCTA({
@@ -421,75 +573,28 @@ function InterviewUnlockCTA({
 
   const completionUnlocked = total > 0 && completed >= total;
   const unlocked = serverEligible ?? (completionUnlocked || isAdmin);
-  const left = Math.max(0, total - completed);
-
-  if (unlocked) {
-    return (
-      <Link
-        href={`/domains/${slug}/interview`}
-        className="group relative mt-8 block overflow-hidden rounded-2xl border border-fuchsia-400/30 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 shadow-2xl shadow-fuchsia-500/20 transition-all hover:-translate-y-0.5 hover:shadow-fuchsia-500/40"
-      >
-        {/* shimmer sweep on hover */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
-        />
-        {/* gold star pulse */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl animate-cta-breathe"
-        />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/30">
-            <Briefcase className="h-6 w-6 text-white" />
-          </div>
-          <div className="flex-1 text-white">
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-amber-700">
-              <Sparkles className="h-3 w-3" />
-              {isAdmin && !completionUnlocked
-                ? "Admin override · Interview prep"
-                : "Unlocked · Interview prep"}
-            </div>
-            <h3 className="mt-1 text-xl font-bold tracking-tight">
-              {isAdmin && !completionUnlocked
-                ? "Admin access — full interview prep available."
-                : "You finished the roadmap. Now nail the interview."}
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm text-white/85">
-              15 senior-level questions, 2 system-design scenarios, behavioral STAR
-              templates, common traps, and a 7-day cram plan — calibrated to your level.
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-bold text-violet-700 shadow-lg transition-transform group-hover:translate-x-1 sm:self-center">
-            Open prep
-            <ArrowRight className="h-4 w-4" />
-          </span>
-        </div>
-      </Link>
-    );
-  }
+  const adminView = isAdmin && !completionUnlocked;
 
   return (
-    <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 sm:flex-row sm:items-center">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/40">
-        <Lock className="h-5 w-5 text-muted-foreground" />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          <Briefcase className="h-3 w-3" />
-          Interview prep · Locked
-        </div>
-        <p className="mt-1 text-sm text-foreground/85">
-          Complete every topic in this roadmap to unlock a hand-tuned interview
-          prep brief — questions, system design, behavioral, the lot.
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {left === 0
-            ? "Almost there — finish your last topic to unlock."
-            : `${left} ${left === 1 ? "topic" : "topics"} to go.`}
-        </p>
-      </div>
-    </div>
+    <UnlockCard
+      className="mt-6"
+      unlocked={unlocked}
+      href={`/domains/${slug}/interview`}
+      tone="grape"
+      icon={Briefcase}
+      pillText={adminView ? "Admin override · Interview prep" : "Unlocked · Interview prep"}
+      title={
+        adminView
+          ? "Admin access — full interview prep available."
+          : "You finished the roadmap. Now nail the interview."
+      }
+      body="15 senior-level questions, 2 system-design scenarios, behavioral STAR templates, common traps, and a 7-day cram plan — calibrated to your level."
+      cta="Open prep"
+      lockedTitle="Interview prep"
+      lockedBody="Complete every topic in this roadmap to unlock a hand-tuned interview prep brief — questions, system design, behavioral, the lot."
+      completed={completed}
+      total={total}
+    />
   );
 }
 
@@ -525,72 +630,22 @@ function CareerUnlockCTA({
 
   const completionUnlocked = total > 0 && completed >= total;
   const unlocked = serverEligible ?? (completionUnlocked || isAdmin);
-  const left = Math.max(0, total - completed);
-
-  if (unlocked) {
-    return (
-      <Link
-        href={`/domains/${slug}/career`}
-        className="group relative mt-14 block overflow-hidden rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-600 via-teal-600 to-emerald-600 p-6 shadow-2xl shadow-cyan-500/20 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40"
-      >
-        {/* shimmer sweep on hover */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-emerald-300/30 blur-3xl animate-cta-breathe"
-        />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/30">
-            <Compass className="h-6 w-6 text-white" />
-          </div>
-          <div className="flex-1 text-white">
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-emerald-100">
-              <Sparkles className="h-3 w-3" />
-              {isAdmin && !completionUnlocked
-                ? "Admin override · Career path"
-                : "Unlocked · Career path"}
-            </div>
-            <h3 className="mt-1 text-xl font-bold tracking-tight">
-              The road ends here. Your career starts now.
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm text-white/85">
-              Your personalized career map for this domain — stages with
-              timeframes at your pace, real certifications worth taking, role
-              and salary progression, and portfolio projects to build.
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-bold text-teal-700 shadow-lg transition-transform group-hover:translate-x-1 sm:self-center">
-            See my career path
-            <ArrowRight className="h-4 w-4" />
-          </span>
-        </div>
-      </Link>
-    );
-  }
 
   return (
-    <div className="mt-14 flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-5 sm:flex-row sm:items-center">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/40">
-        <Lock className="h-5 w-5 text-muted-foreground" />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          <Compass className="h-3 w-3" />
-          Career path · Locked
-        </div>
-        <p className="mt-1 text-sm text-foreground/85">
-          Finish the trail above to unlock your career map — stages,
-          certifications, roles and salaries, personalized to your profile.
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {left === 0
-            ? "Almost there — finish your last topic to unlock."
-            : `${left} ${left === 1 ? "topic" : "topics"} to go.`}
-        </p>
-      </div>
-    </div>
+    <UnlockCard
+      className="mt-14"
+      unlocked={unlocked}
+      href={`/domains/${slug}/career`}
+      tone="primary"
+      icon={Compass}
+      pillText={isAdmin && !completionUnlocked ? "Admin override · Career path" : "Unlocked · Career path"}
+      title="The road ends here. Your career starts now."
+      body="Your personalized career map for this domain — stages with timeframes at your pace, real certifications worth taking, role and salary progression, and portfolio projects to build."
+      cta="See my career path"
+      lockedTitle="Career path"
+      lockedBody="Finish the trail above to unlock your career map — stages, certifications, roles and salaries, personalized to your profile."
+      completed={completed}
+      total={total}
+    />
   );
 }

@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * One question, playground style: a big friendly prompt and four chunky
+ * answer keys. Picking a key presses it into a blue "selected" state; once
+ * the answer is checked the right key turns green and a wrong pick turns red
+ * and shakes. Keys 1–4 pick from the keyboard (wired in QuizPlayer).
+ */
+
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Check, X } from "lucide-react";
@@ -7,114 +14,83 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   index: number;
-  total: number;
   question: string;
   options: string[];
   selected: number | null;
   revealed: boolean;
   correctIndex?: number;
-  explanation?: string;
   onSelect: (i: number) => void;
 };
 
-const LABELS = ["A", "B", "C", "D"];
-
-export function QuestionCard({
-  index,
-  total,
-  question,
-  options,
-  selected,
-  revealed,
-  correctIndex,
-  explanation,
-  onSelect,
-}: Props) {
+export function QuestionCard({ index, question, options, selected, revealed, correctIndex, onSelect }: Props) {
   const reduce = useReducedMotion();
   return (
-    // A 500ms 90-degree card flip between questions was landing-page motion on
-    // the screen where the learner is thinking hardest. Product register: keep
-    // it quiet and short — a brief slide reads as "next question" just as well.
     <motion.div
       key={index}
-      initial={reduce ? { opacity: 0 } : { opacity: 0, x: 16 }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={reduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
-      transition={{ duration: reduce ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-2xl border border-border bg-card/85 p-6 sm:p-8"
+      exit={reduce ? { opacity: 0 } : { opacity: 0, x: -24 }}
+      transition={{ duration: reduce ? 0.12 : 0.25, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
-        <span>
-          Question {index + 1} of {total}
-        </span>
-      </div>
+      <h2 className="font-display text-2xl text-foreground sm:text-3xl [text-wrap:balance]">{question}</h2>
 
-      <h2 className="mt-3 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-        {question}
-      </h2>
-
-      <div className="mt-6 grid gap-3">
+      <div className="mt-7 grid gap-3" role="radiogroup" aria-label="Answers">
         {options.map((opt, i) => {
           const isSelected = selected === i;
           const isCorrect = revealed && i === correctIndex;
           const isWrongPick = revealed && isSelected && i !== correctIndex;
+          const idle = revealed && !isCorrect && !isWrongPick;
 
           return (
             <motion.button
               key={i}
               type="button"
+              role="radio"
+              aria-checked={isSelected}
               onClick={() => !revealed && onSelect(i)}
               disabled={revealed}
-              whileHover={!revealed ? { x: 4 } : undefined}
-              whileTap={!revealed ? { scale: 0.985 } : undefined}
-              animate={isWrongPick && !reduce ? { x: [0, -8, 8, -6, 6, 0] } : { x: 0 }}
-              transition={isWrongPick ? { duration: 0.4 } : { duration: 0.2 }}
+              animate={
+                isWrongPick && !reduce
+                  ? { x: [0, -10, 10, -7, 7, 0] }
+                  : isCorrect && !reduce
+                    ? { scale: [1, 1.03, 1] }
+                    : { x: 0, scale: 1 }
+              }
+              transition={{ duration: 0.4 }}
               className={cn(
-                "group flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                !revealed && isSelected && "border-primary/60 bg-primary/10",
-                !revealed && !isSelected && "border-border bg-card/80 hover:border-primary/40",
-                isCorrect && "border-emerald-500/60 bg-emerald-500/15",
-                isWrongPick && "border-rose-500/60 bg-rose-500/15",
-                revealed && !isCorrect && !isWrongPick && "border-border bg-card/30 opacity-60"
+                "focus-ring group flex w-full items-center gap-4 rounded-2xl border-2 border-b-[5px] px-4 py-3.5 text-left transition-[transform,background-color,border-color] duration-100",
+                !revealed && "active:translate-y-[3px] active:border-b-2",
+                !revealed && !isSelected && "border-border bg-card hover:bg-muted",
+                !revealed && isSelected && "border-secondary-bright bg-secondary-bright/10",
+                isCorrect && "border-primary-bright bg-primary-bright/15",
+                isWrongPick && "border-destructive-bright bg-destructive-bright/10",
+                idle && "border-border bg-card opacity-60",
               )}
             >
               <span
                 className={cn(
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold",
-                  isCorrect && "border-emerald-500/60 bg-emerald-500/20 text-emerald-700",
-                  isWrongPick && "border-rose-500/60 bg-rose-500/20 text-rose-700",
-                  !revealed && "border-border text-muted-foreground group-hover:text-foreground",
-                  revealed && !isCorrect && !isWrongPick && "border-border text-muted-foreground"
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 text-sm font-black",
+                  !revealed && !isSelected && "border-border text-muted-foreground",
+                  !revealed && isSelected && "border-secondary-bright text-secondary",
+                  isCorrect && "border-primary-bright bg-primary-bright text-white",
+                  isWrongPick && "border-destructive-bright bg-destructive-bright text-white",
+                  idle && "border-border text-muted-foreground",
                 )}
               >
-                {revealed && isCorrect ? (
-                  <Check className="h-4 w-4" />
-                ) : revealed && isWrongPick ? (
-                  <X className="h-4 w-4" />
-                ) : (
-                  LABELS[i]
-                )}
+                {isCorrect ? <Check className="h-4 w-4" strokeWidth={4} /> : isWrongPick ? <X className="h-4 w-4" strokeWidth={4} /> : i + 1}
               </span>
-              <span className="text-sm leading-relaxed text-foreground">{opt}</span>
+              <span
+                className={cn(
+                  "text-base font-bold leading-snug",
+                  !revealed && isSelected ? "text-secondary" : isCorrect ? "text-primary" : isWrongPick ? "text-destructive-text" : "text-foreground",
+                )}
+              >
+                {opt}
+              </span>
             </motion.button>
           );
         })}
       </div>
-
-      {revealed && explanation && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
-          className="mt-5 rounded-xl border border-border bg-card/80 p-4 text-sm text-muted-foreground"
-        >
-          <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground">
-            Explanation
-          </div>
-          {explanation}
-        </motion.div>
-      )}
     </motion.div>
   );
 }

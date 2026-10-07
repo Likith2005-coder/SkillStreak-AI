@@ -60,7 +60,8 @@ export function RouteProgress() {
 
   return (
     <motion.div
-      className="route-bar"
+      // Juicy progress bar: brand-green fill with a gloss strip, no glow.
+      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-1.5 origin-left rounded-r-full bg-primary-bright"
       initial={false}
       animate={target}
       transition={{
@@ -72,6 +73,8 @@ export function RouteProgress() {
             : { duration: 0.2, ease: "easeOut" },
         opacity: { duration: 0.2 },
       }}
-    />
+    >
+      <span className="absolute inset-x-2 top-[2px] h-0.5 rounded-full bg-white/40" />
+    </motion.div>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
-import { Check, Lock, Play, Star } from "lucide-react";
+import { BookOpen, Check, Play, Star } from "lucide-react";
 import type { RoadmapTopic } from "@/lib/api";
-import { styleFor, type DomainColor } from "@/lib/domain-style";
+import { styleFor } from "@/lib/domain-style";
+import { domainPalette } from "@/components/shared/DomainIcon";
 import { cn } from "@/lib/utils";
 
 type Status = "completed" | "current" | "in_progress" | "available";
@@ -18,17 +19,38 @@ type Props = {
 };
 
 // Layout constants — tuned so the winding path looks natural on most screens.
-const NODE_SIZE = 80;            // px diameter of each topic node
-const ROW_HEIGHT = 130;          // vertical distance between adjacent nodes
-const SIDE_PADDING = 40;         // padding at horizontal extremes
-const PATH_AMPLITUDE = 110;      // peak horizontal sway
-const WAVELENGTH = 4;            // topics per full sine wave cycle
+const NODE_SIZE = 80; // px diameter of each topic node
+const ROW_HEIGHT = 150; // vertical distance between adjacent nodes
+const LABEL_HALF = 92; // half the 176px label + breathing room
+const MAX_AMPLITUDE = 110; // peak horizontal sway on roomy screens
+const MIN_AMPLITUDE = 30;
+const WAVELENGTH = 4; // topics per full sine wave cycle
 const TOP_PADDING = 60;
 const BOTTOM_PADDING = 80;
 
 export function WindingRoadmap({ topics, progressMap, color }: Props) {
   const reduce = useReducedMotion();
   const s = styleFor(color);
+
+  // The sway shrinks with the container so the outermost labels never run
+  // off a phone screen; the full wind returns wherever there is room.
+  const wrap = useRef<HTMLDivElement>(null);
+  const [amplitude, setAmplitude] = useState(MAX_AMPLITUDE);
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const fit = () =>
+      setAmplitude(
+        Math.max(
+          MIN_AMPLITUDE,
+          Math.min(MAX_AMPLITUDE, el.clientWidth / 2 - LABEL_HALF),
+        ),
+      );
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Identify the "current" node: the first non-completed topic. Everything
   // before it is unlocked (available / completed); we don't actually lock
@@ -46,13 +68,14 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
   const points = useMemo(() => {
     return topics.map((t, i) => ({
       topic: t,
-      x: PATH_AMPLITUDE * Math.sin((i * 2 * Math.PI) / WAVELENGTH),
+      x: amplitude * Math.sin((i * 2 * Math.PI) / WAVELENGTH),
       y: TOP_PADDING + i * ROW_HEIGHT,
     }));
-  }, [topics]);
+  }, [topics, amplitude]);
 
-  const totalHeight = TOP_PADDING + (topics.length - 1) * ROW_HEIGHT + BOTTOM_PADDING;
-  const halfWidth = PATH_AMPLITUDE + NODE_SIZE / 2 + SIDE_PADDING;
+  const totalHeight =
+    TOP_PADDING + (topics.length - 1) * ROW_HEIGHT + BOTTOM_PADDING;
+  const halfWidth = amplitude + LABEL_HALF;
 
   // Build a smooth SVG path connecting all node centres.
   const pathD = useMemo(() => {
@@ -72,70 +95,81 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
   }, [points, halfWidth]);
 
   return (
-    <div
-      className="relative mx-auto"
-      style={{ width: halfWidth * 2, maxWidth: "100%", height: totalHeight }}
-    >
-      {/* SVG path behind the nodes */}
-      <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        viewBox={`0 0 ${halfWidth * 2} ${totalHeight}`}
-        preserveAspectRatio="xMidYMin meet"
-        aria-hidden
+    <div ref={wrap} className="w-full">
+      <div
+        className="relative mx-auto"
+        style={{ width: halfWidth * 2, maxWidth: "100%", height: totalHeight }}
       >
-        <defs>
-          <linearGradient id={`path-${color}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={pathStop(color, "from")} stopOpacity="0.7" />
-            <stop offset="100%" stopColor={pathStop(color, "to")} stopOpacity="0.45" />
-          </linearGradient>
-        </defs>
-        {/* Dashed underlay for "future" path */}
-        <path
-          d={pathD}
-          fill="none"
-          stroke="hsl(var(--border))"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray="4 10"
-          opacity="0.6"
-        />
-        {/* Solid coloured overlay up to current progress */}
-        {currentIndex !== 0 && (
-          <ProgressPath
+        {/* SVG path behind the nodes */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox={`0 0 ${halfWidth * 2} ${totalHeight}`}
+          preserveAspectRatio="xMidYMin meet"
+          aria-hidden
+        >
+          <defs>
+            <linearGradient id={`path-${color}`} x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor={pathStop(color, "from")}
+                stopOpacity="0.55"
+              />
+              <stop
+                offset="100%"
+                stopColor={pathStop(color, "to")}
+                stopOpacity="0.4"
+              />
+            </linearGradient>
+          </defs>
+          {/* Dashed underlay for "future" path */}
+          <path
             d={pathD}
-            currentIndex={currentIndex < 0 ? topics.length : currentIndex}
-            total={topics.length}
-            color={color}
-            reduce={!!reduce}
+            fill="none"
+            stroke="hsl(var(--muted))"
+            strokeWidth="14"
+            strokeLinecap="round"
           />
-        )}
-      </svg>
+          {/* Solid coloured overlay up to current progress */}
+          {currentIndex !== 0 && (
+            <ProgressPath
+              d={pathD}
+              currentIndex={currentIndex < 0 ? topics.length : currentIndex}
+              total={topics.length}
+              color={color}
+              reduce={!!reduce}
+            />
+          )}
+        </svg>
 
-      {/* Topic nodes */}
-      {points.map(({ topic, x, y }, i) => {
-        const raw = progressMap.get(topic.id) ?? "not_started";
-        const status: Status =
-          raw === "completed"
-            ? "completed"
-            : i === currentIndex
-              ? "current"
-              : raw === "in_progress"
-                ? "in_progress"
-                : "available";
+        {/* Topic nodes */}
+        {points.map(({ topic, x, y }, i) => {
+          const raw = progressMap.get(topic.id) ?? "not_started";
+          const status: Status =
+            raw === "completed"
+              ? "completed"
+              : i === currentIndex
+                ? "current"
+                : raw === "in_progress"
+                  ? "in_progress"
+                  : "available";
 
-        return (
-          <RoadmapNode
-            key={topic.id}
-            topic={topic}
-            status={status}
-            color={color}
-            colorStyle={s}
-            position={{ x: halfWidth + x - NODE_SIZE / 2, y: y - NODE_SIZE / 2 }}
-            index={i}
-            reduce={!!reduce}
-          />
-        );
-      })}
+          return (
+            <RoadmapNode
+              key={topic.id}
+              topic={topic}
+              status={status}
+              color={color}
+              colorStyle={s}
+              position={{
+                x: halfWidth + x - NODE_SIZE / 2,
+                y: y - NODE_SIZE / 2,
+              }}
+              index={i}
+              reduce={!!reduce}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -163,7 +197,7 @@ function ProgressPath({
       d={d}
       fill="none"
       stroke={`url(#path-${color})`}
-      strokeWidth="6"
+      strokeWidth="14"
       strokeLinecap="round"
       strokeDasharray="1"
       pathLength={1}
@@ -178,7 +212,6 @@ function RoadmapNode({
   topic,
   status,
   color,
-  colorStyle,
   position,
   index,
   reduce,
@@ -192,29 +225,32 @@ function RoadmapNode({
   reduce: boolean;
 }) {
   const isCurrent = status === "current";
-  const isCompleted = status === "completed";
-
-  const tone =
-    isCompleted
-      ? "completed"
-      : isCurrent
-        ? "current"
-        : status === "in_progress"
-          ? "progress"
-          : "available";
+  const { bright: face, edge } = domainPalette(color);
+  const palette =
+    status === "completed" || status === "current"
+      ? { face, edge, fg: "#fff" }
+      : status === "in_progress"
+        ? {
+            face: "hsl(var(--xp-bright))",
+            edge: "hsl(var(--xp-shade))",
+            fg: "#fff",
+          }
+        : {
+            face: "hsl(var(--muted))",
+            edge: "hsl(var(--border))",
+            fg: "hsl(var(--muted-foreground))",
+          };
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5, y: 18 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{
         duration: reduce ? 0 : 0.5,
-        delay: reduce ? 0 : Math.min(index * 0.04, 0.4),
-        ease: [0.22, 1, 0.36, 1],
+        delay: reduce ? 0 : Math.min(index * 0.05, 0.6),
         type: reduce ? undefined : "spring",
-        stiffness: 220,
-        damping: 18,
+        stiffness: 260,
+        damping: 16,
       }}
       style={{
         position: "absolute",
@@ -225,89 +261,70 @@ function RoadmapNode({
       }}
       className="group"
     >
-      {/* Pulsing glow under the current node */}
-      {isCurrent && !reduce && (
+      {isCurrent && (
         <motion.span
           aria-hidden
-          className={cn(
-            "pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br",
-            colorStyle.gradientFrom,
-            colorStyle.gradientTo
-          )}
-          animate={{ scale: [1, 1.35, 1], opacity: [0.45, 0, 0.45] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduce ? undefined : { y: [0, -6, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-2 border-border bg-card px-3 py-1.5 text-xs font-black uppercase tracking-wider"
+          style={{ color: edge }}
+        >
+          Start
+          <span className="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-border bg-card" />
+        </motion.span>
+      )}
+      {isCurrent && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -inset-[10px] rounded-full border-[7px]"
+          style={{ borderColor: face, opacity: 0.28 }}
         />
       )}
 
       <Link
         href={`/topic/${topic.id}`}
-        aria-label={topic.title}
-        className="block h-full w-full"
+        aria-label={`${topic.orderIndex}. ${topic.title}: ${status === "completed" ? "completed" : isCurrent ? "current topic" : status === "in_progress" ? "in progress" : "not started"}`}
+        className="focus-ring relative flex h-full w-full items-center justify-center rounded-full transition-[transform,box-shadow] duration-100 hover:brightness-105 active:translate-y-[7px] active:!shadow-none motion-reduce:transition-none"
+        style={{
+          background: palette.face,
+          color: palette.fg,
+          boxShadow: `0 7px 0 ${palette.edge}`,
+        }}
       >
-        <motion.div
-          whileHover={reduce ? undefined : { scale: 1.1, rotate: -3, y: -2 }}
-          whileTap={reduce ? undefined : { scale: 0.92 }}
-          transition={{ type: "spring", stiffness: 400, damping: 18 }}
+        {/* glossy highlight, the toy-button detail */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-[22%] top-[12%] h-[18%] w-[34%] -rotate-12 rounded-full bg-white/30"
+        />
+        {status === "completed" ? (
+          <Check className="h-9 w-9" strokeWidth={4} />
+        ) : isCurrent ? (
+          <Star className="h-9 w-9" fill="currentColor" strokeWidth={2} />
+        ) : status === "in_progress" ? (
+          <Play className="h-8 w-8" fill="currentColor" strokeWidth={2} />
+        ) : (
+          <BookOpen className="h-8 w-8" strokeWidth={2.5} />
+        )}
+      </Link>
+
+      <div className="pointer-events-none absolute left-1/2 top-full mt-4 w-44 -translate-x-1/2 text-center">
+        <span
           className={cn(
-            "relative flex h-full w-full items-center justify-center rounded-full text-white shadow-lg transition-shadow",
-            tone === "completed" && "bg-gradient-to-br from-emerald-400 to-emerald-600",
-            tone === "current" &&
-              `bg-gradient-to-br ${colorStyle.gradientFrom} ${colorStyle.gradientTo}`,
-            tone === "progress" &&
-              "bg-gradient-to-br from-amber-400 to-orange-500",
-            tone === "available" &&
-              "border-2 border-dashed border-border bg-card text-muted-foreground shadow-none",
-            "group-hover:shadow-2xl"
+            "inline-block max-w-full truncate rounded-xl border-2 border-border bg-card px-2.5 py-1 text-xs font-extrabold",
+            status === "available"
+              ? "text-muted-foreground"
+              : "text-foreground",
           )}
-          style={
-            tone === "current"
-              ? { boxShadow: `0 12px 40px -10px ${pathStop(color, "to")}` }
-              : undefined
-          }
         >
-          <span className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-card text-[10px] font-bold tabular-nums text-foreground shadow ring-2 ring-background">
+          <span
+            className="mr-1 tabular-nums"
+            style={{ color: status === "available" ? undefined : edge }}
+          >
             {topic.orderIndex}
           </span>
-
-          {tone === "completed" ? (
-            <Check className="h-7 w-7" strokeWidth={3} />
-          ) : tone === "current" ? (
-            <Play className="h-6 w-6 fill-white" strokeWidth={2.5} />
-          ) : tone === "progress" ? (
-            <Star className="h-6 w-6 fill-white" strokeWidth={2} />
-          ) : (
-            <Lock className="h-5 w-5" strokeWidth={2} />
-          )}
-
-          {/* Floating label */}
-          <div
-            className={cn(
-              "pointer-events-none absolute left-1/2 top-full mt-3 w-44 -translate-x-1/2 text-center transition-all",
-              "opacity-100 group-hover:scale-105"
-            )}
-          >
-            <div
-              className={cn(
-                "mx-auto inline-block max-w-full truncate rounded-md bg-card/80 px-2 py-1 text-xs font-semibold text-foreground shadow-sm",
-                isCurrent && "ring-1 ring-inset",
-                isCurrent && colorStyle.ring
-              )}
-            >
-              {topic.title}
-            </div>
-            {isCurrent && (
-              <div
-                className={cn(
-                  "mx-auto mt-1 inline-block rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white",
-                  `bg-gradient-to-r ${colorStyle.gradientFrom} ${colorStyle.gradientTo}`
-                )}
-              >
-                START
-              </div>
-            )}
-          </div>
-        </motion.div>
-      </Link>
+          {topic.title}
+        </span>
+      </div>
     </motion.div>
   );
 }

@@ -52,20 +52,16 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
   const danger = remaining <= 10;
 
   return (
-    <div className="flex items-center gap-2">
-      <Timer className={cn("h-3.5 w-3.5", danger ? "text-rose-600" : "text-muted-foreground")} />
-      <div className="relative h-1 w-32 overflow-hidden rounded-full bg-card">
-        <div
-          className={cn(
-            "h-full rounded-full transition-[width] duration-1000 ease-linear",
-            danger ? "bg-rose-500" : "bg-gradient-to-r from-indigo-500 to-violet-500"
-          )}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className={cn("w-10 text-right text-xs tabular-nums", danger && "text-rose-600")}>
-        {remaining}s
-      </span>
+    <div
+      className={cn(
+        "flex items-center gap-1.5 rounded-xl border-2 border-b-4 px-2.5 py-1 text-sm font-black tabular-nums",
+        danger ? "border-destructive-bright/60 text-destructive-text" : "border-border text-secondary",
+      )}
+      aria-label={`${remaining} seconds left`}
+    >
+      <Timer className={cn("h-4 w-4", danger && "animate-pulse motion-reduce:animate-none")} strokeWidth={2.75} aria-hidden />
+      <span className="w-7 text-right">{remaining}s</span>
+      <span className="sr-only">{pct}% of the time left</span>
     </div>
   );
 }

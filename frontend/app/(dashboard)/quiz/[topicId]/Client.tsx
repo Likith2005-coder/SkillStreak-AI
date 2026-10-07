@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { Mascot } from "@/components/playground/Mascot";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage, fetchTopic, type TopicView } from "@/lib/api";
 import { QuizPlayer } from "@/components/quiz/QuizPlayer";
@@ -31,12 +32,12 @@ export default function QuizPage() {
 
   if (error) {
     return (
-      <main className="container px-4 py-10">
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
+      <main className="container max-w-3xl px-4 py-8">
+        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
           {error}
         </div>
-        <Button variant="ghost" size="sm" className="mt-4" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4" /> Back
+        <Button variant="outline" className="mt-4" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4" strokeWidth={3} /> Back
         </Button>
       </main>
     );
@@ -44,23 +45,23 @@ export default function QuizPage() {
 
   if (!topic) {
     return (
-      <main className="container flex items-center justify-center px-4 py-20 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
+      <main className="container flex min-h-[60vh] items-center justify-center px-4 py-16" role="status">
+        <Mascot message="Cooking up 5 fresh questions…" size={104} />
       </main>
     );
   }
 
   return (
-    <main className="container max-w-3xl px-4 py-10">
+    <main className="container max-w-3xl px-4 py-8">
       <Link
         href={`/topic/${topic.id}`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+        className="focus-ring -ml-2 inline-flex h-11 max-w-full items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" />
-        Back to topic
+        <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={3} />
+        <span className="truncate">Back to {topic.title}</span>
       </Link>
 
-      <div className="mt-6">
+      <div className="mt-4">
         <QuizPlayer topicId={topic.id} topicTitle={topic.title} />
       </div>
     </main>

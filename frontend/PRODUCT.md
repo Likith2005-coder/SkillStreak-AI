@@ -33,16 +33,16 @@ feel themselves getting more capable — not a course they bought and abandoned.
 
 ## Positioning
 
-Structured mastery of modern tech, guided by an AI tutor and kept alive by streaks — a
-learning console you operate, not a course catalog you browse.
+Structured mastery of modern tech, guided by an AI tutor and kept alive by streaks. Learning
+that feels like a game you want to come back to, not a course catalog you browse.
 
 ## Brand Personality
 
-Electric, precise, cinematic. The product should feel like mission control for your own
-skill: an instrument with a deep-ink console, a live signal running through it, and a sense
-that something capable is working on your behalf. Confident without being corporate, energetic
-without being noisy. The emotional target is momentum plus a little awe — the learner should
-feel that continuing is the obvious next move, and that the tool taking them there is serious.
+Playful, encouraging, energetic. It should feel like a game board for your own skills:
+bright colour, chunky buttons you want to press, a mascot cheering you on, and rewards that
+land with a pop. It is friendly without being childish: the content is serious tech, and the
+delight is what keeps the learner showing up tomorrow. The one exception is the Arsenal, a
+dark hacker-terminal "secret level" that rewards curiosity with a change of world.
 
 ## Anti-references
 
@@ -53,26 +53,24 @@ marketplace or an admin template someone downloaded, it has failed.
 
 ## Design Principles
 
-A learning console, not a catalog. Screens should read like instruments the learner operates,
-with a clear signal and live state, not like pages of content to scroll past.
+A game board, not a catalog. Every screen should make the next action obvious and pressable.
 
-Momentum is the product. Streak, XP, and progress are the emotional core; they should be felt
-on every surface, never buried in a stat box.
+Momentum is the product. Streak, XP and level are the emotional core. They have fixed
+colours (orange, gold, grape) and are felt on every surface, not buried in a stat box.
 
-One world, many treatments. Landing, app, and Arsenal can look different, but they share a
-voice — deep ink, electric signal, precise motion — so the whole thing feels like one system.
+Celebrate the right things. Correct answers, finished topics and kept streaks get motion,
+colour and confetti. Everything else stays calm so the celebration means something.
 
-Theatrical entrances, calm workspaces. The landing and Arsenal earn ambitious first-load
-motion and unconventional layout; inside the app, motion is quiet and gets out of the way of
-the task. Loud where it persuades, calm where it works.
+One meaning per colour. Green moves you forward, red tells you it was wrong. The palette is
+information.
 
-Show mastery, don't claim it. The craft of the interface is itself the proof that the platform
-is serious about skill. Distinctiveness over safety — average now reads as mediocre.
+Show mastery, don't claim it. The craft of the interface is the proof that the platform takes
+skill seriously.
 
 ## Accessibility & Inclusion
 
-Target WCAG 2.1 AA. The product ships dark-locked, so the discipline is contrast: body text
-and placeholders must clear 4.5:1 against the deep-ink surfaces (the muted-gray-on-tinted-dark
-trap is the one to watch). Every animation already has a `prefers-reduced-motion` path; keep
+Target WCAG 2.1 AA. On a bright palette the discipline is contrast: small text uses a
+colour's *face* tone, never its *bright* tone, and coloured slabs carry white text only.
+Body text and placeholders must clear 4.5:1. Every animation already has a `prefers-reduced-motion` path; keep
 that invariant as motion grows. Signal is carried by more than hue (icons, weight, position)
-so the cyan/violet/lime language stays legible for color-blind users.
+so the colour language stays legible for color-blind users.

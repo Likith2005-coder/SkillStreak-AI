@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { apiErrorMessage, registerUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
-import { useAuthForm } from "../auth-form-context";
+import { AUTH_INPUT, AUTH_INPUT_ERROR, AUTH_LABEL, useAuthForm } from "../auth-form-context";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -108,28 +108,28 @@ export default function RegisterPage() {
   // backend flagged it (e.g. 409 email-already-exists).
   const fieldInvalid = (k: keyof RegisterValues) => !!errors[k] || errorField === k;
   const errorClass = (k: keyof RegisterValues) =>
-    fieldInvalid(k) ? "border-destructive/60 focus-visible:ring-destructive" : "";
+    `${AUTH_INPUT} ${fieldInvalid(k) ? AUTH_INPUT_ERROR : ""}`;
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight">Create your account</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <h1 className="font-display text-3xl text-foreground">Create your account</h1>
+      <p className="mt-1.5 text-base font-semibold text-muted-foreground">
         Start your streak in under a minute.
       </p>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`mt-6 space-y-4 ${errorBumpKey > 0 && formError ? "animate-shake" : ""}`}
+        className={`mt-7 space-y-5 ${errorBumpKey > 0 && formError ? "animate-shake" : ""}`}
         key={`form-${errorBumpKey}`}
         noValidate
       >
         <div>
-          <Label htmlFor="name">Full name</Label>
+          <Label htmlFor="name" className={AUTH_LABEL}>Full name</Label>
           <Input
             id="name"
             autoComplete="name"
             placeholder="Ada Lovelace"
-            className={`mt-1.5 transition-colors ${errorClass("name")}`}
+            className={`mt-2 ${errorClass("name")}`}
             aria-invalid={!!errors.name}
             {...register("name", {
               onChange: () => {
@@ -144,13 +144,13 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className={AUTH_LABEL}>Email</Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className={`mt-1.5 transition-colors ${errorClass("email")}`}
+            className={`mt-2 ${errorClass("email")}`}
             aria-invalid={!!errors.email || errorField === "email"}
             {...register("email", {
               onChange: () => {
@@ -165,14 +165,14 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <Label htmlFor="password">Password</Label>
-          <div className="relative mt-1.5">
+          <Label htmlFor="password" className={AUTH_LABEL}>Password</Label>
+          <div className="relative mt-2">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
               placeholder="••••••••"
-              className={`pr-10 transition-colors ${errorClass("password")}`}
+              className={`pr-14 ${errorClass("password")}`}
               aria-invalid={!!errors.password}
               {...register("password", {
                 onChange: () => {
@@ -187,9 +187,9 @@ export default function RegisterPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+              className="focus-ring absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-[calc(50%+1px)] items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
 
@@ -197,9 +197,9 @@ export default function RegisterPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-600"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-bold text-energy"
             >
-              <ArrowUp className="h-3 w-3" />
+              <ArrowUp className="h-4 w-4" strokeWidth={3} />
               Caps Lock is on
             </motion.p>
           )}
@@ -208,26 +208,24 @@ export default function RegisterPage() {
 
           {/* Live password strength meter */}
           {(password?.length ?? 0) > 0 && (
-            <div className="mt-2 space-y-1.5">
-              <div className="flex h-1 gap-1">
+            <div className="mt-3 space-y-2">
+              <div className="flex h-2.5 gap-1.5">
                 {[0, 1, 2, 3].map((i) => (
                   <span
                     key={i}
                     className={`flex-1 rounded-full transition-colors ${
                       i < strength.score
                         ? strength.score === 1
-                          ? "bg-rose-500"
+                          ? "bg-destructive-bright"
                           : strength.score === 2
-                            ? "bg-amber-500"
-                            : strength.score === 3
-                              ? "bg-emerald-500"
-                              : "bg-emerald-400"
-                        : "bg-muted/40"
+                            ? "bg-energy-bright"
+                            : "bg-primary-bright"
+                        : "bg-muted"
                     }`}
                   />
                 ))}
               </div>
-              <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs font-bold text-muted-foreground">
                 <Rule ok={strength.checks.length}>8+ characters</Rule>
                 <Rule ok={strength.checks.mix}>Letters + numbers</Rule>
                 <Rule ok={strength.checks.case}>Upper + lower case</Rule>
@@ -241,17 +239,17 @@ export default function RegisterPage() {
           <motion.div
             initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive-text"
+            className="flex items-start gap-2.5 rounded-2xl border-2 border-destructive-bright/50 bg-destructive/5 px-4 py-3 text-sm font-bold text-destructive-text"
             role="alert"
             aria-live="polite"
           >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            <p className="font-medium leading-tight">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+            <p className="leading-tight">
               {formError}{" "}
               {errorField === "email" && (
                 <Link
                   href="/login"
-                  className="font-medium underline-offset-2 hover:underline"
+                  className="font-extrabold underline underline-offset-2"
                 >
                   Sign in →
                 </Link>
@@ -263,7 +261,8 @@ export default function RegisterPage() {
         <div>
           <Button
             type="submit"
-            className="w-full"
+            size="lg"
+            className="w-full uppercase tracking-wider"
             // Disabled until every field passes Zod. With mode:"all" isValid is
             // live, so the button can only fire when the form is genuinely
             // submittable — no chance of "Creating account…" with a bad email.
@@ -274,16 +273,16 @@ export default function RegisterPage() {
           </Button>
           {/* Tell the user WHY the button is grey — top-site UX pattern */}
           {!isValid && !isSubmitting && (
-            <p className="mt-2 text-center text-xs text-muted-foreground">
+            <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">
               {nextHint(errors, password ?? "")}
             </p>
           )}
         </div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-7 text-center text-base font-semibold text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
+        <Link href="/login" className="focus-ring rounded-md font-extrabold text-secondary hover:underline">
           Sign in
         </Link>
       </p>
@@ -294,9 +293,9 @@ export default function RegisterPage() {
 function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li
-      className={`inline-flex items-center gap-1 ${ok ? "text-emerald-600" : "text-muted-foreground"}`}
+      className={`inline-flex items-center gap-1 ${ok ? "text-primary" : "text-muted-foreground"}`}
     >
-      {ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3 opacity-50" />}
+      {ok ? <Check className="h-3.5 w-3.5" strokeWidth={3.5} /> : <X className="h-3.5 w-3.5 opacity-60" strokeWidth={3} />}
       {children}
     </li>
   );

@@ -1,7 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
-
 type Props = {
   chips: string[];
   onPick: (text: string) => void;
@@ -10,14 +8,13 @@ type Props = {
 export function FollowUpChips({ chips, onPick }: Props) {
   if (!chips.length) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2 px-1">
-      <Sparkles className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+    <div className="flex flex-wrap items-center gap-2 pl-12" aria-label="Suggested follow-ups">
       {chips.map((chip) => (
         <button
           key={chip}
           type="button"
           onClick={() => onPick(chip)}
-          className="rounded-full border border-border bg-card/50 px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-card hover:text-foreground"
+          className="focus-ring min-h-[44px] rounded-2xl border-2 border-b-4 border-border bg-card px-4 py-2 text-left text-sm font-bold text-secondary transition-[transform,border-width,background-color] duration-100 hover:border-secondary-bright hover:bg-secondary/5 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none"
         >
           {chip}
         </button>

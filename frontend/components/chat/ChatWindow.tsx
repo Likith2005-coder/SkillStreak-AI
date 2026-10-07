@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Bot, RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/playground/Mascot";
 import { useChatStore } from "@/store/chatStore";
 import { useSendMessage } from "@/hooks/useChat";
 import { ChatInput } from "./ChatInput";
@@ -14,6 +15,8 @@ type Props = {
   emptyTitle?: string;
   emptyHint?: string;
   className?: string;
+  /** Tighter empty state for the floating widget panel. */
+  compact?: boolean;
 };
 
 const STARTERS = [
@@ -23,7 +26,7 @@ const STARTERS = [
   "Recommend YouTube videos on linear regression",
 ];
 
-export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
+export function ChatWindow({ emptyTitle, emptyHint, className, compact = false }: Props) {
   const messages = useChatStore((s) => s.messages);
   const followUps = useChatStore((s) => s.followUps);
   const isStreaming = useChatStore((s) => s.isStreaming);
@@ -59,7 +62,7 @@ export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-6"
+        className={cn("flex-1 overflow-y-auto px-4", compact ? "py-4" : "py-6")}
       >
         {messages.length === 0 ? (
           <EmptyState
@@ -69,6 +72,7 @@ export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
               "Explanations, roadmaps, quizzes, debugging — your AI tutor knows your level."
             }
             starters={STARTERS}
+            compact={compact}
             onPick={(t) => send(t, { topicId: activeSession?.topicId ?? null })}
           />
         ) : (
@@ -84,9 +88,9 @@ export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
             )}
 
             {canRegenerate && (
-              <div className="flex justify-start pl-10">
-                <Button variant="ghost" size="sm" onClick={() => regenerate()}>
-                  <RefreshCw className="h-3.5 w-3.5" />
+              <div className="flex justify-start pl-12">
+                <Button variant="outline" size="sm" onClick={() => regenerate()}>
+                  <RefreshCw className="h-4 w-4" strokeWidth={3} />
                   Regenerate
                 </Button>
               </div>
@@ -95,13 +99,13 @@ export function ChatWindow({ emptyTitle, emptyHint, className }: Props) {
         )}
 
         {error && (
-          <div className="mx-auto mt-4 max-w-3xl rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive-text">
+          <div className="mx-auto mt-4 max-w-3xl rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive-text">
             <div className="flex items-center justify-between gap-3">
               <span>{error}</span>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-xs uppercase tracking-wider opacity-70 hover:opacity-100"
+                className="focus-ring min-h-[44px] shrink-0 rounded-lg px-2 text-sm font-extrabold hover:underline"
               >
                 Dismiss
               </button>
@@ -128,32 +132,28 @@ function EmptyState({
   title,
   hint,
   starters,
+  compact,
   onPick,
 }: {
   title: string;
   hint: string;
   starters: string[];
+  compact: boolean;
   onPick: (text: string) => void;
 }) {
   return (
-    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center py-10 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
-        <Bot className="h-6 w-6" />
-      </div>
-      <h2 className="mt-4 text-xl font-semibold tracking-tight">{title}</h2>
-      <p className="mt-2 text-sm text-muted-foreground">{hint}</p>
+    <div className={cn("mx-auto flex max-w-2xl flex-col items-center justify-center text-center", compact ? "py-2" : "py-10")}>
+      <Mascot size={compact ? 84 : 120} message={compact ? undefined : "Hi! I'm your tutor. Ask me anything."} />
+      <h2 className={cn("mt-4 font-display text-foreground [text-wrap:balance]", compact ? "text-xl" : "text-3xl")}>{title}</h2>
+      <p className="mt-2 max-w-md text-sm font-semibold text-muted-foreground">{hint}</p>
 
-      <div className="mt-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
-        <Sparkles className="h-3.5 w-3.5" />
-        Try a starter
-      </div>
-      <div className="mt-3 grid w-full gap-2 sm:grid-cols-2">
+      <div className={cn("mt-6 grid w-full gap-2.5", !compact && "sm:grid-cols-2")}>
         {starters.map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => onPick(s)}
-            className="rounded-xl border border-border bg-card/40 p-3 text-left text-sm transition hover:border-primary/40 hover:bg-card/70"
+            className="card-press focus-ring min-h-[52px] rounded-2xl border-2 border-b-4 border-border bg-card px-4 py-3 text-left text-sm font-bold text-foreground transition-colors hover:border-secondary-bright hover:bg-secondary/5"
           >
             {s}
           </button>

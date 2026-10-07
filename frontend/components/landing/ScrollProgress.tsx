@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Thin gradient bar that fills as the user scrolls the landing page.
+ * Chunky brand-green bar that fills as the user scrolls the landing page.
  * Driven by framer-motion's useScroll + useSpring so the fill trails
  * the scroll with a gentle spring rather than a 1:1 jitter.
  *
@@ -27,7 +27,7 @@ export function ScrollProgress() {
     <motion.div
       aria-hidden
       style={{ scaleX, transformOrigin: "0% 50%" }}
-      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[2.5px] bg-gradient-to-r from-cyan-400 to-violet-500 shadow-[0_0_12px_rgba(34,211,238,0.55)]"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-1.5 rounded-r-full bg-primary-bright"
     />
   );
 }

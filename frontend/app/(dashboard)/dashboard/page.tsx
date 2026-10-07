@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
 import { PathPreview } from "@/components/playground/PathPreview";
-import { ArsenalCard, LeagueCard, LevelCard, StatPills, StreakCard } from "@/components/playground/Rail";
+import { ArsenalCard, LeagueCard, LevelCard, StreakCard } from "@/components/playground/Rail";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   ArrowRight,
   BarChart3,
+  Check,
+  X,
 } from "lucide-react";
 import { useUserStore } from "@/store/userStore";
 import {
@@ -119,90 +121,82 @@ export default function DashboardPage() {
             </div>
           )}
 
-      {/* Recommended next */}
-      <section className="mt-8">
-        <RecommendedNext />
-      </section>
+          {/* Recommended next */}
+          <section className="mt-10">
+            <RecommendedNext />
+          </section>
 
-      {/* Domain rings */}
-      <section className="mt-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Per-domain progress
-          </h2>
-          <Link
-            href="/progress"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-foreground"
-          >
-            <BarChart3 className="h-3.5 w-3.5" />
-            Deep analytics
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        {overview ? (
-          reduce ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {overview.perDomain.map((tile, i) => (
-                <DomainProgressRing key={tile.slug} tile={tile} index={i} />
-              ))}
+          {/* Domain progress */}
+          <section className="mt-10" aria-labelledby="domains-h">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <h2 id="domains-h" className="text-2xl font-black text-foreground">
+                Your domains
+              </h2>
+              <Link
+                href="/progress"
+                className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-extrabold uppercase tracking-wide text-secondary hover:underline"
+              >
+                <BarChart3 className="h-4 w-4" strokeWidth={3} aria-hidden />
+                All stats
+              </Link>
             </div>
-          ) : (
-            <>
-              {/* Desktop: magnetic dock — bars magnify near the cursor,
-                  click one to expand its detail card. */}
-              <div className="hidden lg:block">
-                <MagneticDomainDock tiles={overview.perDomain} />
-              </div>
-              {/* Small screens: the classic ring grid (the dock needs a
-                  cursor + horizontal room to shine). */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
-                {overview.perDomain.map((tile, i) => (
-                  <DomainProgressRing key={tile.slug} tile={tile} index={i} />
-                ))}
-              </div>
-            </>
-          )
-        ) : (
-          <SkeletonGrid />
-        )}
-      </section>
+            {overview ? (
+              reduce ? (
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {overview.perDomain.map((tile, i) => (
+                    <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {/* Wide desktop: magnetic dock — bars magnify near the
+                      cursor, click one to expand its detail card. It needs a
+                      cursor and real horizontal room, so it only appears at
+                      2xl where the centre column can hold it. */}
+                  <div className="hidden 2xl:block">
+                    <MagneticDomainDock tiles={overview.perDomain} />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:hidden">
+                    {overview.perDomain.map((tile, i) => (
+                      <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+                    ))}
+                  </div>
+                </>
+              )
+            ) : (
+              <SkeletonGrid />
+            )}
+          </section>
 
-      {/* Recent + weak areas */}
-      <section className="mt-8 grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Recent quiz attempts
-          </h2>
-          {overview ? (
-            <RecentAttempts items={overview.recentAttempts} />
-          ) : (
-            <div className="rounded-2xl border border-border bg-card/80 p-6 text-center text-xs text-muted-foreground">
-              Loading…
+          {/* Recent + weak areas */}
+          <section className="mt-10 grid gap-4 xl:grid-cols-2">
+            <div className="min-w-0">
+              <h2 className="mb-4 text-2xl font-black text-foreground">Recent quizzes</h2>
+              {overview ? (
+                <RecentAttempts items={overview.recentAttempts} />
+              ) : (
+                <div className="space-y-2.5">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="h-[76px] animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
+                  ))}
+                </div>
+              )}
             </div>
+            <div className="min-w-0 xl:pt-12">
+              {overview && <WeakAreasCard items={overview.weakAreas} />}
+            </div>
+          </section>
+
+          {/* Badges — 3D coverflow trophy case */}
+          {badges && (
+            <section className="mt-10" aria-label="Badges">
+              <BadgeCoverflow badges={badges} />
+            </section>
           )}
-        </div>
-        <div>
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            &nbsp;
-          </h2>
-          {overview && <WeakAreasCard items={overview.weakAreas} />}
-        </div>
-      </section>
-
-      {/* Badges — 3D coverflow trophy case */}
-      {badges && (
-        <section className="mt-8">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Badges
-          </h2>
-          <BadgeCoverflow badges={badges} />
-        </section>
-      )}
         </div>
 
         {/* ── Right rail: vital signs ──────────────────────── */}
         <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start" aria-label="Your stats">
-          <StatPills streakDays={streak?.currentStreak ?? 0} xp={user.xp} level={user.level} />
           <StreakCard streak={streak} />
           <LevelCard xp={user.xp} />
           <LeagueCard />
@@ -215,9 +209,9 @@ export default function DashboardPage() {
 
 function SkeletonGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-[140px] animate-pulse motion-reduce:animate-none rounded-2xl border border-border bg-card/80" />
+    <div className="grid gap-4 sm:grid-cols-2">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="card-chunky h-[140px] animate-pulse motion-reduce:animate-none" />
       ))}
     </div>
   );
@@ -226,48 +220,59 @@ function SkeletonGrid() {
 function RecentAttempts({ items }: { items: RecentAttempt[] }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-card/30 p-6 text-center text-xs text-muted-foreground">
-        No quiz attempts yet. Take a quiz on any topic to see it here.
+      <div className="card-chunky flex flex-col items-center px-6 py-8 text-center">
+        <p className="text-lg font-black text-foreground">No quizzes yet!</p>
+        <p className="mt-1 text-sm font-semibold text-muted-foreground">
+          Finish a topic and take its quiz to see your scores here.
+        </p>
       </div>
     );
   }
   return (
-    <div className="space-y-2">
+    <ul className="space-y-2.5">
       {items.map((a) => {
         const s = styleFor(a.domain.color);
         return (
-          <Link
-            key={a.id}
-            href={`/topic/${a.topicId}`}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 p-4 transition hover:border-primary/40 hover:bg-card"
-          >
-            <div className="min-w-0">
-              <div className={cn("text-[11px] uppercase tracking-wider", s.text)}>{a.domain.name}</div>
-              <div className="truncate text-sm font-medium text-foreground">{a.topicTitle}</div>
-              <div className="mt-0.5 text-[11px] text-muted-foreground">
-                {new Date(a.attemptedAt).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+          <li key={a.id}>
+            <Link
+              href={`/topic/${a.topicId}`}
+              className="card-press focus-ring group flex items-center gap-3 rounded-2xl border-2 border-b-4 border-border bg-card p-3 transition-colors hover:bg-muted/60"
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white",
+                  a.passed ? "bg-primary-bright" : "bg-destructive-bright"
+                )}
+                style={{ boxShadow: `0 3px 0 hsl(var(--${a.passed ? "primary" : "destructive"}-shade))` }}
+              >
+                {a.passed ? <Check className="h-6 w-6" strokeWidth={3.5} /> : <X className="h-6 w-6" strokeWidth={3.5} />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className={cn("truncate text-xs font-extrabold", s.text)}>{a.domain.name}</div>
+                <div className="truncate text-base font-extrabold text-foreground">{a.topicTitle}</div>
+                <div className="text-xs font-semibold text-muted-foreground">
+                  {new Date(a.attemptedAt).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
               </div>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
-                  a.passed
-                    ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
-                    : "border border-rose-500/30 bg-rose-500/10 text-rose-700"
+                  "shrink-0 rounded-full px-2.5 py-0.5 text-sm font-black tabular-nums",
+                  a.passed ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive-text"
                 )}
               >
                 {a.score}/{a.total}
+                <span className="sr-only">{a.passed ? " passed" : " not passed"}</span>
               </span>
-            </div>
-          </Link>
+            </Link>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }

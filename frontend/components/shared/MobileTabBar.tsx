@@ -41,9 +41,9 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="vt-tabbar fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="vt-tabbar fixed inset-x-0 bottom-0 z-40 border-t-2 border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-5">
+      <ul className="mx-auto grid max-w-md grid-cols-5 gap-1 px-2 py-1.5">
         {TABS.map((t, i) => {
           const on = i === active;
           const Icon = t.icon;
@@ -53,19 +53,19 @@ export function MobileTabBar() {
                 href={t.href}
                 aria-current={on ? "page" : undefined}
                 className={cn(
-                  "focus-ring relative flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
-                  on ? "text-primary" : "text-muted-foreground",
+                  "focus-ring relative flex h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[11px] font-extrabold transition-colors",
+                  on ? "text-secondary" : "text-muted-foreground active:bg-muted",
                 )}
               >
                 {on && (
                   <motion.span
                     layoutId="tab-pill"
-                    className="absolute inset-x-3 top-1.5 h-9 rounded-xl bg-primary/15"
+                    className="absolute inset-0 rounded-2xl border-2 border-secondary-bright bg-secondary/10"
                     transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 38 }}
                     aria-hidden
                   />
                 )}
-                <Icon className="relative h-5 w-5" aria-hidden />
+                <Icon className="relative h-6 w-6" strokeWidth={on ? 2.75 : 2.25} aria-hidden />
                 <span className="relative">{t.label}</span>
               </Link>
             </li>

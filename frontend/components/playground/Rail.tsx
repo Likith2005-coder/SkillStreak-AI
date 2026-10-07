@@ -19,27 +19,6 @@ import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/* ── Stat pills ───────────────────────────────────────────── */
-
-export function StatPills({ streakDays, xp, level }: { streakDays: number; xp: number; level: number }) {
-  const pills = [
-    { icon: Flame, value: streakDays, label: "day streak", color: "text-energy", fill: streakDays > 0 },
-    { icon: Gem, value: xp.toLocaleString(), label: "total XP", color: "text-xp", fill: true },
-    { icon: Star, value: level, label: "level", color: "text-grape", fill: true },
-  ];
-  return (
-    <div className="grid grid-cols-3 gap-2">
-      {pills.map((p) => (
-        <div key={p.label} className="card-chunky flex items-center justify-center gap-1.5 px-2 py-2.5" title={`${p.value} ${p.label}`}>
-          <p.icon className={cn("h-5 w-5 shrink-0", p.color)} fill={p.fill ? "currentColor" : "none"} aria-hidden />
-          <span className={cn("text-base font-black tabular-nums", p.color)}>{p.value}</span>
-          <span className="sr-only">{p.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /* ── Streak card: the flame + this week ───────────────────── */
 
 function isoDay(d: Date) {

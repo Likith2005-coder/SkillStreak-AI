@@ -18,18 +18,19 @@ import {
   Award,
   Briefcase,
   CheckCircle2,
-  Compass,
   Flag,
   FolderGit2,
   Lock,
   RefreshCcw,
   Rocket,
   Star,
+  Trophy,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/playground/Mascot";
 import {
   apiErrorMessage,
   fetchCareerPath,
@@ -40,17 +41,17 @@ import { cn } from "@/lib/utils";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const CERT_LEVEL_STYLES: Record<string, { badge: string; label: string }> = {
-  foundation: { badge: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30", label: "Foundation" },
-  intermediate: { badge: "bg-cyan-500/15 text-cyan-700 border-cyan-500/30", label: "Intermediate" },
-  advanced: { badge: "bg-violet-500/15 text-violet-700 border-violet-500/30", label: "Advanced" },
-  expert: { badge: "bg-amber-500/15 text-amber-700 border-amber-500/30", label: "Expert" },
+  foundation: { badge: "bg-primary/10 text-primary", label: "Foundation" },
+  intermediate: { badge: "bg-secondary/10 text-secondary", label: "Intermediate" },
+  advanced: { badge: "bg-grape/10 text-grape", label: "Advanced" },
+  expert: { badge: "bg-xp/10 text-xp", label: "Expert" },
 };
 
 const SENIORITY_STYLES: Record<string, string> = {
-  entry: "text-emerald-700",
-  mid: "text-cyan-700",
-  senior: "text-violet-700",
-  lead: "text-amber-700",
+  entry: "text-primary",
+  mid: "text-secondary",
+  senior: "text-grape",
+  lead: "text-xp",
 };
 
 // Rotating status lines for the (potentially 20-40s) cold generation.
@@ -111,19 +112,14 @@ export default function CareerPathPage() {
   }, [slug, load]);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-24 pt-10 lg:px-8">
+    <main className="mx-auto max-w-5xl px-4 pb-24 pt-8 lg:px-8">
       <Link
         href={slug ? `/domains/${slug}` : "/domains"}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+        className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4" strokeWidth={3} />
         Back to roadmap
       </Link>
-
-      <div className="mt-6 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-primary">
-        <Compass className="h-4 w-4" />
-        Career path
-      </div>
 
       {loading ? (
         <LoadingState />
@@ -131,9 +127,11 @@ export default function CareerPathPage() {
         <LockedState slug={slug} />
       ) : error ? (
         <div className="mt-16 flex flex-col items-center text-center">
-          <p className="text-sm text-destructive-text">{error}</p>
+          <p className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
+            {error}
+          </p>
           <Button variant="outline" className="mt-4" onClick={() => slug && load(slug)}>
-            <RefreshCcw className="h-4 w-4" /> Try again
+            <RefreshCcw className="h-4 w-4" strokeWidth={3} /> Try again
           </Button>
         </div>
       ) : career ? (
@@ -145,21 +143,23 @@ export default function CareerPathPage() {
 
 function LockedState({ slug }: { slug?: string }) {
   return (
-    <div className="mt-16 flex flex-col items-center text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/40">
-        <Lock className="h-6 w-6 text-muted-foreground" />
+    <div className="card-chunky mx-auto mt-10 flex max-w-xl flex-col items-center p-8 text-center">
+      <span
+        aria-hidden
+        className="flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl bg-muted"
+        style={{ boxShadow: "0 5px 0 hsl(var(--border))" }}
+      >
+        <Lock className="h-8 w-8 text-muted-foreground" strokeWidth={2.6} />
       </span>
-      <p className="mt-4 text-sm font-medium text-foreground">
+      <h1 className="mt-5 font-display text-2xl text-foreground">
         Your career path is waiting at the end of the roadmap.
-      </p>
-      <p className="mt-1.5 max-w-sm text-xs text-muted-foreground">
+      </h1>
+      <p className="mt-2 max-w-sm text-base font-semibold text-muted-foreground">
         Complete every topic in this domain to unlock your personalized career
         map — stages, certifications, roles and salaries.
       </p>
-      <Button asChild variant="outline" className="mt-5">
-        <Link href={slug ? `/domains/${slug}` : "/domains"}>
-          <ArrowLeft className="h-4 w-4" /> Back to the roadmap
-        </Link>
+      <Button asChild size="lg" className="mt-6 uppercase">
+        <Link href={slug ? `/domains/${slug}` : "/domains"}>Back to the roadmap</Link>
       </Button>
     </div>
   );
@@ -172,15 +172,12 @@ function LoadingState() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="mt-20 flex flex-col items-center text-center">
-      <Compass className="h-10 w-10 animate-[spin_5s_linear_infinite] text-primary/70" />
-      <p className="mt-5 text-sm font-medium text-foreground">
-        Charting your career roadmap
-      </p>
-      <p className="mt-1.5 min-h-5 text-xs text-muted-foreground" aria-live="polite">
-        {LOADING_LINES[i]}
-      </p>
-      <p className="mt-6 max-w-sm text-xs text-muted-foreground">
+    <div className="mt-16 flex flex-col items-center text-center" role="status">
+      <h1 className="font-display text-2xl text-foreground sm:text-3xl">Charting your career roadmap</h1>
+      <div className="mt-6" aria-live="polite">
+        <Mascot message={LOADING_LINES[i]} size={110} />
+      </div>
+      <p className="mt-6 max-w-sm text-sm font-semibold text-muted-foreground">
         First generation for a persona takes up to ~30 seconds. After that it
         loads instantly.
       </p>
@@ -188,35 +185,64 @@ function LoadingState() {
   );
 }
 
+const SECTION_TONES = {
+  energy: { face: "bg-energy-bright", edge: "hsl(var(--energy-shade))" },
+  primary: { face: "bg-primary-bright", edge: "hsl(var(--primary-shade))" },
+  xp: { face: "bg-xp-bright", edge: "hsl(var(--xp-shade))" },
+  secondary: { face: "bg-secondary-bright", edge: "hsl(var(--secondary-shade))" },
+  grape: { face: "bg-grape-bright", edge: "hsl(var(--grape-shade))" },
+} as const;
+
 function Section({
-  icon,
+  icon: Icon,
+  tone,
   title,
   sub,
   children,
 }: {
-  icon: React.ReactNode;
+  icon: typeof Rocket;
+  tone: keyof typeof SECTION_TONES;
   title: string;
   sub?: string;
   children: React.ReactNode;
 }) {
   const reduce = useReducedMotion();
+  const t = SECTION_TONES[tone];
   return (
     <motion.section
       initial={reduce ? { opacity: 1 } : { opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.5, ease: EASE }}
-      className="mt-16"
+      transition={{ duration: reduce ? 0 : 0.5, ease: EASE }}
+      className="mt-14"
     >
-      <div className="flex items-center gap-2.5">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          {icon}
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden
+          className={cn("flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-xl text-white", t.face)}
+          style={{ boxShadow: `0 4px 0 ${t.edge}` }}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2.6} />
         </span>
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <div>
+          <h2 className="font-display text-2xl leading-tight text-foreground">{title}</h2>
+          {sub && <p className="text-sm font-semibold text-muted-foreground">{sub}</p>}
+        </div>
       </div>
-      {sub && <p className="mt-1.5 text-sm text-muted-foreground">{sub}</p>}
       <div className="mt-6">{children}</div>
     </motion.section>
+  );
+}
+
+function SkillChips({ skills }: { skills: string[] }) {
+  return (
+    <div className="mt-3 flex flex-wrap gap-1.5">
+      {skills.map((sk) => (
+        <span key={sk} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-foreground">
+          {sk}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -237,93 +263,88 @@ function CareerView({
 
   return (
     <div>
-      {/* ── Headline ── */}
-      <div className="mt-8">
-        <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-          <Star className="h-3 w-3 fill-current" />
-          {adminOverride
-            ? "Admin preview"
-            : `Roadmap completed — your ${career.domainName} career map`}
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-          {career.headline}
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {career.summary}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {personaChips.map((c) => (
-            <span
-              key={c}
-              className="rounded-full border border-border bg-card/50 px-2.5 py-1 text-[11px] text-muted-foreground"
+      {/* ── Headline: the reward slab ── */}
+      <header
+        className="mt-2 rounded-[1.5rem] bg-primary p-6 text-primary-foreground sm:p-8"
+        style={{ boxShadow: "0 6px 0 hsl(var(--primary-shade))" }}
+      >
+        <div className="flex flex-col gap-6 md:flex-row md:items-center">
+          <div className="min-w-0 flex-1">
+            <p
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold text-white"
+              style={{ background: "hsl(var(--primary-shade))" }}
             >
-              {c}
-            </span>
-          ))}
-          <span className="rounded-full border border-border bg-card/50 px-2.5 py-1 text-[11px] text-muted-foreground">
-            Tailored to {career.domainName}
+              <Star className="h-3.5 w-3.5 fill-current" />
+              {adminOverride ? "Admin preview" : `Roadmap completed — your ${career.domainName} career map`}
+            </p>
+            <h1 className="mt-3 font-display text-3xl leading-tight sm:text-4xl [text-wrap:balance]">
+              {career.headline}
+            </h1>
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-relaxed text-white">{career.summary}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[...personaChips, `Tailored to ${career.domainName}`].map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-primary"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+          <span
+            aria-hidden
+            className="hidden h-24 w-24 shrink-0 rotate-6 items-center justify-center rounded-3xl bg-xp-bright md:flex"
+            style={{ boxShadow: "0 6px 0 hsl(var(--xp-shade))" }}
+          >
+            <Trophy className="h-12 w-12 text-white" strokeWidth={2.4} />
           </span>
         </div>
-      </div>
+      </header>
 
       {/* ── This week ── */}
-      <Section
-        icon={<Rocket className="h-4 w-4" />}
-        title="Start this week"
-        sub="Three small moves to put you on the road today."
-      >
-        <ol className="grid gap-3 sm:grid-cols-3">
+      <Section icon={Rocket} tone="energy" title="Start this week" sub="Three small moves to put you on the road today.">
+        <ol className="grid gap-4 sm:grid-cols-3">
           {career.firstSteps.map((s, i) => (
-            <li
-              key={i}
-              className="rounded-xl border border-border bg-card/50 p-4 text-sm leading-relaxed"
-            >
-              <span className="font-mono text-xs text-primary">0{i + 1}</span>
-              <p className="mt-1.5 text-foreground/90">{s}</p>
+            <li key={i} className="card-chunky p-5">
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-energy-bright font-display text-base text-white"
+                style={{ boxShadow: "0 3px 0 hsl(var(--energy-shade))" }}
+              >
+                {i + 1}
+              </span>
+              <p className="mt-3 text-sm font-bold leading-relaxed text-foreground">{s}</p>
             </li>
           ))}
         </ol>
       </Section>
 
       {/* ── The road (stages timeline) ── */}
-      <Section
-        icon={<Flag className="h-4 w-4" />}
-        title="The road"
-        sub="Your stages, in order — timeframes already adjusted to your pace."
-      >
-        <ol className="relative space-y-8 border-l border-border/60 pl-8">
+      <Section icon={Flag} tone="primary" title="The road" sub="Your stages, in order — timeframes already adjusted to your pace.">
+        <ol className="relative space-y-6">
+          {/* the road itself */}
+          <span aria-hidden className="absolute bottom-6 left-[21px] top-6 w-1.5 rounded-full bg-primary-bright/30" />
           {career.stages.map((st) => (
-            <li key={st.phase} className="relative">
-              {/* node */}
-              <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border border-primary/40 bg-background font-mono text-[11px] text-primary">
+            <li key={st.phase} className="relative flex gap-4">
+              <span
+                className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-bright font-display text-lg text-white"
+                style={{ boxShadow: "0 4px 0 hsl(var(--primary-shade))" }}
+              >
                 {st.phase}
               </span>
-              <div className="rounded-2xl border border-border bg-card/50 p-5">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h3 className="text-base font-semibold text-foreground">
-                    {st.title}
-                  </h3>
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary">
+              <div className="card-chunky min-w-0 flex-1 p-5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <h3 className="text-lg font-black text-foreground">{st.title}</h3>
+                  <span className="rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-extrabold text-secondary">
                     {st.timeframe}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {st.focus}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {st.skills.map((sk) => (
-                    <span
-                      key={sk}
-                      className="rounded-md border border-border/70 bg-background/60 px-2 py-0.5 text-[11px] text-foreground/80"
-                    >
-                      {sk}
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-3 flex items-start gap-1.5 text-xs text-emerald-700/90">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <p className="mt-2 text-sm font-semibold leading-relaxed text-muted-foreground">{st.focus}</p>
+                <SkillChips skills={st.skills} />
+                <p className="mt-3 flex items-start gap-1.5 text-sm font-semibold text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2.6} />
                   <span>
-                    <span className="font-medium">Done when:</span> {st.milestone}
+                    <span className="font-black text-primary">Done when:</span> {st.milestone}
                   </span>
                 </p>
               </div>
@@ -333,43 +354,25 @@ function CareerView({
       </Section>
 
       {/* ── Certification ladder ── */}
-      <Section
-        icon={<Award className="h-4 w-4" />}
-        title="Certification ladder"
-        sub="Real, hiring-relevant certifications — cheapest and easiest first."
-      >
-        <div className="grid gap-3 sm:grid-cols-2">
+      <Section icon={Award} tone="xp" title="Certification ladder" sub="Real, hiring-relevant certifications — cheapest and easiest first.">
+        <div className="grid gap-4 sm:grid-cols-2">
           {career.certifications.map((c) => {
             const style = CERT_LEVEL_STYLES[c.level] ?? CERT_LEVEL_STYLES.foundation;
             return (
-              <div
-                key={c.name}
-                className="rounded-2xl border border-border bg-card/50 p-5"
-              >
+              <div key={c.name} className="card-chunky p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">{c.name}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{c.org}</p>
+                    <h3 className="text-base font-black text-foreground">{c.name}</h3>
+                    <p className="mt-0.5 text-sm font-semibold text-muted-foreground">{c.org}</p>
                   </div>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-                      style.badge
-                    )}
-                  >
+                  <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-extrabold", style.badge)}>
                     {style.label}
                   </span>
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                  {c.whyItMatters}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-foreground/70">
-                  <span>
-                    <span className="text-muted-foreground">When:</span> {c.whenToTake}
-                  </span>
-                  <span>
-                    <span className="text-muted-foreground">Cost:</span> {c.cost}
-                  </span>
+                <p className="mt-3 text-sm font-semibold leading-relaxed text-muted-foreground">{c.whyItMatters}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-extrabold text-foreground">
+                  <span className="rounded-full bg-muted px-2.5 py-0.5">When: {c.whenToTake}</span>
+                  <span className="rounded-full bg-muted px-2.5 py-0.5">Cost: {c.cost}</span>
                 </div>
               </div>
             );
@@ -378,63 +381,37 @@ function CareerView({
       </Section>
 
       {/* ── Role progression ── */}
-      <Section
-        icon={<Briefcase className="h-4 w-4" />}
-        title="Where it takes you"
-        sub="Role progression with realistic Indian-market salary bands."
-      >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <Section icon={Briefcase} tone="grape" title="Where it takes you" sub="Role progression with realistic Indian-market salary bands.">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {career.roles.map((r, i) => (
-            <div
-              key={r.title}
-              className="relative rounded-2xl border border-border bg-card/50 p-5"
-            >
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div key={r.title} className="card-chunky p-5">
+              <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">
                 Step {i + 1}
-              </p>
-              <h3 className={cn("mt-1 text-sm font-semibold", SENIORITY_STYLES[r.seniority])}>
+              </span>
+              <h3 className={cn("mt-3 text-base font-black leading-snug", SENIORITY_STYLES[r.seniority] ?? "text-foreground")}>
                 {r.title}
               </h3>
-              <p className="mt-2 text-lg font-bold tabular-nums text-foreground">
-                {r.salaryRange}
-              </p>
-              <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                {r.whenReady}
-              </p>
+              <p className="mt-2 font-display text-xl tabular-nums text-foreground">{r.salaryRange}</p>
+              <p className="mt-1.5 text-sm font-semibold leading-relaxed text-muted-foreground">{r.whenReady}</p>
             </div>
           ))}
         </div>
       </Section>
 
       {/* ── Portfolio projects ── */}
-      <Section
-        icon={<FolderGit2 className="h-4 w-4" />}
-        title="Prove it with projects"
-        sub="Portfolio pieces that make recruiters stop scrolling — easiest first."
-      >
-        <div className="grid gap-3 lg:grid-cols-3">
+      <Section icon={FolderGit2} tone="secondary" title="Prove it with projects" sub="Portfolio pieces that make recruiters stop scrolling — easiest first.">
+        <div className="grid gap-4 lg:grid-cols-3">
           {career.projects.map((p) => (
-            <div key={p.title} className="rounded-2xl border border-border bg-card/50 p-5">
-              <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {p.description}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {p.skills.map((sk) => (
-                  <span
-                    key={sk}
-                    className="rounded-md border border-border/70 bg-background/60 px-2 py-0.5 text-[11px] text-foreground/80"
-                  >
-                    {sk}
-                  </span>
-                ))}
-              </div>
+            <div key={p.title} className="card-chunky p-5">
+              <h3 className="text-base font-black text-foreground">{p.title}</h3>
+              <p className="mt-2 text-sm font-semibold leading-relaxed text-muted-foreground">{p.description}</p>
+              <SkillChips skills={p.skills} />
             </div>
           ))}
         </div>
       </Section>
 
-      <p className="mt-16 text-center text-xs text-muted-foreground">
+      <p className="mt-16 text-center text-sm font-semibold text-muted-foreground">
         Generated from your onboarding answers — experience, goal and pace.
         Salary bands are indicative, not guarantees.
       </p>

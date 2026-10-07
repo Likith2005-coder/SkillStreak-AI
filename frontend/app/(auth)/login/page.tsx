@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { apiErrorMessage, fetchMe, loginUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
-import { useAuthForm } from "../auth-form-context";
+import { AUTH_INPUT, AUTH_INPUT_ERROR, AUTH_LABEL, useAuthForm } from "../auth-form-context";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -117,27 +117,25 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight">Welcome back</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <h1 className="font-display text-3xl text-foreground">Welcome back</h1>
+      <p className="mt-1.5 text-base font-semibold text-muted-foreground">
         Pick up your streak where you left off.
       </p>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`mt-6 space-y-4 ${errorBumpKey > 0 && errorState ? "animate-shake" : ""}`}
+        className={`mt-7 space-y-5 ${errorBumpKey > 0 && errorState ? "animate-shake" : ""}`}
         // Re-key on every error to retrigger the CSS shake animation.
         key={`form-${errorBumpKey}`}
         noValidate
       >
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className={AUTH_LABEL}>Email</Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
-            className={`mt-1.5 transition-colors ${
-              errors.email || errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
-            }`}
+            className={`mt-2 ${AUTH_INPUT} ${errors.email || errorState ? AUTH_INPUT_ERROR : ""}`}
             aria-invalid={!!errors.email || errorState}
             placeholder="you@example.com"
             {...register("email", {
@@ -154,11 +152,11 @@ export default function LoginPage() {
 
         <div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className={AUTH_LABEL}>Password</Label>
             {failedAttempts > 0 && (
               <Link
                 href="#"
-                className="text-xs font-medium text-primary hover:underline"
+                className="focus-ring rounded-md text-sm font-extrabold text-secondary hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   // Reset hook — to keep parity, no real reset flow is wired yet.
@@ -169,14 +167,12 @@ export default function LoginPage() {
               </Link>
             )}
           </div>
-          <div className="relative mt-1.5">
+          <div className="relative mt-2">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              className={`pr-10 transition-colors ${
-                errors.password || errorState ? "border-destructive/60 focus-visible:ring-destructive" : ""
-              }`}
+              className={`pr-14 ${AUTH_INPUT} ${errors.password || errorState ? AUTH_INPUT_ERROR : ""}`}
               aria-invalid={!!errors.password || errorState}
               placeholder="••••••••"
               {...register("password", {
@@ -192,9 +188,9 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+              className="focus-ring absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-[calc(50%+1px)] items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
 
@@ -204,9 +200,9 @@ export default function LoginPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-600"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-bold text-energy"
             >
-              <ArrowUp className="h-3 w-3" />
+              <ArrowUp className="h-4 w-4" strokeWidth={3} />
               Caps Lock is on
             </motion.p>
           )}
@@ -218,19 +214,19 @@ export default function LoginPage() {
           <motion.div
             initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2.5 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive-text"
+            className="flex items-start gap-2.5 rounded-2xl border-2 border-destructive-bright/50 bg-destructive/5 px-4 py-3 text-sm font-bold text-destructive-text"
             role="alert"
             aria-live="polite"
           >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
             <div className="flex-1">
-              <p className="font-medium leading-tight">{formError}</p>
+              <p className="leading-tight">{formError}</p>
               {failedAttempts >= 2 && (
-                <p className="mt-1 text-xs text-destructive-text">
+                <p className="mt-1 text-sm font-semibold text-destructive-text">
                   Trouble signing in? Try{" "}
                   <Link
                     href="/register"
-                    className="font-medium underline-offset-2 hover:underline"
+                    className="font-extrabold underline underline-offset-2"
                   >
                     creating an account
                   </Link>{" "}
@@ -244,14 +240,15 @@ export default function LoginPage() {
         <div>
           <Button
             type="submit"
-            className="w-full"
+            size="lg"
+            className="w-full uppercase tracking-wider"
             disabled={isSubmitting || !isValid}
           >
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
           {!isValid && !isSubmitting && (
-            <p className="mt-2 text-center text-xs text-muted-foreground">
+            <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">
               {errors.email
                 ? "Enter a valid email address to continue"
                 : errors.password
@@ -262,9 +259,9 @@ export default function LoginPage() {
         </div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-7 text-center text-base font-semibold text-muted-foreground">
         New to SkillStreak?{" "}
-        <Link href="/register" className="font-medium text-primary hover:underline">
+        <Link href="/register" className="focus-ring rounded-md font-extrabold text-secondary hover:underline">
           Create an account
         </Link>
       </p>

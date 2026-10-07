@@ -106,7 +106,7 @@ export function PathPreview({ slug, currentTopicId }: { slug: string; currentTop
                 ) : current ? (
                   <Star className="h-8 w-8 fill-white text-white" />
                 ) : (
-                  <BookOpen className="h-7 w-7 text-muted-foreground/70" strokeWidth={2.5} />
+                  <BookOpen className="h-7 w-7 text-muted-foreground" strokeWidth={2.5} />
                 )}
               </Link>
               <span className="pointer-events-none absolute left-[calc(100%+14px)] top-1/2 hidden w-44 -translate-y-1/2 text-sm font-bold leading-tight text-foreground lg:block">

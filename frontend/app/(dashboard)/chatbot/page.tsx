@@ -12,7 +12,7 @@ export default function ChatbotPageWrapper() {
   return (
     <Suspense
       fallback={
-        <main className="flex h-[calc(100dvh-3.5rem)] items-center justify-center text-muted-foreground">
+        <main className="flex h-[calc(100dvh-4.125rem)] items-center justify-center text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
         </main>
       }
@@ -48,7 +48,9 @@ function ChatbotPage() {
   }, [search, sessionsLoaded, activeSession?.topicId, startSession, router]);
 
   return (
-    <main className="flex h-[calc(100dvh-3.5rem)] overflow-hidden">
+    // Height = viewport minus the 4rem navbar (+2px border); on phones also
+    // minus the fixed bottom tab bar, so the input never hides beneath it.
+    <main className="flex h-[calc(100dvh-8.625rem)] overflow-hidden md:h-[calc(100dvh-4.125rem)]">
       {/* Sidebar hides on mobile so the chat fills the screen.
           Tablet+ shows the sidebar. */}
       <div className="hidden md:block">

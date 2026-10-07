@@ -197,7 +197,7 @@ export function LandingIntro() {
 
         {/* Status line */}
         <motion.p
-          className="mt-5 font-mono text-[11px] uppercase tracking-[0.42em] text-primary/70"
+          className="mt-5 font-mono text-[11px] uppercase tracking-[0.42em] text-primary"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: T.status, duration: 0.5, ease: EASE }}

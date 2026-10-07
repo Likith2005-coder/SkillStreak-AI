@@ -39,13 +39,10 @@ export default function DashboardLayout({
 
   return (
     <div className="relative min-h-[100svh] bg-background">
-      <div className="aurora-bg" aria-hidden />
-      {/* Cinematic film grain over the app, same as the landing page */}
-      <div className="noise-overlay" aria-hidden />
       {/* Skip link — only visible when focused via keyboard */}
       <a
         href="#main"
-        className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
+        className="sr-only z-50 rounded-xl bg-primary px-4 py-2 text-sm font-extrabold text-primary-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
       >
         Skip to content
       </a>
