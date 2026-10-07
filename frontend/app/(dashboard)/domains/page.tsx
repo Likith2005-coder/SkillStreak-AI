@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import dynamicImport from "next/dynamic";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
+import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { ArrowRight, BookOpen, MessageCircle, Sparkles } from "lucide-react";
 import { apiErrorMessage, fetchDomains, type Domain } from "@/lib/api";
+import { rememberDomains } from "@/lib/domainCache";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { cn } from "@/lib/utils";
@@ -35,7 +37,10 @@ export default function DomainsPage() {
     let cancelled = false;
     fetchDomains()
       .then((d) => {
-        if (!cancelled) setDomains(d);
+        if (!cancelled) {
+          rememberDomains(d);
+          setDomains(d);
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(apiErrorMessage(err, "Could not load domains"));
@@ -120,6 +125,7 @@ export default function DomainsPage() {
         {domains === null && !error
           ? Array.from({ length: 6 }).map((_, i) => <DomainSkeleton key={i} />)
           : domains?.map((d, i) => <DomainCard key={d.id} domain={d} index={i} />)}
+        <MorphTextStyle slugs={domains?.map((d) => d.slug) ?? []} />
       </section>
     </main>
   );
@@ -155,6 +161,9 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
 
       <Link
         href={href}
+        // View-transition names pair this card with the roadmap header, so
+        // opening a domain morphs the card into the page instead of cutting.
+        style={{ viewTransitionName: `domain-card-${domain.slug}` }}
         className={cn(
           "relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/85 p-6 transition-colors duration-300",
           s.cardHover
@@ -185,6 +194,7 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
 
         <div className="flex items-start justify-between">
           <div
+            style={{ viewTransitionName: `domain-icon-${domain.slug}` }}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-4deg]",
               s.iconBg
@@ -205,7 +215,10 @@ function DomainCard({ domain, index }: { domain: Domain; index: number }) {
           </span>
         </div>
 
-        <h2 className="mt-4 text-lg font-semibold tracking-tight text-foreground drop-shadow-sm">
+        <h2
+          style={{ viewTransitionName: `domain-title-${domain.slug}` }}
+          className="mt-4 w-fit text-lg font-semibold tracking-tight text-foreground drop-shadow-sm"
+        >
           {domain.name}
         </h2>
         <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-white">

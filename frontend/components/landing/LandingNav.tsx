@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Sparkles as SparklesIcon } from "lucide-react";
@@ -43,7 +43,7 @@ export function LandingNav() {
       initial={{ y: -24, opacity: 0 }}
       animate={introDone || reduce ? { y: 0, opacity: 1 } : { y: -24, opacity: 0 }}
       transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`vt-nav fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
           ? "border-b border-border/60 bg-background/90 backdrop-blur-sm"
           : "border-b border-transparent bg-transparent"

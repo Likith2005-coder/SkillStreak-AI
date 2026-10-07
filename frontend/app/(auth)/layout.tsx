@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { Sparkles } from "lucide-react";
 import { useBootstrapUser } from "@/hooks/useUser";
 import { AuthFormProvider } from "./auth-form-context";

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
+import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
+import { cachedDomain } from "@/lib/domainCache";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -24,6 +26,7 @@ import {
   type AssessmentQuestion,
   type RoadmapTopic,
   type RoadmapView,
+  type Domain,
 } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
 import { styleFor } from "@/lib/domain-style";
@@ -115,9 +118,18 @@ export default function RoadmapPage() {
   }
 
   if (!data) {
+    // Came from the domains grid: draw the real header immediately (the card
+    // morphs into it) and load the trail underneath.
+    const preview = cachedDomain(slug);
     return (
       <main className="container px-4 py-10 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
+        {preview && (
+          <>
+            <BackToDomains />
+            <DomainHeader data={preview} colorStyle={styleFor(preview.color)} />
+          </>
+        )}
+        <Loader2 className="mt-10 h-5 w-5 animate-spin motion-reduce:animate-none" />
       </main>
     );
   }
@@ -129,8 +141,10 @@ export default function RoadmapPage() {
   // then a personalized plan. The learner can always skip to the trail.
   if (hasPlan === null && !skippedAssessment) {
     return (
-      <main className="container flex min-h-[60vh] items-center justify-center px-4 py-10 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" />
+      <main className="container px-4 py-10 text-muted-foreground">
+        <BackToDomains />
+        <DomainHeader data={data} colorStyle={s} />
+        <Loader2 className="mt-10 h-5 w-5 animate-spin motion-reduce:animate-none" />
       </main>
     );
   }
@@ -138,6 +152,7 @@ export default function RoadmapPage() {
     return (
       <main className="container px-4 py-10">
         <BackToDomains />
+        <DomainHeader data={data} colorStyle={s} />
         <div className="mt-10 sm:mt-14">
           {assessStage === "intro" ? (
             <AssessmentIntro
@@ -281,13 +296,19 @@ function DomainHeader({
   colorStyle,
   progress,
 }: {
-  data: RoadmapView;
+  // Only fields every domain has, so the header can render from the cached
+  // summary before the full roadmap has loaded.
+  data: Domain;
   colorStyle: ReturnType<typeof styleFor>;
   progress?: { completed: number; total: number; percent: number };
 }) {
   return (
-    <header className="mt-4 flex flex-col gap-6 rounded-2xl border border-border bg-card/80 p-6 sm:flex-row sm:items-center">
+    <header
+      style={{ viewTransitionName: `domain-card-${data.slug}` }}
+      className="mt-4 flex flex-col gap-6 rounded-2xl border border-border bg-card/80 p-6 sm:flex-row sm:items-center"
+    >
       <div
+        style={{ viewTransitionName: `domain-icon-${data.slug}` }}
         className={cn(
           "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl",
           colorStyle.iconBg
@@ -309,7 +330,13 @@ function DomainHeader({
             </>
           )}
         </div>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{data.name}</h1>
+        <MorphTextStyle slugs={[data.slug]} />
+        <h1
+          style={{ viewTransitionName: `domain-title-${data.slug}` }}
+          className="mt-2 w-fit text-2xl font-semibold tracking-tight sm:text-3xl"
+        >
+          {data.name}
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">{data.description}</p>
       </div>
 

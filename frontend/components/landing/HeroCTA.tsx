@@ -14,7 +14,7 @@
  * - On hover: scale, shimmer sweep, arrow nudge — visible but quiet.
  */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";

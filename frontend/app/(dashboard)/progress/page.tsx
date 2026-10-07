@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import {

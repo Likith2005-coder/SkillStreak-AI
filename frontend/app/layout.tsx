@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Martian_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { ViewTransitions } from "next-view-transitions";
 import { RouteProgress } from "@/components/shared/RouteProgress";
 import "./globals.css";
 
@@ -38,6 +39,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    // Enables the View Transitions API for client navigations: pages flow
+    // into each other instead of hard-cutting. Browsers without support just
+    // navigate normally.
+    <ViewTransitions>
     <html lang="en" className="dark">
       <body className={`${archivo.variable} ${martianMono.variable} font-sans`}>
         <RouteProgress />
@@ -57,5 +62,6 @@ export default function RootLayout({
         />
       </body>
     </html>
+    </ViewTransitions>
   );
 }

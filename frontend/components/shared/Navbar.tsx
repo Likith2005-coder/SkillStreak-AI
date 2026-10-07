@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { usePathname, useRouter } from "next/navigation";
 import { Flame, LogOut, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-sm">
+    <header className="vt-nav sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-sm">
       <div className="container flex h-14 items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold">
           <Sparkles className="h-4 w-4 text-primary" />

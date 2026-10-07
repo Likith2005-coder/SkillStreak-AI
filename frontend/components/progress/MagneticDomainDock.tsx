@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { ArrowRight, X } from "lucide-react";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { styleFor } from "@/lib/domain-style";

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styleFor } from "@/lib/domain-style";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
 import { ArrowLeft, Crown, Loader2, Sparkles, Trophy } from "lucide-react";
 import {

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
 import { TiltCard } from "@/components/landing/TiltCard";
 import { DomainIcon } from "@/components/shared/DomainIcon";
