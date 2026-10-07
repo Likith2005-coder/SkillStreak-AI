@@ -16,6 +16,11 @@
  * - Only runs on wide, fine-pointer viewports. Phones, coarse pointers and
  *   reduced-motion users get the same field drawn once as static SVG, which
  *   is also what the server renders, so there is never an empty hero.
+ * - Never runs on a software renderer (SwiftShader, llvmpipe — blocklisted
+ *   GPUs, VMs, some power-saving modes), where the per-pixel loop lands on
+ *   the CPU and blocks the page for seconds. And on any machine, if the first
+ *   frames come in slow, it hands back to the static field by itself.
+ * - Starts during idle time after load, so it never competes with first paint.
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -124,8 +129,21 @@ export function SignalField({ className }: { className?: string }) {
   useEffect(() => {
     if (!live) return;
     const el = canvas.current!, host = wrap.current!;
-    const gl = el.getContext("webgl", { premultipliedAlpha: true, antialias: false, alpha: true });
+    const gl = el.getContext("webgl", {
+      premultipliedAlpha: true,
+      antialias: false,
+      alpha: true,
+      powerPreference: "low-power",
+      failIfMajorPerformanceCaveat: true, // refuse software rendering outright
+    });
     if (!gl) return; // static SVG stays
+    // Belt and braces: some software renderers don't report the caveat.
+    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : "";
+    if (/swiftshader|llvmpipe|software|basic render/i.test(renderer)) {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return;
+    }
 
     const compile = (type: number, src: string) => {
       const sh = gl.createShader(type)!;
@@ -181,9 +199,33 @@ export function SignalField({ className }: { className?: string }) {
     window.addEventListener("scroll", onScrollResize, { passive: true });
     window.addEventListener("resize", onScrollResize);
 
-    let raf = 0, visible = true, start = performance.now();
+    let raf = 0, visible = true, start = performance.now(), dead = false;
+    // Adaptive guard. Skip a warm-up window (shader compilation — here and
+    // in the SignalBot — makes the first frames slow on every machine), then
+    // take the MEDIAN interval of the next 60 so a single hitch can't trip
+    // it. Only a device that genuinely can't hold ~40fps falls back.
+    const WARMUP = 45, SAMPLES = 60;
+    let n = 0, last = 0;
+    const gaps: number[] = [];
     const frame = (now: number) => {
       raf = 0;
+      if (dead) return;
+      if (n > WARMUP && gaps.length < SAMPLES) {
+        gaps.push(now - last);
+        if (gaps.length === SAMPLES) {
+          const median = [...gaps].sort((a, b) => a - b)[SAMPLES >> 1];
+          host.dataset.fieldMedianMs = median.toFixed(1);
+          if (median > 25) {
+            dead = true;
+            host.dataset.fieldState = "fallback";
+            setReady(false);
+            gl.getExtension("WEBGL_lose_context")?.loseContext();
+            return;
+          }
+        }
+      }
+      n++;
+      last = now;
       cur.x += (target.x - cur.x) * 0.08;
       cur.y += (target.y - cur.y) * 0.08;
       cur.on += (target.on - cur.on) * 0.06;
@@ -193,15 +235,31 @@ export function SignalField({ className }: { className?: string }) {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       if (visible && !document.hidden) raf = requestAnimationFrame(frame);
     };
-    const kick = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame); };
+    const kick = () => { if (!dead && !raf && visible && !document.hidden) raf = requestAnimationFrame(frame); };
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick(); });
     io.observe(host);
     const onVis = () => kick();
     document.addEventListener("visibilitychange", onVis);
 
-    raf = requestAnimationFrame((t) => { start = t; setReady(true); frame(t); });
+    // Begin once the page has finished loading and the main thread is idle.
+    const begin = () => {
+      if (dead) return;
+      host.dataset.fieldState = "live";
+      raf = requestAnimationFrame((t) => { start = t; setReady(true); frame(t); });
+    };
+    let idle = 0;
+    const schedule = () => {
+      const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      idle = ric ? ric(begin, { timeout: 2500 }) : window.setTimeout(begin, 1200);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
 
     return () => {
+      dead = true;
+      window.removeEventListener("load", schedule);
+      const cic = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+      if (cic) cic(idle); else clearTimeout(idle);
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();

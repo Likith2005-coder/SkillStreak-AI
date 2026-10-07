@@ -68,10 +68,12 @@ export function RotatingWord({ words, intervalMs = 2200, className }: RotatingWo
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={words[i]}
+            // A clean handoff: the outgoing word leaves fast (exits are quicker
+            // than entrances), and the incoming one waits a beat, so the two
+            // never share the slot at full strength.
             initial={{ y: "70%", opacity: 0 }}
-            animate={{ y: "0%", opacity: 1 }}
-            exit={{ y: "-70%", opacity: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            animate={{ y: "0%", opacity: 1, transition: { duration: 0.55, delay: 0.12, ease: [0.22, 1, 0.36, 1] } }}
+            exit={{ y: "-60%", opacity: 0, transition: { duration: 0.25, ease: [0.4, 0, 1, 1] } }}
             // The gradient must live on the *visible* word — a stacked child
             // can't inherit a clipped gradient from an ancestor.
             className={`absolute left-[0.5em] top-[0.2em] whitespace-nowrap ${className ?? ""}`}
