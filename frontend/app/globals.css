@@ -546,7 +546,7 @@
     .term-cursor::after { animation: none; }
   }
 
-  /* Loader used by SplineScene's Suspense fallback. */
+  /* Loader shown while the 3D SignalBot chunk downloads. */
   .loader {
     display: inline-block;
     width: 32px;

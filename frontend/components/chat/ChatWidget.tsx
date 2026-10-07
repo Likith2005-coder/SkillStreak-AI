@@ -44,7 +44,7 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
         whileHover={reduce ? undefined : { scale: 1.08 }}
         whileTap={reduce ? undefined : { scale: 0.92 }}
         className={cn(
-          "group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_8px_30px_rgba(99,102,241,0.5)] transition-shadow",
+          "group fixed bottom-24 right-5 z-40 md:bottom-5 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_8px_30px_rgba(99,102,241,0.5)] transition-shadow",
           "bg-gradient-to-br from-indigo-500 to-violet-500 hover:shadow-[0_10px_40px_rgba(139,92,246,0.7)]"
         )}
       >
@@ -88,7 +88,7 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
           exit={{ opacity: 0, y: 16, scale: 0.96 }}
           transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "fixed bottom-24 right-5 z-40 flex h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl"
+            "fixed bottom-44 right-5 z-40 flex h-[60vh] md:bottom-24 md:h-[70vh] max-h-[640px] w-[92vw] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl"
           )}
         >
           <header className="flex items-center justify-between border-b border-border bg-card/80 px-4 py-2.5">

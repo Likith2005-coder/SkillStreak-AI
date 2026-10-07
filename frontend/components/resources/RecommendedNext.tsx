@@ -60,7 +60,10 @@ export function RecommendedNext() {
       </p>
 
       {!items ? (
-        <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr]">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+          {/* minmax(0,...) lets columns shrink below their content width.
+              Without it a long truncated title set the track width and pushed
+              the whole dashboard to ~760px on phones, zooming the page out. */}
           <div className="h-56 animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-card/30" />
           <div className="grid gap-2.5">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -76,7 +79,7 @@ export function RecommendedNext() {
         <div className="mt-4 grid gap-3 lg:grid-cols-[1.1fr_1fr]">
           <HeroPick item={items[0]} />
           {items.length > 1 && (
-            <ul className="grid content-start gap-2.5">
+            <ul className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2.5">
               {items.slice(1).map((it, i) => (
                 <QueueRow key={it.topicId} item={it} index={i + 1} />
               ))}

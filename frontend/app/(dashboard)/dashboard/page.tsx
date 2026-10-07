@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
+import { WeekStrip } from "@/components/gamification/WeekStrip";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
@@ -9,7 +10,6 @@ import {
   BarChart3,
   BookOpen,
   Bot,
-  Flame,
   ListChecks,
   Sparkles,
   Target,
@@ -29,7 +29,6 @@ import {
   type RecentAttempt,
   type Streak,
 } from "@/lib/api";
-import dynamic from "next/dynamic";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { MagneticDomainDock } from "@/components/progress/MagneticDomainDock";
 import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
@@ -39,12 +38,6 @@ import { BadgeCoverflow } from "@/components/gamification/BadgeCoverflow";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
 import { useCountUp } from "@/hooks/useCountUp";
 
-// 3D scene is ~150KB of three.js — lazy-load so the dashboard initial paint
-// isn't blocked by it. SSR off because three.js needs a real WebGL context.
-const FloatingOrbs = dynamic(
-  () => import("@/components/3d/FloatingOrbs").then((m) => m.FloatingOrbs),
-  { ssr: false }
-);
 import { styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
 
@@ -79,52 +72,10 @@ export default function DashboardPage() {
 
   return (
     <main className="container px-4 py-10">
-      {/* Hero with 3D floating orbs */}
+      {/* Hero: greeting + next action on the left, this week's rhythm on the
+          right. The orbs and floating stat chips are gone — they duplicated
+          the numbers already in the navbar meter and the cards below. */}
       <section className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-8">
-        {/* Signature neon knowledge-grid horizon, same motif as the landing */}
-        <div className="grid-scene opacity-60" aria-hidden>
-          <div className="grid-floor" />
-        </div>
-        {/* 3D scene fills the right ~half, fades into the card */}
-        <FloatingOrbs className="pointer-events-none absolute inset-0 opacity-90" />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card/95 via-card/70 to-transparent"
-          aria-hidden
-        />
-        {/* Giant ghost word for that cinematic depth */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 flex items-center overflow-hidden opacity-40"
-        >
-          <span className="ghost-word text-[15vw] leading-none lg:text-[8vw]">STREAK</span>
-        </div>
-
-        {/* Floating holo-chips drifting over the orbs — the hero's right half
-            was dead space; now your live stats hover in it like HUD elements. */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-1/2 lg:block" aria-hidden>
-          <FloatChip
-            className="right-[30%] top-[16%]"
-            delay={0}
-            icon={<Trophy className="h-3.5 w-3.5 text-amber-300" />}
-            label="Level"
-            value={`${user.level}`}
-          />
-          <FloatChip
-            className="right-[8%] top-[42%]"
-            delay={1.2}
-            icon={<Sparkles className="h-3.5 w-3.5 text-violet-300" />}
-            label="Total XP"
-            value={`${user.xp}`}
-          />
-          <FloatChip
-            className="right-[34%] top-[66%]"
-            delay={0.6}
-            icon={<Flame className="h-3.5 w-3.5 text-orange-300" />}
-            label="Streak"
-            value={`${streak?.currentStreak ?? 0}d`}
-          />
-        </div>
-
         <div className="relative z-10">
           <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -163,6 +114,7 @@ export default function DashboardPage() {
             </Button>
           </div>
         </div>
+        <WeekStrip className="relative z-10 mt-8 lg:absolute lg:right-8 lg:top-1/2 lg:mt-0 lg:w-[360px] lg:-translate-y-1/2" />
       </section>
 
       {/* Featured: Ethical Hacking Arsenal */}
@@ -356,40 +308,6 @@ export default function DashboardPage() {
         </section>
       )}
     </main>
-  );
-}
-
-/** Glassy HUD chip that drifts gently over the hero's 3D orbs. */
-function FloatChip({
-  className,
-  delay,
-  icon,
-  label,
-  value,
-}: {
-  className: string;
-  delay: number;
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <motion.div
-      animate={{ y: [0, -12, 0] }}
-      transition={{ duration: 5.5, ease: "easeInOut", repeat: Infinity, delay }}
-      className={cn(
-        "absolute flex items-center gap-2.5 rounded-xl border border-white/10 bg-card/85 px-3.5 py-2.5 shadow-xl shadow-black/30",
-        className
-      )}
-    >
-      {icon}
-      <div>
-        <div className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
-          {label}
-        </div>
-        <div className="text-sm font-bold tabular-nums text-foreground">{value}</div>
-      </div>
-    </motion.div>
   );
 }
 

@@ -4,24 +4,12 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Trophy } from "lucide-react";
+import { levelForXp } from "@/lib/level";
 
 type Props = {
   level: number;
   xp: number;
 };
-
-// Mirror of backend levelForXp.
-function xpRequiredForLevel(level: number): number {
-  if (level <= 1) return 0;
-  return Math.round(100 * level * Math.log2(level + 1));
-}
-function levelForXp(xp: number) {
-  let level = 1;
-  while (xpRequiredForLevel(level + 1) <= xp) level++;
-  const base = xpRequiredForLevel(level);
-  const next = xpRequiredForLevel(level + 1);
-  return { level, into: xp - base, span: next - base };
-}
 
 export function XpBar({ level, xp }: Props) {
   const reduce = useReducedMotion();

@@ -2,10 +2,9 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/shared/Navbar";
+import { MobileTabBar } from "@/components/shared/MobileTabBar";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { CommandPalette } from "@/components/shared/CommandPalette";
 import { useAuthStatus, useBootstrapUser } from "@/hooks/useUser";
@@ -21,7 +20,6 @@ export default function DashboardLayout({
   const user = useUserStore((s) => s.user);
   const router = useRouter();
   const pathname = usePathname();
-  const reduce = useReducedMotion();
   const onChatbotPage = pathname?.startsWith("/chatbot") ?? false;
 
   useEffect(() => {
@@ -52,22 +50,15 @@ export default function DashboardLayout({
         Skip to content
       </a>
       <Navbar />
-      {/* No `mode="wait"` — old page fades out underneath the new one rather
-          than blocking the new one from rendering. Faster enter (180ms) and
-          a near-instant exit make navigation feel immediate. */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={pathname}
-          id="main"
-          tabIndex={-1}
-          initial={{ opacity: 0, y: reduce ? 0 : 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 0.18, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+      {/* Page changes are animated by the View Transitions API (see the root
+          layout). The old AnimatePresence wrapper here kept the outgoing page
+          mounted beside the incoming one, which doubled the content during a
+          transition and fought the view-transition morphs. Bottom padding on
+          phones clears the tab bar. */}
+      <div id="main" tabIndex={-1} className="pb-24 md:pb-0">
+        {children}
+      </div>
+      <MobileTabBar />
       <CommandPalette />
       {!onChatbotPage && <ChatWidget />}
     </div>

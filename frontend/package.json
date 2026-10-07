@@ -17,8 +17,6 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
-    "@splinetool/react-spline": "^4.1.0",
-    "@splinetool/runtime": "^1.12.90",
     "@tailwindcss/typography": "^0.5.19",
     "axios": "^1.7.7",
     "canvas-confetti": "^1.9.4",

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import dynamicImport from "next/dynamic";
 import { Link } from "next-view-transitions";
+import { SignalBotLazy } from "@/components/3d/SignalBotLazy";
 import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
@@ -12,22 +12,6 @@ import { rememberDomains } from "@/lib/domainCache";
 import { styleFor } from "@/lib/domain-style";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { cn } from "@/lib/utils";
-
-// 3D Whobee robot — public Spline scene. Override via NEXT_PUBLIC_SPLINE_ROBOT_SCENE
-// in frontend/.env.local to use your own scene from app.spline.design.
-const DEFAULT_ROBOT_SCENE =
-  "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode";
-const ROBOT_SCENE =
-  process.env.NEXT_PUBLIC_SPLINE_ROBOT_SCENE ?? DEFAULT_ROBOT_SCENE;
-
-// Spline runtime is heavy; lazy-load so the domains page initial paint stays fast.
-const InteractiveRobotSpline = dynamicImport(
-  () =>
-    import("@/components/3d/InteractiveRobotSpline").then(
-      (m) => m.InteractiveRobotSpline
-    ),
-  { ssr: false }
-);
 
 export default function DomainsPage() {
   const [domains, setDomains] = useState<Domain[] | null>(null);
@@ -79,39 +63,12 @@ export default function DomainsPage() {
           </p>
         </div>
 
-        {/* 3D robot mascot — immersed in the page.
-            mix-blend-mode: screen drops the canvas's dark background against
-            the dark page; the radial mask softens the rectangular canvas into
-            a vignette. The watermark cover sits OUTSIDE the masked layer so
-            it stays solid and reliably hides the "Built with Spline" pill. */}
-        <div className="relative z-10 h-[260px] w-full sm:h-[280px] lg:h-[300px]">
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{
-              WebkitMaskImage:
-                "radial-gradient(ellipse 54% 56% at 54% 32%, black 44%, transparent 72%)",
-              maskImage:
-                "radial-gradient(ellipse 54% 56% at 54% 32%, black 44%, transparent 72%)",
-            }}
-          >
-            <div
-              className="absolute -top-24 -bottom-24 left-0 right-0 origin-center scale-[0.6]"
-              style={{ mixBlendMode: "screen" }}
-            >
-              <InteractiveRobotSpline scene={ROBOT_SCENE} className="h-full w-full" />
-            </div>
-          </div>
-          {/* Soft fade-to-page-bg over the bottom band where the watermark
-              sits. Gradient instead of solid block so the cover blends into
-              the scene rather than slicing it with a hard horizontal line. */}
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-20"
-            aria-hidden
-            style={{
-              background:
-                "linear-gradient(to top, hsl(var(--background)) 30%, hsl(var(--background) / 0.85) 55%, transparent 100%)",
-            }}
-          />
+        {/* The SignalBot, same mascot as the landing page: real 3D on desktop,
+            the static SVG version on phones. Replaces a borrowed Spline scene
+            that needed blend-mode and mask hacks to hide its pedestal and
+            watermark. */}
+        <div className="relative z-10 h-[240px] w-full sm:h-[260px] lg:h-[300px]">
+          <SignalBotLazy className="absolute inset-0" />
         </div>
       </header>
 

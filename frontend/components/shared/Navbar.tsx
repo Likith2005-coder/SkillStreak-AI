@@ -1,8 +1,9 @@
 "use client";
 
 import { Link } from "next-view-transitions";
+import { MomentumMeter } from "@/components/gamification/MomentumMeter";
 import { usePathname, useRouter } from "next/navigation";
-import { Flame, LogOut, Settings, Sparkles } from "lucide-react";
+import { LogOut, Settings, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logoutUser } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
@@ -52,14 +53,7 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-1.5 lg:gap-2.5">
-          {user && (
-            <div className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground sm:flex">
-              <Flame className="h-3.5 w-3.5 text-orange-400" />
-              <span>Level {user.level}</span>
-              <span className="opacity-40">·</span>
-              <span>{user.xp} XP</span>
-            </div>
-          )}
+          {user && <MomentumMeter xp={user.xp} />}
           <button
             type="button"
             aria-label="Open command palette"
