@@ -242,66 +242,6 @@ export default function DashboardPage() {
             <RecommendedNext />
           </motion.section>
 
-          {/* Domain progress */}
-          <motion.section {...rise(3)} aria-labelledby="domains-h">
-            <SectionHead id="domains-h" title="Your domains">
-              <Link
-                href="/progress"
-                className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-medium text-secondary hover:underline"
-              >
-                <BarChart3 className="h-4 w-4" aria-hidden />
-                All stats
-              </Link>
-            </SectionHead>
-            {overview ? (
-              reduce ? (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {overview.perDomain.map((tile, i) => (
-                    <DomainProgressRing key={tile.slug} tile={tile} index={i} />
-                  ))}
-                </div>
-              ) : (
-                <>
-                  {/* Wide desktop: magnetic dock — bars magnify near the
-                      cursor, click one to expand its detail card. It needs a
-                      cursor and real horizontal room, so it only appears at
-                      2xl where the centre column can hold it. */}
-                  <div className="hidden 2xl:block">
-                    <MagneticDomainDock tiles={overview.perDomain} />
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:hidden">
-                    {overview.perDomain.map((tile, i) => (
-                      <DomainProgressRing key={tile.slug} tile={tile} index={i} />
-                    ))}
-                  </div>
-                </>
-              )
-            ) : (
-              <SkeletonGrid />
-            )}
-          </motion.section>
-
-          {/* Recent + weak areas: a wide list beside a narrower card. */}
-          <motion.section {...rise(4)} className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
-            <div className="min-w-0">
-              <SectionHead title="Recent quizzes" />
-              {overview ? (
-                <RecentAttempts items={overview.recentAttempts} />
-              ) : (
-                <div className="card-chunky h-[230px] animate-pulse motion-reduce:animate-none" />
-              )}
-            </div>
-            <div className="min-w-0 xl:pt-[60px]">
-              {overview && <WeakAreasCard items={overview.weakAreas} />}
-            </div>
-          </motion.section>
-
-          {/* Badges — 3D coverflow trophy case */}
-          {badges && (
-            <motion.section {...rise(5)} aria-label="Badges">
-              <BadgeCoverflow badges={badges} />
-            </motion.section>
-          )}
         </div>
 
         {/* ── Right rail: instrument panels ─────────────────── */}
@@ -321,6 +261,69 @@ export default function DashboardPage() {
           <LeagueCard />
           <ArsenalCard />
         </motion.aside>
+      </div>
+
+      {/* ── Full width: domain dock, recent quizzes, badges ── */}
+      <div className="mt-10 space-y-10">
+      {/* Domain progress */}
+      <motion.section {...rise(3)} aria-labelledby="domains-h">
+        <SectionHead id="domains-h" title="Your domains">
+          <Link
+            href="/progress"
+            className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-medium text-secondary hover:underline"
+          >
+            <BarChart3 className="h-4 w-4" aria-hidden />
+            All stats
+          </Link>
+        </SectionHead>
+        {overview ? (
+          reduce ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {overview.perDomain.map((tile, i) => (
+                <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* Desktop: magnetic dock — bars magnify near the cursor,
+                  click one to expand its detail card. It needs a cursor and
+                  the full page width, so it lives outside the rail grid. */}
+              <div className="hidden lg:block">
+                <MagneticDomainDock tiles={overview.perDomain} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
+                {overview.perDomain.map((tile, i) => (
+                  <DomainProgressRing key={tile.slug} tile={tile} index={i} />
+                ))}
+              </div>
+            </>
+          )
+        ) : (
+          <SkeletonGrid />
+        )}
+      </motion.section>
+
+      {/* Recent + weak areas: a wide list beside a narrower card. */}
+      <motion.section {...rise(4)} className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <SectionHead title="Recent quizzes" />
+          {overview ? (
+            <RecentAttempts items={overview.recentAttempts} />
+          ) : (
+            <div className="card-chunky h-[230px] animate-pulse motion-reduce:animate-none" />
+          )}
+        </div>
+        <div className="min-w-0 lg:pt-[60px]">
+          {overview && <WeakAreasCard items={overview.weakAreas} />}
+        </div>
+      </motion.section>
+
+      {/* Badges — 3D coverflow trophy case */}
+      {badges && (
+        <motion.section {...rise(5)} aria-label="Badges">
+          <BadgeCoverflow badges={badges} />
+        </motion.section>
+      )}
       </div>
     </main>
   );
