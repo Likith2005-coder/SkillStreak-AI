@@ -8,8 +8,8 @@
  *
  * Perf: pure CSS 3D transforms with transitions — zero per-frame JS. The
  * gentle autoplay stops the moment the user interacts and pauses on hover.
- * Reduced-motion falls back to the flat grid (BadgeGallery). Cards are
- * chunky white tiles with a coloured medal; locked ones are grey.
+ * Reduced-motion falls back to the flat grid (BadgeGallery). Cards are dark
+ * plaques lit from above in the badge colour; locked ones stay unlit.
  */
 
 import {
@@ -132,9 +132,14 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
         onKeyDown={onKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="focus-ring relative mt-2 flex h-[370px] items-center justify-center rounded-2xl"
+        className="focus-ring relative mt-2 flex h-[370px] items-center justify-center rounded-xl"
         style={{ perspective: `${PERSPECTIVE}px` }}
       >
+        {/* stage light behind the active plaque */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-[30rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.2),transparent)] blur-2xl"
+        />
         <div
           className="relative"
           style={{
@@ -176,24 +181,33 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
                 onClick={() => handleCardClick(i)}
                 aria-label={b.name}
                 aria-hidden={!visible}
-                className="overflow-hidden rounded-[1.5rem] border-2 border-b-[6px] border-border bg-card"
+                className="overflow-hidden rounded-2xl border border-white/10 bg-card shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_30px_60px_-24px_rgb(0_0_0/0.9)]"
               >
-                {/* coloured top band — the ribbon the medal hangs from */}
-                <div aria-hidden className={cn("absolute inset-x-0 top-0 h-20", earned ? tone.tint : "bg-muted")} />
+                {/* light falling from above in the badge colour */}
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-44"
+                  style={{
+                    background: `radial-gradient(80% 100% at 50% 0%, ${earned ? tone.glow : "rgb(255 255 255 / 0.05)"}, transparent 70%)`,
+                    opacity: earned ? 0.45 : 1,
+                  }}
+                />
                 <div className="relative flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
                   <Medal icon={b.icon} earned={earned} size="lg" />
                   <div>
-                    <div className={cn("text-xl font-black", earned ? "text-foreground" : "text-muted-foreground")}>
+                    <div className={cn("font-display text-xl", earned ? "text-foreground" : "text-muted-foreground")}>
                       {b.name}
                     </div>
-                    <p className="mt-1.5 text-sm font-semibold leading-snug text-muted-foreground">
+                    <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
                       {b.description}
                     </p>
                   </div>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-extrabold",
-                      earned ? cn(tone.tint, tone.text) : "bg-muted text-muted-foreground"
+                      "rounded-full border px-3 py-1 font-mono text-[11px] font-semibold",
+                      earned
+                        ? cn("border-white/10", tone.tint, tone.text)
+                        : "border-white/10 bg-white/[0.04] text-muted-foreground"
                     )}
                   >
                     {earned
@@ -205,9 +219,9 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
                 {/* dim veil over non-active cards */}
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-white"
+                  className="pointer-events-none absolute inset-0 bg-background"
                   style={{
-                    opacity: isActive ? 0 : 0.5,
+                    opacity: isActive ? 0 : 0.6,
                     transition: `opacity ${MOVE_DUR}s ${EASE}`,
                   }}
                 />
@@ -230,8 +244,8 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
           >
             <span
               className={cn(
-                "block h-2.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
-                i === active ? "w-7 bg-primary-bright" : "w-2.5 bg-border hover:bg-muted-foreground/50"
+                "block h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
+                i === active ? "w-6 bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.8)]" : "w-1.5 bg-white/15 hover:bg-white/30"
               )}
             />
           </button>
@@ -248,9 +262,9 @@ function CarouselArrow({ dir, onClick }: { dir: -1 | 1; onClick: () => void }) {
       type="button"
       aria-label={dir === -1 ? "Previous badge" : "Next badge"}
       onClick={onClick}
-      className="focus-ring flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-border bg-card text-muted-foreground transition-[transform,box-shadow] duration-100 [box-shadow:0_4px_0_hsl(var(--border))] hover:bg-muted hover:text-foreground active:translate-y-[4px] active:[box-shadow:none] motion-reduce:transition-none"
+      className="focus-ring flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition-colors hover:border-white/20 hover:bg-white/[0.07] hover:text-foreground active:scale-95 motion-reduce:transition-none"
     >
-      <Icon className="h-5 w-5" strokeWidth={3} />
+      <Icon className="h-5 w-5" strokeWidth={2} />
     </button>
   );
 }

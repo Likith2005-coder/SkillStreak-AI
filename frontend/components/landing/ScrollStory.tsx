@@ -1,20 +1,18 @@
 "use client";
 
 /**
- * "How it works", playground edition: the learning loop drawn as a path.
+ * "How it works", Midnight edition: the learning loop drawn as a path of light.
  *
- * Five steps hang off a chunky vertical track like nodes on a lesson path.
- * The track fills with green as you scroll past it, each step's sticker node
- * pops in, its card slides in from its side, and a live mini-mock of the real
- * feature (roadmap, tutor, quiz, streak week, progress) plays once it's on
- * screen. Desktop zig-zags card / node / mock; phones stack along a left rail.
- *
- * Replaces the old 500vh pinned scroll-story: same content and vignettes, but
- * it scrolls like a normal page, works on phones, and never traps the wheel.
+ * Five steps hang off a hairline vertical track. As you scroll, the track
+ * fills with volt light (a bright head leads the fill), each step's orb node
+ * lights up in its role colour, its copy panel slides in from its side, and a
+ * live mini product panel (roadmap, tutor, quiz, streak week, progress) plays
+ * once it is on screen. Desktop zig-zags copy / node / panel; phones stack
+ * along a left rail.
  */
 
-import { useRef, type FC } from "react";
-import { MotionConfig, motion, useInView, useScroll, useSpring } from "framer-motion";
+import { useRef, type CSSProperties, type FC } from "react";
+import { MotionConfig, motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import {
   BookOpen,
@@ -33,14 +31,15 @@ import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+type Tone = "secondary" | "grape" | "primary" | "energy" | "xp";
+
 type Step = {
   title: string;
   copy: string;
   icon: LucideIcon;
-  face: string; // node face (bright)
-  edge: string; // node 3D edge colour
-  text: string; // AA text colour on white
-  tilt: number;
+  tone: Tone; // role colour token, used for glows via hsl(var(--tone))
+  text: string; // literal text class for Tailwind
+  window: string; // faux window title on the product panel
   Vignette: FC;
   vignetteLabel: string;
 };
@@ -50,10 +49,9 @@ const STEPS: Step[] = [
     title: "Pick your path",
     copy: "9 tech domains, 5 deeply-curated roadmaps. Choose a goal and get a clear trail from foundations to mastery.",
     icon: BookOpen,
-    face: "bg-secondary-bright",
-    edge: "hsl(var(--secondary-shade))",
+    tone: "secondary",
     text: "text-secondary",
-    tilt: -8,
+    window: "roadmap / cybersecurity",
     Vignette: TrailVignette,
     vignetteLabel: "A roadmap trail with the first topic ready to start",
   },
@@ -61,10 +59,9 @@ const STEPS: Step[] = [
     title: "Learn with an AI tutor",
     copy: "A streaming tutor that knows your level and current topic. Ask for analogies, deeper dives or a quick quiz. Every chat is saved, every code block copy-ready.",
     icon: Bot,
-    face: "bg-grape-bright",
-    edge: "hsl(var(--grape-shade))",
+    tone: "grape",
     text: "text-grape",
-    tilt: 7,
+    window: "tutor / cia-triad",
     Vignette: TutorVignette,
     vignetteLabel: "The AI tutor explaining the CIA Triad with an analogy",
   },
@@ -72,10 +69,9 @@ const STEPS: Step[] = [
     title: "Prove it",
     copy: "5 AI-written questions per topic, checked by a second AI pass. Score 3 out of 5 to complete it. Plus a hands-on Ethical Hacking Arsenal for real practice.",
     icon: ListChecks,
-    face: "bg-primary-bright",
-    edge: "hsl(var(--primary-shade))",
+    tone: "primary",
     text: "text-primary",
-    tilt: -6,
+    window: "quiz / question 3",
     Vignette: QuizVignette,
     vignetteLabel: "A quiz question answered correctly for 25 XP",
   },
@@ -83,10 +79,9 @@ const STEPS: Step[] = [
     title: "Build the habit",
     copy: "Daily streaks with automatic freezes, XP and levels, 8 unlockable badges and a weekly league. Momentum you can feel.",
     icon: Flame,
-    face: "bg-energy-bright",
-    edge: "hsl(var(--energy-shade))",
+    tone: "energy",
     text: "text-energy",
-    tilt: 9,
+    window: "streak / this week",
     Vignette: HabitVignette,
     vignetteLabel: "A five-day streak, level progress and a league rank",
   },
@@ -94,10 +89,9 @@ const STEPS: Step[] = [
     title: "Watch yourself level up",
     copy: "A 90-day activity heatmap, per-domain progress, weak-area detection and score trends. Visible proof you're actually improving.",
     icon: TrendingUp,
-    face: "bg-xp-bright",
-    edge: "hsl(var(--xp-shade))",
+    tone: "xp",
     text: "text-xp",
-    tilt: -7,
+    window: "analytics / 90 days",
     Vignette: AnalyticsVignette,
     vignetteLabel: "An activity heatmap, a rising score trend and a flagged weak area",
   },
@@ -108,28 +102,36 @@ export function ScrollStory() {
   const trackRef = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start 70%", "end 60%"] });
   const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
+  const headTop = useTransform(fill, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
 
   return (
     <MotionConfig reducedMotion={reduce ? "always" : "never"}>
       <section className="relative px-4 py-20 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <h2 className="mx-auto max-w-3xl text-center font-display text-3xl md:text-5xl [text-wrap:balance]">
-            From curious to <span className="text-primary">capable</span>, step by step.
+          <h2 className="mx-auto max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
+            From curious to <span className="font-serif-accent text-primary text-glow">capable</span>, step by step.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-lg font-semibold text-muted-foreground [text-wrap:pretty]">
+          <p className="mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-muted-foreground [text-wrap:pretty] md:text-lg">
             Five systems working as one loop, so you don&apos;t just read it. You actually learn it.
           </p>
 
-          <ol ref={trackRef} className="relative mt-14 space-y-10 md:mt-20 md:space-y-16">
-            {/* The track: a fat grey rail that fills green as you scroll. */}
+          <ol ref={trackRef} className="relative mt-14 space-y-12 md:mt-20 md:space-y-20">
+            {/* The track: a hairline that fills with volt light as you scroll,
+                led by a bright glowing head. */}
             <span
               aria-hidden
-              className="absolute bottom-8 left-[27px] top-8 w-2.5 -translate-x-1/2 overflow-hidden rounded-full bg-muted md:left-1/2"
+              className="absolute bottom-8 left-[28px] top-8 w-px -translate-x-1/2 bg-white/[0.08] md:left-1/2"
             >
               <motion.span
-                className="absolute inset-0 origin-top rounded-full bg-primary-bright"
+                className="absolute inset-x-0 top-0 h-full origin-top bg-[linear-gradient(180deg,hsl(var(--aurora-3)/0.0),hsl(var(--aurora-3))_12%,hsl(var(--primary)))] shadow-[0_0_12px_1px_hsl(var(--primary)/0.6)]"
                 style={{ scaleY: reduce ? 1 : fill }}
               />
+              {!reduce && (
+                <motion.span
+                  className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-bright shadow-[0_0_0_4px_hsl(var(--primary)/0.18),0_0_24px_4px_hsl(var(--primary)/0.8)]"
+                  style={{ top: headTop }}
+                />
+              )}
             </span>
 
             {STEPS.map((step, i) => (
@@ -143,68 +145,108 @@ export function ScrollStory() {
 }
 
 function StepRow({ step, index }: { step: Step; index: number }) {
-  const left = index % 2 === 0; // desktop: card on the left, mock on the right
+  const left = index % 2 === 0; // desktop: copy on the left, panel on the right
   const Icon = step.icon;
+  const rowRef = useRef<HTMLLIElement>(null);
+  const lit = useInView(rowRef, { once: true, amount: 0.5 });
   const mockRef = useRef<HTMLDivElement>(null);
   const mockInView = useInView(mockRef, { once: true, amount: 0.45 });
   const V = step.Vignette;
+  const toneVar = { "--tone": `var(--${step.tone})` } as CSSProperties;
 
   return (
-    <li className="relative grid grid-cols-[56px_minmax(0,1fr)] items-center gap-x-4 gap-y-4 md:grid-cols-[minmax(0,1fr)_96px_minmax(0,1fr)] md:gap-x-8">
-      {/* Node: a tilted 3D sticker with the step number on a badge. */}
-      <motion.div
-        initial={{ scale: 0.4, opacity: 0 }}
-        whileInView={{ scale: 1, opacity: 1 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ type: "spring", stiffness: 380, damping: 14 }}
-        className="relative z-10 col-start-1 row-start-1 self-start justify-self-center md:col-start-2 md:self-center"
-      >
-        <span
-          className={cn("flex h-14 w-14 items-center justify-center rounded-2xl md:h-20 md:w-20 md:rounded-[1.6rem]", step.face)}
-          style={{ boxShadow: `0 6px 0 ${step.edge}`, transform: `rotate(${step.tilt}deg)` }}
-        >
-          <Icon className="h-7 w-7 text-white md:h-10 md:w-10" strokeWidth={2.6} aria-hidden />
-        </span>
-        <span
+    <li
+      ref={rowRef}
+      style={toneVar}
+      className="relative grid grid-cols-[56px_minmax(0,1fr)] items-center gap-x-4 gap-y-4 md:grid-cols-[minmax(0,1fr)_96px_minmax(0,1fr)] md:gap-x-10"
+    >
+      {/* Node: a dark glass orb whose rim and icon light up in the step's
+          role colour as the path reaches it. */}
+      <div className="relative z-10 col-start-1 row-start-1 self-start justify-self-center md:col-start-2 md:self-center">
+        <motion.span
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={lit ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 320, damping: 18 }}
           className={cn(
-            "absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-border bg-card text-sm font-black tabular-nums md:h-8 md:w-8 md:text-base",
-            step.text,
+            "relative flex h-14 w-14 items-center justify-center rounded-full border bg-card transition-[box-shadow,border-color] duration-700 md:h-16 md:w-16",
+            lit ? "border-[hsl(var(--tone)/0.55)]" : "border-white/10",
           )}
-          aria-hidden
+          style={{
+            boxShadow: lit
+              ? "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 0 6px hsl(var(--background)), 0 0 36px -2px hsl(var(--tone) / 0.55)"
+              : "inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 6px hsl(var(--background))",
+          }}
         >
-          {index + 1}
-        </span>
-      </motion.div>
+          <Icon className={cn("h-6 w-6 md:h-7 md:w-7", step.text)} strokeWidth={2} aria-hidden />
+          <span
+            aria-hidden
+            className="absolute -bottom-8 left-1/2 z-20 hidden -translate-x-1/2 rounded-md bg-background px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground md:block"
+          >
+            0{index + 1}
+          </span>
+        </motion.span>
+      </div>
 
-      {/* Copy card */}
+      {/* Copy panel */}
       <motion.div
         initial={{ opacity: 0, x: left ? -28 : 28 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 0.55, ease: EASE }}
+        transition={{ duration: 0.6, ease: EASE }}
         className={cn(
-          "card-chunky col-start-2 row-start-1 p-6 md:row-start-1 md:p-8",
-          left ? "md:col-start-1" : "md:col-start-3",
+          "col-start-2 row-start-1 md:row-start-1",
+          left ? "md:col-start-1 md:text-right" : "md:col-start-3",
         )}
       >
-        <h3 className="font-display text-2xl text-foreground md:text-3xl">
+        <p className={cn("font-mono text-xs md:hidden", step.text)} aria-hidden>
+          0{index + 1}
+        </p>
+        <h3 className="mt-1 font-display text-2xl leading-tight text-foreground md:mt-0 md:text-4xl">
           <span className="sr-only">Step {index + 1}: </span>
           {step.title}
         </h3>
-        <p className="mt-2 text-base font-semibold leading-relaxed text-muted-foreground">{step.copy}</p>
+        <p
+          className={cn(
+            "mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground md:text-base",
+            left && "md:ml-auto",
+          )}
+        >
+          {step.copy}
+        </p>
       </motion.div>
 
-      {/* Live mini-mock — mounts (and plays) once it's on screen. */}
+      {/* Live product panel — mounts (and plays) once it's on screen. */}
       <div
         ref={mockRef}
         role="img"
         aria-label={step.vignetteLabel}
         className={cn(
-          "relative col-start-2 row-start-2 h-[300px] overflow-hidden rounded-[1.25rem] border-2 border-b-[5px] border-border bg-card md:row-start-1",
+          "card-chunky spotlight relative col-start-2 row-start-2 h-[320px] overflow-hidden md:row-start-1",
           left ? "md:col-start-3" : "md:col-start-1",
         )}
+        style={{ "--spot": `var(--${step.tone})` } as CSSProperties}
       >
-        {mockInView && <V />}
+        {/* Window chrome */}
+        <div className="flex h-9 items-center gap-1.5 border-b border-white/[0.06] bg-white/[0.02] px-3.5">
+          <span className="h-2 w-2 rounded-full bg-white/15" />
+          <span className="h-2 w-2 rounded-full bg-white/15" />
+          <span className="h-2 w-2 rounded-full bg-white/15" />
+          <span className="ml-2 truncate font-mono text-[10.5px] text-muted-foreground">{step.window}</span>
+          <span
+            className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ background: `hsl(var(--${step.tone}))`, boxShadow: `0 0 8px hsl(var(--${step.tone}))` }}
+          />
+        </div>
+        {/* Stage (a wrapper, because .spotlight makes its direct children
+            position:relative): role-tinted corner light + the vignette. */}
+        <div className="h-[calc(100%-2.25rem)]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-28 h-48 w-48 rounded-full blur-3xl"
+            style={{ background: `hsl(var(--${step.tone}) / 0.12)` }}
+          />
+          {mockInView && <V />}
+        </div>
       </div>
     </li>
   );
@@ -215,80 +257,102 @@ function StepRow({ step, index }: { step: Step; index: number }) {
 const pop = (delay: number) => ({
   initial: { opacity: 0, scale: 0.5 },
   animate: { opacity: 1, scale: 1 },
-  transition: { type: "spring" as const, stiffness: 380, damping: 16, delay },
+  transition: { type: "spring" as const, stiffness: 380, damping: 18, delay },
 });
 
 const rise = (delay: number) => ({
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, delay, ease: EASE },
+  transition: { duration: 0.45, delay, ease: EASE },
 });
 
-/** 1 — mini roadmap: domain chips + a trail that draws itself. */
+const CHIP = "rounded-full border px-2.5 py-1 text-xs font-medium";
+
+/** 1 — mini roadmap: domain chips + a trail of orbs that draws itself. */
 function TrailVignette() {
   const nodes = [
-    { x: 84, y: 98, current: true },
-    { x: 178, y: 150 },
-    { x: 108, y: 202 },
-    { x: 196, y: 250 },
+    { x: 84, y: 92, current: true },
+    { x: 178, y: 144 },
+    { x: 108, y: 196 },
+    { x: 196, y: 244 },
   ];
+  const d = nodes
+    .slice(1)
+    .reduce((acc, n, i) => {
+      const p = nodes[i];
+      const my = (p.y + n.y) / 2;
+      return `${acc} C ${p.x} ${my}, ${n.x} ${my}, ${n.x} ${n.y}`;
+    }, `M ${nodes[0].x} ${nodes[0].y}`);
   return (
     <div className="absolute inset-0 p-4">
       <div className="flex gap-1.5 overflow-hidden">
-        {["Cybersecurity", "Web Dev", "AI / ML"].map((d, i) => (
+        {["Cybersecurity", "Web Dev", "AI / ML"].map((label, i) => (
           <motion.span
-            key={d}
+            key={label}
             {...rise(0.1 + i * 0.08)}
             className={cn(
-              "shrink-0 whitespace-nowrap rounded-full border-2 px-2.5 py-1 text-xs font-extrabold",
-              i === 0 ? "border-secondary-bright bg-secondary/10 text-secondary" : "border-border bg-card text-muted-foreground",
+              CHIP,
+              "shrink-0 whitespace-nowrap",
+              i === 0
+                ? "border-secondary/30 bg-secondary/10 text-secondary"
+                : "border-white/10 bg-white/[0.03] text-muted-foreground",
             )}
           >
-            {d}
+            {label}
           </motion.span>
         ))}
       </div>
 
       <svg className="absolute inset-0 h-full w-full" fill="none" aria-hidden>
+        <path d={d} stroke="rgb(255 255 255 / 0.10)" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 7" />
         <motion.path
-          d={nodes.slice(1).reduce((d, n, i) => { const p = nodes[i]; const my = (p.y + n.y) / 2; return `${d} C ${p.x} ${my}, ${n.x} ${my}, ${n.x} ${n.y}`; }, `M ${nodes[0].x} ${nodes[0].y}`)}
-          stroke="hsl(var(--border))"
-          strokeWidth="8"
+          d={d}
+          stroke="hsl(var(--primary))"
+          strokeWidth="2"
           strokeLinecap="round"
-          strokeDasharray="1 16"
+          style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.8))" }}
           initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.2, delay: 0.35, ease: "easeInOut" }}
+          animate={{ pathLength: 0.34 }}
+          transition={{ duration: 1.1, delay: 0.5, ease: EASE }}
         />
       </svg>
 
       {nodes.map((n, i) => (
         <motion.div
           key={i}
-          {...pop(0.4 + i * 0.22)}
+          {...pop(0.35 + i * 0.18)}
           className="absolute"
-          style={{ left: n.x - (n.current ? 28 : 24), top: n.y - (n.current ? 28 : 24) }}
+          style={{ left: n.x - (n.current ? 22 : 18), top: n.y - (n.current ? 22 : 18) }}
         >
+          {n.current && (
+            <motion.span
+              aria-hidden
+              className="absolute inset-0 rounded-full bg-primary/40"
+              animate={{ scale: [1, 1.9], opacity: [0.55, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay: 1 }}
+            />
+          )}
           <span
             className={cn(
-              "flex items-center justify-center rounded-full",
-              n.current ? "h-14 w-14 bg-primary-bright" : "h-12 w-12 bg-muted",
+              "relative flex items-center justify-center rounded-full",
+              n.current
+                ? "h-11 w-11 bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_28px_2px_hsl(var(--primary)/0.6)]"
+                : "h-9 w-9 border border-white/10 bg-card text-muted-foreground",
             )}
-            style={{ boxShadow: `0 5px 0 ${n.current ? "hsl(var(--primary-shade))" : "hsl(var(--border))"}` }}
           >
             {n.current ? (
-              <Star className="h-6 w-6 text-white" fill="currentColor" aria-hidden />
+              <Star className="h-5 w-5" fill="currentColor" aria-hidden />
             ) : (
-              <BookOpen className="h-5 w-5 text-muted-foreground" strokeWidth={2.5} aria-hidden />
+              <BookOpen className="h-4 w-4" strokeWidth={2} aria-hidden />
             )}
           </span>
         </motion.div>
       ))}
 
       <motion.span
-        {...pop(0.75)}
-        className="absolute rounded-xl border-2 border-border bg-card px-2.5 py-1 text-xs font-black uppercase tracking-wide text-primary"
-        style={{ left: nodes[0].x + 36, top: nodes[0].y - 14 }}
+        {...pop(0.8)}
+        className="label-mono absolute rounded-md border border-primary/30 bg-primary/10 px-2 py-1 text-primary"
+        style={{ left: nodes[0].x + 32, top: nodes[0].y - 12 }}
       >
         Start
       </motion.span>
@@ -300,30 +364,33 @@ function TrailVignette() {
 function TutorVignette() {
   return (
     <div className="absolute inset-0 flex flex-col p-4">
-      <div className="flex items-center gap-2.5 border-b-2 border-border pb-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-grape-bright" style={{ boxShadow: "0 3px 0 hsl(var(--grape-shade))" }}>
-          <Bot className="h-5 w-5 text-white" strokeWidth={2.5} aria-hidden />
+      <div className="flex items-center gap-2.5 border-b border-white/[0.06] pb-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-grape/10 text-grape ring-1 ring-grape/25">
+          <Bot className="h-4 w-4" strokeWidth={2} aria-hidden />
         </span>
-        <span className="text-sm font-black text-foreground">AI tutor</span>
-        <span className="ml-auto rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-extrabold text-primary">typing…</span>
+        <span className="text-sm font-semibold text-foreground">AI tutor</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 font-mono text-[11px] text-primary">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))] motion-reduce:animate-none" />
+          streaming
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col justify-end gap-2.5 pt-3">
         <motion.div
           {...rise(0.2)}
-          className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-secondary px-3.5 py-2 text-sm font-bold text-white"
+          className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-secondary px-3.5 py-2 text-sm font-medium text-secondary-foreground"
         >
           Explain the CIA Triad like I&apos;m new to this
         </motion.div>
 
         <motion.div
           {...rise(0.5)}
-          className="max-w-[92%] rounded-2xl rounded-bl-md bg-muted px-3.5 py-2.5 text-sm font-semibold leading-snug text-foreground"
+          className="max-w-[92%] rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.04] px-3.5 py-2.5 text-sm leading-snug text-foreground"
         >
-          Think of a bank vault: only tellers get in <span className="font-extrabold text-grape">(confidentiality)</span>, the
-          ledger can&apos;t be forged <span className="font-extrabold text-grape">(integrity)</span>, and it opens when you need it…
+          Think of a bank vault: only tellers get in <span className="font-semibold text-grape">(confidentiality)</span>, the
+          ledger can&apos;t be forged <span className="font-semibold text-grape">(integrity)</span>, and it opens when you need it…
           <motion.span
-            className="ml-0.5 inline-block h-3.5 w-[3px] translate-y-0.5 rounded-full bg-grape-bright"
+            className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 rounded-full bg-grape shadow-[0_0_6px_hsl(var(--grape))]"
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 0.9, repeat: Infinity }}
           />
@@ -331,7 +398,7 @@ function TutorVignette() {
 
         <motion.div {...rise(0.8)} className="flex gap-1.5">
           {["Give me an analogy", "Quiz me"].map((chip) => (
-            <span key={chip} className="rounded-full border-2 border-border bg-card px-3 py-1 text-xs font-extrabold text-grape">
+            <span key={chip} className={cn(CHIP, "border-white/10 bg-white/[0.03] text-grape")}>
               {chip}
             </span>
           ))}
@@ -351,42 +418,42 @@ function QuizVignette() {
   return (
     <div className="absolute inset-0 flex flex-col p-4">
       <motion.div {...rise(0.1)} className="flex items-center gap-3">
-        <div className="relative h-3.5 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
-            className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-primary-bright"
+            className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
             initial={{ scaleX: 0.4 }}
             animate={{ scaleX: 0.6 }}
             transition={{ delay: 1.1, duration: 0.6, ease: EASE }}
-          >
-            <span className="absolute inset-x-2 top-[3px] h-1 rounded-full bg-white/35" />
-          </motion.div>
+          />
         </div>
-        <span className="text-xs font-black tabular-nums text-muted-foreground">3 / 5</span>
+        <span className="font-mono text-[11px] text-muted-foreground">3 / 5</span>
       </motion.div>
 
-      <motion.p {...rise(0.25)} className="mt-3 text-base font-black text-foreground">
+      <motion.p {...rise(0.25)} className="mt-3.5 text-[15px] font-semibold text-foreground">
         What does the CIA Triad protect?
       </motion.p>
 
-      <div className="mt-2.5 flex flex-col gap-2">
+      <div className="mt-3 flex flex-col gap-2">
         {options.map((o, i) => (
           <motion.div
             key={o.label}
             {...rise(0.4 + i * 0.1)}
             className={cn(
-              "flex items-center gap-2.5 rounded-xl border-2 border-b-4 px-3 py-2 text-xs font-bold",
-              o.correct ? "border-primary-bright bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground",
+              "flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+              o.correct
+                ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_24px_-8px_hsl(var(--primary)/0.7)]"
+                : "border-white/[0.08] bg-white/[0.02] text-muted-foreground",
             )}
           >
             <span
               className={cn(
-                "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 text-[11px] font-black",
-                o.correct ? "border-primary-bright bg-primary-bright text-white" : "border-border text-muted-foreground",
+                "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border font-mono text-[10px]",
+                o.correct ? "border-primary bg-primary text-primary-foreground" : "border-white/15 text-muted-foreground",
               )}
             >
               {o.correct ? (
-                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.0, type: "spring", stiffness: 500, damping: 14 }}>
-                  <Check className="h-3 w-3" strokeWidth={4} aria-hidden />
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.0, type: "spring", stiffness: 500, damping: 16 }}>
+                  <Check className="h-3 w-3" strokeWidth={3.5} aria-hidden />
                 </motion.span>
               ) : (
                 String.fromCharCode(65 + i)
@@ -398,11 +465,11 @@ function QuizVignette() {
       </div>
 
       <motion.div {...pop(1.3)} className="mt-auto flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-xp/10 px-3 py-1 text-sm font-black text-xp">
-          <Gem className="h-4 w-4 text-xp-bright" fill="currentColor" aria-hidden />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-xp/10 px-3 py-1 font-mono text-xs font-semibold text-xp ring-1 ring-xp/25 shadow-[0_0_20px_-6px_hsl(var(--xp)/0.7)]">
+          <Gem className="h-3.5 w-3.5" fill="currentColor" aria-hidden />
           +25 XP
         </span>
-        <span className="text-sm font-black text-primary">Nice! 5 / 5</span>
+        <span className="text-sm font-semibold text-primary">Correct!</span>
       </motion.div>
     </div>
   );
@@ -416,65 +483,66 @@ function HabitVignette() {
     <div className="absolute inset-0 flex flex-col p-4">
       <motion.div {...rise(0.1)} className="flex items-center gap-3">
         <motion.span
-          animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 0] }}
+          animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-          className="flex h-11 w-11 items-center justify-center rounded-2xl bg-energy-bright"
-          style={{ boxShadow: "0 4px 0 hsl(var(--energy-shade))" }}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-energy/10 text-energy ring-1 ring-energy/30 shadow-[0_0_24px_-4px_hsl(var(--energy)/0.7)]"
         >
-          <Flame className="h-6 w-6 text-white" fill="currentColor" aria-hidden />
+          <Flame className="h-5 w-5" fill="currentColor" aria-hidden />
         </motion.span>
         <div>
-          <div className="text-xl font-black tabular-nums text-energy">5 day streak</div>
-          <div className="text-xs font-bold text-muted-foreground">Longest: 12 days</div>
+          <div className="font-display text-xl tabular-nums text-energy">5 day streak</div>
+          <div className="text-xs text-muted-foreground">Longest: 12 days</div>
         </div>
       </motion.div>
 
       <div className="mt-4 grid grid-cols-7 gap-1.5">
         {days.map((d, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
-            <span className="text-[11px] font-extrabold text-muted-foreground">{d}</span>
+            <span className="font-mono text-[10px] text-muted-foreground">{d}</span>
             <motion.span
               {...pop(0.3 + i * 0.1)}
               className={cn(
-                "flex aspect-square w-full max-w-[2.1rem] items-center justify-center rounded-full",
-                i < lit ? "bg-energy-bright" : "border-2 border-border bg-muted",
+                "flex aspect-square w-full max-w-[2rem] items-center justify-center rounded-full",
+                i < lit
+                  ? "bg-energy/15 text-energy ring-1 ring-energy/40 shadow-[0_0_14px_-3px_hsl(var(--energy)/0.8)]"
+                  : "border border-white/10 bg-white/[0.03]",
               )}
             >
-              {i < lit && <Flame className="h-3.5 w-3.5 text-white" fill="currentColor" aria-hidden />}
+              {i < lit && <Flame className="h-3.5 w-3.5" fill="currentColor" aria-hidden />}
             </motion.span>
           </div>
         ))}
       </div>
 
       <motion.div {...rise(1.0)} className="mt-4">
-        <div className="flex items-center justify-between text-xs font-extrabold">
-          <span className="flex items-center gap-1 text-grape">
-            <Star className="h-3.5 w-3.5 text-grape-bright" fill="currentColor" aria-hidden />
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-1 font-semibold text-grape">
+            <Star className="h-3.5 w-3.5" fill="currentColor" aria-hidden />
             Level 4
           </span>
-          <span className="tabular-nums text-muted-foreground">380 / 520 XP</span>
+          <span className="font-mono text-[11px] text-muted-foreground">380 / 520 XP</span>
         </div>
-        <div className="relative mt-1.5 h-3.5 overflow-hidden rounded-full bg-muted">
+        <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
-            className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-grape-bright"
+            className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-grape shadow-[0_0_12px_hsl(var(--grape)/0.6)]"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 0.73 }}
             transition={{ delay: 1.15, duration: 0.9, ease: EASE }}
-          >
-            <span className="absolute inset-x-2 top-[3px] h-1 rounded-full bg-white/35" />
-          </motion.div>
+          />
         </div>
       </motion.div>
 
       <motion.div
         {...rise(1.5)}
-        className="mt-auto flex items-center justify-between rounded-xl border-2 border-border px-3 py-2"
+        className="mt-auto flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2"
       >
-        <span className="flex items-center gap-2 text-xs font-extrabold text-foreground">
-          <Trophy className="h-4 w-4 text-xp-bright" fill="currentColor" aria-hidden />
+        <span className="flex items-center gap-2 text-xs font-medium text-foreground">
+          <Trophy className="h-4 w-4 text-xp" aria-hidden />
           Weekly league
         </span>
-        <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-black text-grape">#2 ↑</span>
+        <span className="rounded-full bg-grape/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-grape ring-1 ring-grape/25">
+          #2 ↑
+        </span>
       </motion.div>
     </div>
   );
@@ -489,15 +557,23 @@ function AnalyticsVignette() {
     const h = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
     return h < 0.3 ? 0 : h < 0.5 ? 1 : h < 0.7 ? 2 : h < 0.88 ? 3 : 4;
   };
-  const CELL_BG = ["bg-muted", "bg-primary-bright/25", "bg-primary-bright/50", "bg-primary-bright/75", "bg-primary-bright"];
+  const CELL_BG = [
+    "bg-white/[0.05]",
+    "bg-primary/20",
+    "bg-primary/40",
+    "bg-primary/70",
+    "bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.7)]",
+  ];
   return (
     <div className="absolute inset-0 flex flex-col p-4">
       <motion.div {...rise(0.1)} className="flex items-center justify-between">
-        <span className="text-sm font-black text-foreground">Last 90 days</span>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">All domains</span>
+        <span className="text-sm font-semibold text-foreground">Last 90 days</span>
+        <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] text-muted-foreground">
+          All domains
+        </span>
       </motion.div>
 
-      <div className="mt-2.5 grid gap-1" style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}>
+      <div className="mt-3 grid gap-1" style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}>
         {Array.from({ length: COLS * ROWS }, (_, i) => {
           const col = i % COLS;
           const row = Math.floor(i / COLS);
@@ -507,7 +583,7 @@ function AnalyticsVignette() {
               initial={{ opacity: 0, scale: 0.4 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.25 + col * 0.045 + row * 0.012, ease: EASE }}
-              className={cn("h-[18px] w-full rounded-[4px]", CELL_BG[level(col * ROWS + row)])}
+              className={cn("h-[15px] w-full rounded-[3px]", CELL_BG[level(col * ROWS + row)])}
             />
           );
         })}
@@ -517,10 +593,11 @@ function AnalyticsVignette() {
         <svg viewBox="0 0 320 40" preserveAspectRatio="none" className="h-full w-full" fill="none" aria-hidden>
           <motion.path
             d="M 4 34 C 40 32, 60 26, 92 27 S 150 16, 184 18 S 250 8, 316 5"
-            stroke="hsl(var(--secondary-bright))"
-            strokeWidth="4"
+            stroke="hsl(var(--secondary))"
+            strokeWidth="2.5"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
+            style={{ filter: "drop-shadow(0 0 5px hsl(var(--secondary) / 0.8))" }}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 1.0, delay: 1.0, ease: "easeInOut" }}
@@ -528,22 +605,22 @@ function AnalyticsVignette() {
         </svg>
         <motion.span
           {...pop(1.8)}
-          className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-extrabold text-secondary"
+          className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full bg-secondary/10 px-2.5 py-0.5 text-[11px] font-semibold text-secondary ring-1 ring-secondary/25"
         >
-          <TrendingUp className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+          <TrendingUp className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
           Scores up 12%
         </motion.span>
       </motion.div>
 
       <motion.div
         {...rise(2.0)}
-        className="mt-auto flex items-center justify-between gap-2 rounded-xl border-2 border-destructive-bright/40 bg-destructive/5 px-3 py-2"
+        className="mt-auto flex items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2"
       >
-        <span className="flex min-w-0 items-center gap-2 text-xs font-extrabold text-destructive-text">
-          <TrendingDown className="h-4 w-4 shrink-0" strokeWidth={3} aria-hidden />
+        <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-destructive-text">
+          <TrendingDown className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden />
           <span className="truncate">Weak area: SQL injection</span>
         </span>
-        <span className="shrink-0 text-xs font-black text-destructive-text">Review</span>
+        <span className="shrink-0 text-xs font-semibold text-destructive-text">Review</span>
       </motion.div>
     </div>
   );

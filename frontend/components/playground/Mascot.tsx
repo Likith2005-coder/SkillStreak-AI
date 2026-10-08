@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The SignalBot as a character: an idle bob, an occasional blink-hop, and a
+ * The SignalBot as a character: an idle bob over a soft glow, and a sleek
  * speech bubble that says something about where the learner actually is.
  * Built on the static SVG bot so it costs nothing to render anywhere.
  */
@@ -26,23 +26,29 @@ export function Mascot({
   const reduce = useReducedMotionSafe();
   return (
     <div className={cn("flex items-end gap-3", side === "left" && "flex-row-reverse", className)}>
-      <motion.div
-        aria-hidden
-        style={{ width: size, height: size }}
-        animate={reduce ? undefined : { y: [0, -6, 0] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-        className="shrink-0"
-      >
-        <SignalBotStatic className="h-full w-full" />
-      </motion.div>
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
+        {/* soft light pool under the bot */}
+        <span
+          aria-hidden
+          className="absolute inset-x-[10%] bottom-0 h-1/3 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-3)/0.35),transparent)] blur-md"
+        />
+        <motion.div
+          aria-hidden
+          animate={reduce ? undefined : { y: [0, -6, 0] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          className="relative h-full w-full"
+        >
+          <SignalBotStatic className="h-full w-full" />
+        </motion.div>
+      </div>
       {message && (
         <motion.div
           key={message}
-          initial={{ opacity: 0, scale: 0.85, y: 6 }}
+          initial={reduce ? false : { opacity: 0, scale: 0.9, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "relative mb-6 max-w-[15rem] rounded-2xl border-2 border-border bg-card px-4 py-3 text-sm font-bold text-foreground",
+            "relative mb-6 max-w-[15rem] rounded-xl border border-white/10 bg-card/90 px-4 py-3 text-sm leading-snug text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_16px_40px_-16px_rgb(0_0_0/0.8)] backdrop-blur-sm",
             side === "right" ? "origin-bottom-left" : "origin-bottom-right",
           )}
         >
@@ -51,8 +57,8 @@ export function Mascot({
           <span
             aria-hidden
             className={cn(
-              "absolute bottom-3 h-3 w-3 rotate-45 border-border bg-card",
-              side === "right" ? "-left-[7px] border-b-2 border-l-2" : "-right-[7px] border-r-2 border-t-2",
+              "absolute bottom-3 h-2.5 w-2.5 rotate-45 border-white/10 bg-card",
+              side === "right" ? "-left-[6px] border-b border-l" : "-right-[6px] border-r border-t",
             )}
           />
         </motion.div>

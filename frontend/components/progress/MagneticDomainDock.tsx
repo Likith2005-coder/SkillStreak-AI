@@ -2,8 +2,8 @@
 
 /**
  * Magnetic Domain Dock — the per-domain progress grid reimagined as a
- * macOS-dock row, ported from a Framer "MagneticCarousel" and themed to the
- * Playground palette. Each domain is a chunky vertical slat that doubles as a
+ * macOS-dock row, ported from a Framer "MagneticCarousel" and themed to
+ * Midnight. Each domain is a dark hairline slat that doubles as a
  * progress thermometer (the domain colour fills from the bottom as topics are
  * completed). Bars magnify as the cursor nears — the one under the cursor
  * grows most, neighbours taper off by distance (smoothstep falloff). Click
@@ -22,6 +22,7 @@ import { ArrowRight, X } from "lucide-react";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { hexFor, styleFor } from "@/lib/domain-style";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import type { DomainProgressTile } from "@/lib/api";
 
 // Geometry (px) — tuned for 9 bars in a ~1400px container.
@@ -189,18 +190,20 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
               else setOpen(i);
             }}
             className={cn(
-              "group relative cursor-pointer overflow-hidden rounded-[1.25rem] border-2 border-b-[5px] bg-card",
-              isOpen ? "border-border" : "border-border hover:bg-muted/40"
+              "group relative cursor-pointer overflow-hidden rounded-2xl border bg-card shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_12px_32px_-16px_rgb(0_0_0/0.7)]",
+              isOpen ? "border-white/15" : "border-white/[0.08] hover:border-white/20"
             )}
           >
-            {/* thermometer fill — completion rises from the bottom */}
+            {/* thermometer fill — completion rises from the bottom, its
+                surface a glowing line in the domain colour */}
             <div
               aria-hidden
               className="absolute inset-x-0 bottom-0"
               style={{
                 height: `${Math.max(pct, tile.done > 0 ? 6 : 0)}%`,
-                background: `${hex}26`,
-                borderTop: tile.done > 0 ? `4px solid ${hex}` : undefined,
+                background: `linear-gradient(to top, ${hex}10, ${hex}33)`,
+                borderTop: tile.done > 0 ? `2px solid ${hex}` : undefined,
+                boxShadow: tile.done > 0 ? `0 -6px 18px -6px ${hex}` : undefined,
               }}
             />
 
@@ -215,18 +218,19 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
             >
               <div
                 className={cn(
-                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
-                  s.iconBg
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ring-1",
+                  s.iconBg,
+                  s.ring
                 )}
               >
-                <DomainIcon name={tile.icon} className={cn("h-6 w-6", s.text)} />
+                <DomainIcon name={tile.icon} className={cn("h-5 w-5", s.text)} />
               </div>
               {/* name gets the flexible middle and clips before it can ever
                   collide with the % block below */}
               <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
                 <span
                   className={cn(
-                    "whitespace-nowrap text-sm font-black [writing-mode:vertical-rl]",
+                    "whitespace-nowrap text-sm font-semibold [writing-mode:vertical-rl]",
                     s.text
                   )}
                 >
@@ -237,12 +241,12 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                   row, so nothing shifts or overlaps as it fades in */}
               <div className="shrink-0 text-center">
                 <div
-                  className={cn("text-2xl font-black tabular-nums", s.text)}
+                  className={cn("font-display text-2xl tabular-nums", s.text)}
                 >
                   {pct}%
                 </div>
                 <div
-                  className="h-4 text-xs font-bold tabular-nums text-muted-foreground"
+                  className="h-4 font-mono text-[11px] tabular-nums text-muted-foreground"
                   style={{ opacity: f }}
                 >
                   {tile.done}/{tile.total}
@@ -263,8 +267,9 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
-                      "flex h-14 w-14 items-center justify-center rounded-2xl",
-                      s.iconBg
+                      "flex h-14 w-14 items-center justify-center rounded-xl ring-1",
+                      s.iconBg,
+                      s.ring
                     )}
                   >
                     <DomainIcon
@@ -273,28 +278,29 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                     />
                   </div>
                   <div>
-                    <div className="text-xl font-black text-foreground">
+                    <div className="font-display text-2xl text-foreground">
                       {tile.name}
                     </div>
-                    <div className="text-sm font-bold text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
                       {tile.done} of {tile.total} topics completed
                     </div>
                   </div>
                 </div>
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-card text-muted-foreground">
-                  <X className="h-4 w-4" strokeWidth={3} />
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted-foreground">
+                  <X className="h-4 w-4" strokeWidth={2} />
                 </span>
               </div>
 
               <div className="flex items-end justify-between">
                 <div>
                   <div
-                    className={cn("font-display text-6xl tabular-nums", s.text)}
+                    className={cn("font-display text-7xl leading-none tabular-nums", s.text)}
+                    style={{ textShadow: `0 0 28px ${hex}80` }}
                   >
                     {pct}%
                   </div>
                   {tile.avgScore !== null && (
-                    <div className="mt-1 inline-flex rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">
+                    <div className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[11px] text-muted-foreground">
                       avg quiz {tile.avgScore}/5
                     </div>
                   )}
@@ -302,10 +308,10 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
                 <Link
                   href={`/domains/${tile.slug}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="focus-ring inline-flex h-12 items-center gap-2 rounded-2xl bg-primary px-5 text-sm font-black uppercase tracking-wide text-primary-foreground transition-[transform,box-shadow] duration-100 [box-shadow:0_4px_0_hsl(var(--primary-shade))] hover:brightness-[1.06] active:translate-y-[4px] active:[box-shadow:none] motion-reduce:transition-none"
+                  className={buttonVariants({ size: "lg" })}
                 >
                   Open roadmap
-                  <ArrowRight className="h-4 w-4" strokeWidth={3} />
+                  <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
                 </Link>
               </div>
             </div>

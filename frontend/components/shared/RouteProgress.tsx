@@ -60,8 +60,8 @@ export function RouteProgress() {
 
   return (
     <motion.div
-      // Juicy progress bar: brand-green fill with a gloss strip, no glow.
-      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-1.5 origin-left rounded-r-full bg-primary-bright"
+      // A thin glowing volt line, brightest at its leading edge.
+      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[2px] origin-left bg-[linear-gradient(90deg,hsl(var(--aurora-2)/0.6),hsl(var(--aurora-3))_60%,hsl(var(--primary)))] shadow-[0_0_12px_1px_hsl(var(--primary)/0.65)]"
       initial={false}
       animate={target}
       transition={{
@@ -74,7 +74,7 @@ export function RouteProgress() {
         opacity: { duration: 0.2 },
       }}
     >
-      <span className="absolute inset-x-2 top-[2px] h-0.5 rounded-full bg-white/40" />
+      <span className="absolute -top-px right-0 h-1 w-24 rounded-full bg-primary/70 blur-[3px]" />
     </motion.div>
   );
 }

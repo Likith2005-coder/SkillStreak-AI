@@ -84,17 +84,17 @@ const CATEGORY_ICON: Record<InterviewQuestion["category"], React.ReactNode> = {
 };
 
 const DIFFICULTY_PILL: Record<InterviewQuestion["difficulty"], string> = {
-  easy: "bg-primary/10 text-primary",
-  medium: "bg-xp/10 text-xp",
-  hard: "bg-destructive/10 text-destructive-text",
+  easy: "border border-primary/25 bg-primary/10 text-primary",
+  medium: "border border-xp/25 bg-xp/10 text-xp",
+  hard: "border border-destructive/25 bg-destructive/10 text-destructive-text",
 };
 
-// Light-theme reading styles for the AI's markdown answers. Code blocks stay
-// dark (like ShikiCodeBlock) inside a chunky rounded frame.
+// Dark reading styles for the AI's markdown answers: softened body copy,
+// volt list markers, code in a deeper well with a hairline edge.
 const PROSE =
-  "prose prose-slate prose-sm max-w-none prose-headings:font-black prose-headings:text-foreground prose-p:font-medium prose-p:leading-relaxed prose-p:text-foreground prose-li:font-medium prose-li:text-foreground prose-li:marker:text-primary-bright prose-strong:font-extrabold prose-strong:text-foreground prose-a:font-bold prose-a:text-secondary prose-pre:rounded-2xl prose-pre:border-2 prose-pre:border-b-[5px] prose-pre:border-[#1c2128] prose-pre:bg-[#22272e] prose-pre:text-slate-200 prose-code:rounded-md prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:font-semibold prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-slate-200";
+  "prose prose-invert prose-sm max-w-none prose-headings:font-semibold prose-headings:text-foreground prose-p:leading-relaxed prose-p:text-foreground/85 prose-li:text-foreground/85 prose-li:marker:text-primary prose-strong:font-semibold prose-strong:text-foreground prose-a:font-medium prose-a:text-secondary prose-pre:rounded-xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-[#0b0d12] prose-pre:text-slate-200 prose-code:rounded-md prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:font-medium prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-slate-200";
 
-const LABEL = "text-sm font-black text-foreground";
+const LABEL = "text-sm font-semibold text-foreground";
 
 // Stable id for a question — used both as React key and as the localStorage
 // review key. Same q + same category should produce the same id.
@@ -149,16 +149,15 @@ export default function InterviewPrepPage() {
         <div className="card-chunky mx-auto mt-6 flex max-w-xl flex-col items-center p-8 text-center">
           <span
             aria-hidden
-            className="flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl bg-muted"
-            style={{ boxShadow: "0 5px 0 hsl(var(--border))" }}
+            className="flex h-16 w-16 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]"
           >
-            <Lock className="h-8 w-8 text-muted-foreground" strokeWidth={2.6} />
+            <Lock className="h-8 w-8 text-muted-foreground" strokeWidth={2.2} />
           </span>
           <h1 className="mt-5 font-display text-2xl text-foreground">Interview prep unlocks at the end of the trail.</h1>
-          <p className="mt-2 max-w-sm text-base font-semibold text-muted-foreground">
+          <p className="mt-2 max-w-sm text-base text-muted-foreground">
             Complete every topic in this domain to unlock questions, system design, behavioral templates and a 7-day cram plan.
           </p>
-          <Button asChild size="lg" className="mt-6 uppercase">
+          <Button asChild size="lg" className="mt-6">
             <Link href={`/domains/${slug ?? ""}`}>Back to the roadmap</Link>
           </Button>
         </div>
@@ -171,22 +170,22 @@ export default function InterviewPrepPage() {
     return (
       <main className="container px-4 py-8">
         <BackLink slug={slug ?? ""} />
-        <div className="mt-4 rounded-2xl border-2 border-destructive/30 bg-destructive/10 p-5">
+        <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 p-5">
           <div className="flex items-start gap-3">
             <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive-text" />
             <div className="flex-1">
-              <p className="font-extrabold text-destructive-text">
+              <p className="font-medium text-destructive-text">
                 {isTimeout
                   ? "The AI took longer than expected on the first generation."
                   : "Couldn't load interview prep."}
               </p>
-              <p className="mt-1 text-sm font-semibold text-destructive-text">
+              <p className="mt-1 text-sm text-destructive-text">
                 {isTimeout
                   ? "Cold-cache generation can spike to 30-60s on a busy day. Try again — most retries return a cached copy in under a second."
                   : error}
               </p>
               <Button variant="outline" className="mt-3" onClick={() => setReloadKey((k) => k + 1)}>
-                <RotateCcw className="h-4 w-4" strokeWidth={3} />
+                <RotateCcw className="h-4 w-4" strokeWidth={2.4} />
                 Try again
               </Button>
             </div>
@@ -201,7 +200,7 @@ export default function InterviewPrepPage() {
       <main className="container flex min-h-[60vh] items-center justify-center px-4 py-10" role="status">
         <div className="flex flex-col items-center gap-4 text-center">
           <Mascot message="Composing your interview prep…" size={104} />
-          <p className="text-sm font-semibold text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             First load takes ~15 seconds. After that it’s instant.
           </p>
         </div>
@@ -277,27 +276,27 @@ function InterviewBody({
           <ul className="space-y-3 text-sm">
             {prep.pillars.map((p, i) => (
               <li key={i}>
-                <div className="font-black text-foreground">{p.title}</div>
-                <p className="mt-0.5 text-sm font-semibold text-muted-foreground">{p.oneLiner}</p>
+                <div className="font-semibold text-foreground">{p.title}</div>
+                <p className="mt-0.5 text-sm text-muted-foreground">{p.oneLiner}</p>
               </li>
             ))}
           </ul>
         </Card>
         <Card icon={CircleAlert} tone="bg-destructive-bright" edge="hsl(var(--destructive-shade))" title="Common pitfalls">
-          <ul className="space-y-2.5 text-sm font-semibold text-foreground">
+          <ul className="space-y-2.5 text-sm text-foreground/90">
             {prep.pitfalls.map((s, i) => (
               <li key={i} className="flex gap-2">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-destructive-bright" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive shadow-[0_0_8px_hsl(var(--destructive)/0.8)]" />
                 <span>{s}</span>
               </li>
             ))}
           </ul>
         </Card>
         <Card icon={Award} tone="bg-xp-bright" edge="hsl(var(--xp-shade))" title="Differentiators">
-          <ul className="space-y-2.5 text-sm font-semibold text-foreground">
+          <ul className="space-y-2.5 text-sm text-foreground/90">
             {prep.differentiators.map((s, i) => (
               <li key={i} className="flex gap-2">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-xp-bright" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-xp shadow-[0_0_8px_hsl(var(--xp)/0.8)]" />
                 <span>{s}</span>
               </li>
             ))}
@@ -341,14 +340,11 @@ function InterviewBody({
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           {prep.weekPlan.map((d) => (
             <div key={d.day} className="card-chunky p-4">
-              <span
-                className="inline-block rounded-lg bg-secondary px-2.5 py-0.5 text-xs font-black text-secondary-foreground"
-                style={{ boxShadow: "0 2px 0 hsl(var(--secondary-shade))" }}
-              >
+              <span className="inline-block rounded-full border border-secondary/25 bg-secondary/10 px-2.5 py-0.5 font-mono text-xs font-medium text-secondary">
                 Day {d.day}
               </span>
-              <div className="mt-2 text-sm font-black leading-snug text-foreground">{d.focus}</div>
-              <p className="mt-1 text-sm font-semibold text-muted-foreground">{d.deliverable}</p>
+              <div className="mt-2 text-sm font-semibold leading-snug text-foreground">{d.focus}</div>
+              <p className="mt-1 text-sm text-muted-foreground">{d.deliverable}</p>
             </div>
           ))}
         </div>
@@ -369,12 +365,12 @@ function InterviewBody({
                 href={r.url ?? "#"}
                 target={r.url ? "_blank" : undefined}
                 rel="noreferrer"
-                className="card-chunky card-press focus-ring flex h-full flex-col items-start p-4 transition-colors hover:bg-muted/40"
+                className="card-chunky card-press spotlight focus-ring flex h-full flex-col items-start p-4"
               >
-                <span className="rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-extrabold capitalize text-secondary">
+                <span className="rounded-full border border-secondary/25 bg-secondary/10 px-2.5 py-0.5 text-xs font-medium capitalize text-secondary">
                   {r.type}
                 </span>
-                <span className="mt-2 text-sm font-bold text-foreground">{r.title}</span>
+                <span className="mt-2 text-sm font-semibold text-foreground">{r.title}</span>
               </a>
             </li>
           ))}
@@ -413,56 +409,49 @@ function Hero({
   onPractice: () => void;
 }) {
   const reduce = useReducedMotionSafe();
-  const shade = "hsl(var(--grape-shade))";
   return (
     <motion.header
       initial={reduce ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-2 rounded-[1.5rem] bg-grape p-6 text-white sm:p-8"
-      style={{ boxShadow: `0 6px 0 ${shade}` }}
+      className="card-chunky relative mt-2"
     >
-      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+        <div className="absolute -left-24 -top-40 h-[380px] w-[600px] rounded-full bg-grape/20 blur-[80px]" />
+        <div className="absolute -top-32 right-[-8%] h-[300px] w-[380px] rounded-full bg-aurora-2/15 blur-[90px]" />
+        <div className="grid-faint absolute inset-0" />
+      </div>
+      <div className="relative flex flex-col gap-6 p-6 sm:p-9 md:flex-row md:items-start">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white"
-              style={{ background: shade }}
-            >
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">
               <Briefcase className="h-3.5 w-3.5" aria-hidden />
               Interview prep · {prep.domainName}
             </span>
             {adminOverride && (
-              <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-extrabold text-grape">Admin override</span>
+              <span className="rounded-full border border-xp/25 bg-xp/10 px-2.5 py-0.5 text-xs font-medium text-xp">Admin override</span>
             )}
           </div>
-          <h1 className="mt-3 font-display text-3xl leading-tight sm:text-4xl md:text-5xl [text-wrap:balance]">
-            Walk in like you’ve done this 10 times.
+          <h1 className="mt-4 font-display text-[clamp(2.2rem,5.5vw,4.25rem)] leading-[0.98] text-foreground [text-wrap:balance]">
+            Walk in like you’ve done this{" "}
+            <span className="font-serif-accent text-glow text-primary">10 times.</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-base font-semibold text-white">
+          <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-muted-foreground">
             15 questions, 2 system-design scenarios, behavioral STAR templates, and a
             7-day cram plan — calibrated to your level. Mark each question as you go.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={onPractice}
-              className="focus-ring inline-flex h-14 items-center gap-2 rounded-2xl bg-white px-7 text-base font-black uppercase tracking-wide text-grape transition-[transform,box-shadow] duration-100 active:translate-y-[5px] active:[box-shadow:none] motion-reduce:transition-none"
-              style={{ boxShadow: `0 5px 0 ${shade}` }}
-            >
-              <Play className="h-5 w-5 fill-current" />
+            <Button size="lg" onClick={onPractice}>
+              <Play className="h-4 w-4 fill-current" />
               Start practice
-            </button>
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold capitalize"
-              style={{ background: shade }}
-            >
+            </Button>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium capitalize text-foreground">
               <Sparkles className="h-3.5 w-3.5" aria-hidden />
               Level: {prep.level}
             </span>
             {cached && (
-              <span className="rounded-full px-3 py-1 text-xs font-extrabold" style={{ background: shade }}>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-muted-foreground">
                 Saved copy
               </span>
             )}
@@ -470,13 +459,13 @@ function Hero({
         </div>
 
         {/* Progress */}
-        <div className="w-full rounded-2xl bg-white p-4 text-foreground md:w-72" style={{ boxShadow: `0 4px 0 ${shade}` }}>
+        <div className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-foreground md:w-72">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-sm font-black">Your progress</span>
-            <span className="font-display text-lg tabular-nums text-grape">{progress.pct}%</span>
+            <span className="label-mono text-muted-foreground">Your progress</span>
+            <span className="font-display text-3xl tabular-nums text-primary text-glow">{progress.pct}%</span>
           </div>
           <div
-            className="mt-2 h-4 overflow-hidden rounded-full bg-muted"
+            className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"
             role="progressbar"
             aria-valuenow={progress.pct}
             aria-valuemin={0}
@@ -484,19 +473,17 @@ function Hero({
             aria-label={`${progress.reviewed} of ${progress.total} questions reviewed`}
           >
             <div
-              className="relative h-full rounded-full bg-primary-bright transition-[width] duration-500 motion-reduce:transition-none"
-              style={{ width: `${progress.pct === 0 ? 0 : Math.max(progress.pct, 6)}%` }}
-            >
-              <span className="absolute inset-x-2 top-[3px] h-1.5 rounded-full bg-white/35" />
-            </div>
+              className="h-full rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)] transition-[width] duration-500 motion-reduce:transition-none"
+              style={{ width: `${progress.pct === 0 ? 0 : Math.max(progress.pct, 4)}%` }}
+            />
           </div>
-          <p className="mt-2 text-sm font-bold text-muted-foreground">
+          <p className="mt-2 text-sm text-muted-foreground">
             {progress.reviewed} / {progress.total} reviewed
           </p>
-          <div className="mt-2 flex flex-wrap gap-1.5 text-xs font-extrabold">
-            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-primary">Got it · {progress.gotIt}</span>
-            <span className="rounded-full bg-destructive/10 px-2.5 py-0.5 text-destructive-text">Need work · {progress.needWork}</span>
-            <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
+          <div className="mt-2 flex flex-wrap gap-1.5 text-xs font-medium">
+            <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-primary">Got it · {progress.gotIt}</span>
+            <span className="rounded-full border border-destructive/25 bg-destructive/10 px-2.5 py-0.5 text-destructive-text">Need work · {progress.needWork}</span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-muted-foreground">
               Untouched · {progress.total - progress.reviewed}
             </span>
           </div>
@@ -555,7 +542,7 @@ function QuestionsSection({
       />
 
       {/* Sticky from sm up only: on a phone the wrapped chips would eat the screen. */}
-      <div className="mt-5 rounded-2xl border-2 border-border bg-background px-3 py-3 sm:sticky sm:top-14 sm:z-20">
+      <div className="mt-5 rounded-xl border border-white/10 bg-background/85 px-3 py-3 backdrop-blur-md sm:sticky sm:top-16 sm:z-20">
         <div className="flex flex-wrap items-center gap-2">
           <FilterChip active={cat === "all"} onClick={() => setCat("all")}>
             All
@@ -566,13 +553,13 @@ function QuestionsSection({
               {CATEGORY_LABEL[c]}
             </FilterChip>
           ))}
-          <span aria-hidden className="mx-1 hidden h-6 w-0.5 self-center rounded bg-border sm:block" />
+          <span aria-hidden className="mx-1 hidden h-6 w-px self-center bg-white/10 sm:block" />
           {(["all", "easy", "medium", "hard"] as const).map((d) => (
             <FilterChip key={d} active={dif === d} onClick={() => setDif(d)}>
               <span className="capitalize">{d === "all" ? "Any level" : d}</span>
             </FilterChip>
           ))}
-          <span aria-hidden className="mx-1 hidden h-6 w-0.5 self-center rounded bg-border sm:block" />
+          <span aria-hidden className="mx-1 hidden h-6 w-px self-center bg-white/10 sm:block" />
 
           <FilterChip active={hideReviewed} onClick={() => setHideReviewed((v) => !v)}>
             {hideReviewed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -581,7 +568,7 @@ function QuestionsSection({
 
           <div className="flex w-full flex-wrap items-center gap-2 lg:ml-auto lg:w-auto">
             <Button variant="outline" size="sm" onClick={onShuffle} title="Shuffle order">
-              <Shuffle className="h-3.5 w-3.5" strokeWidth={3} />
+              <Shuffle className="h-3.5 w-3.5" strokeWidth={2.4} />
               {shuffled ? "Original order" : "Shuffle"}
             </Button>
             <Button size="sm" onClick={onPractice}>
@@ -597,7 +584,7 @@ function QuestionsSection({
               }}
               title="Clear all review marks"
             >
-              <RotateCcw className="h-3.5 w-3.5" strokeWidth={3} />
+              <RotateCcw className="h-3.5 w-3.5" strokeWidth={2.4} />
               Reset
             </Button>
           </div>
@@ -606,7 +593,7 @@ function QuestionsSection({
 
       <ul className="mt-5 space-y-3">
         {filtered.length === 0 ? (
-          <li className="rounded-2xl border-2 border-dashed border-border px-4 py-8 text-center text-sm font-semibold text-muted-foreground">
+          <li className="rounded-xl border border-dashed border-white/10 px-4 py-8 text-center text-sm text-muted-foreground">
             Nothing matches those filters.
           </li>
         ) : (
@@ -629,21 +616,21 @@ function QuestionsSection({
 function QuestionPills({ q, review }: { q: InterviewQuestion; review?: ReviewState }) {
   return (
     <>
-      <span className={cn("inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-extrabold capitalize", DIFFICULTY_PILL[q.difficulty])}>
+      <span className={cn("inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize", DIFFICULTY_PILL[q.difficulty])}>
         {q.difficulty}
       </span>
-      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">
+      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
         {CATEGORY_ICON[q.category]}
         {CATEGORY_LABEL[q.category]}
       </span>
       {review && (
         <span
           className={cn(
-            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white",
-            review === "got-it" ? "bg-primary" : "bg-destructive"
+            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+            review === "got-it" ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"
           )}
         >
-          {review === "got-it" ? <Check className="h-3 w-3" strokeWidth={4} /> : <CircleAlert className="h-3 w-3" />}
+          {review === "got-it" ? <Check className="h-3 w-3" strokeWidth={3} /> : <CircleAlert className="h-3 w-3" />}
           {review === "got-it" ? "Got it" : "Need work"}
         </span>
       )}
@@ -655,7 +642,7 @@ function AnswerBody({ q }: { q: InterviewQuestion }) {
   return (
     <>
       <div className={LABEL}>What they’re really probing</div>
-      <p className="mt-1 text-sm font-semibold text-muted-foreground">{q.whyAsked}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{q.whyAsked}</p>
 
       <div className={cn(LABEL, "mt-5")}>Model answer</div>
       <div className={cn(PROSE, "mt-1")}>
@@ -687,8 +674,8 @@ function ReviewButtons({
   showKeys?: boolean;
 }) {
   const base =
-    "focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-2xl border-2 border-b-4 px-4 text-sm font-extrabold transition-[transform,border-width] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none";
-  const kbd = "ml-1 hidden rounded-md border-2 border-current px-1 text-[10px] opacity-70 sm:inline";
+    "focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-4 text-sm font-medium transition-[transform,background-color,box-shadow] duration-200 active:scale-[0.97] motion-reduce:transition-none";
+  const kbd = "ml-1 hidden rounded-md border border-current px-1 text-[10px] opacity-70 sm:inline";
   return (
     <>
       <button
@@ -698,8 +685,8 @@ function ReviewButtons({
         className={cn(
           base,
           review === "got-it"
-            ? "border-primary-shade bg-primary text-primary-foreground"
-            : "border-border bg-card text-primary hover:bg-muted"
+            ? "border-primary bg-primary text-primary-foreground shadow-[0_0_24px_-6px_hsl(var(--primary)/0.8)]"
+            : "border-primary/25 bg-primary/[0.06] text-primary hover:bg-primary/10"
         )}
       >
         <Check className="h-4 w-4" strokeWidth={3.5} />
@@ -713,11 +700,11 @@ function ReviewButtons({
         className={cn(
           base,
           review === "need-work"
-            ? "border-destructive-shade bg-destructive text-destructive-foreground"
-            : "border-border bg-card text-destructive-text hover:bg-muted"
+            ? "border-destructive bg-destructive text-destructive-foreground shadow-[0_0_24px_-6px_hsl(var(--destructive)/0.8)]"
+            : "border-destructive/25 bg-destructive/[0.06] text-destructive-text hover:bg-destructive/10"
         )}
       >
-        <CircleAlert className="h-4 w-4" strokeWidth={3} />
+        <CircleAlert className="h-4 w-4" strokeWidth={2.4} />
         Need work
         {showKeys && <kbd className={kbd}>2</kbd>}
       </button>
@@ -737,9 +724,9 @@ function QuestionItem({
   const [open, setOpen] = useState(false);
   const tone =
     review === "got-it"
-      ? "border-primary-bright/60"
+      ? "!border-primary/40"
       : review === "need-work"
-        ? "border-destructive-bright/60"
+        ? "!border-destructive/40"
         : "";
 
   return (
@@ -748,20 +735,20 @@ function QuestionItem({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="focus-ring flex w-full items-start gap-3 rounded-[1.1rem] px-4 py-4 text-left hover:bg-muted/40"
+        className="focus-ring flex w-full items-start gap-3 rounded-[1.1rem] px-4 py-4 text-left transition-colors hover:bg-white/[0.03]"
       >
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap gap-1.5">
             <QuestionPills q={q} review={review} />
           </span>
-          <span className="mt-2 block text-base font-bold leading-snug text-foreground">{q.q}</span>
+          <span className="mt-2 block text-base font-semibold leading-snug text-foreground">{q.q}</span>
         </span>
         <ChevronDown
           className={cn(
             "mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none",
             open && "rotate-180"
           )}
-          strokeWidth={3}
+          strokeWidth={2.4}
         />
       </button>
       {open && (
@@ -769,12 +756,12 @@ function QuestionItem({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ duration: 0.2 }}
-          className="border-t-2 border-border px-4 pb-4 pt-4"
+          className="border-t border-white/[0.06] px-4 pb-4 pt-4"
         >
           <AnswerBody q={q} />
 
-          <div className="mt-5 flex flex-wrap items-center gap-2 border-t-2 border-border pt-4">
-            <span className="mr-1 text-sm font-black text-foreground">How did you do?</span>
+          <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-4">
+            <span className="mr-1 text-sm font-semibold text-foreground">How did you do?</span>
             <ReviewButtons review={review} onGot={() => onReview("got-it")} onNeed={() => onReview("need-work")} />
           </div>
         </motion.div>
@@ -853,7 +840,7 @@ function PracticeMode({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-foreground/60 p-3 sm:p-4"
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 p-3 backdrop-blur-sm sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
@@ -864,26 +851,24 @@ function PracticeMode({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 20, opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-[1.5rem] border-2 border-b-[6px] border-border bg-card"
+        className="card-chunky flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden"
       >
-        {/* Top bar: close + juicy lesson-style progress */}
+        {/* Top bar: close + thin glowing lesson progress */}
         <div className="flex items-center gap-3 px-4 py-3 sm:px-5">
           <button
             onClick={onClose}
-            className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
             aria-label="Close practice"
           >
-            <X className="h-6 w-6" strokeWidth={3} />
+            <X className="h-6 w-6" strokeWidth={2.4} />
           </button>
-          <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
             <div
-              className="relative h-full rounded-full bg-primary-bright transition-[width] duration-300 motion-reduce:transition-none"
+              className="h-full rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)] transition-[width] duration-300 motion-reduce:transition-none"
               style={{ width: `${pct}%` }}
-            >
-              <span className="absolute inset-x-2 top-[3px] h-1.5 rounded-full bg-white/35" />
-            </div>
+            />
           </div>
-          <span className="shrink-0 text-sm font-extrabold tabular-nums text-muted-foreground">
+          <span className="shrink-0 font-mono text-xs font-medium tabular-nums text-muted-foreground">
             {idx + 1}/{deck.length}
           </span>
         </div>
@@ -897,14 +882,14 @@ function PracticeMode({
           <h2 className="mt-4 font-display text-2xl leading-snug text-foreground sm:text-3xl">{q.q}</h2>
 
           {!revealed ? (
-            <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-2xl bg-muted px-4 py-10">
+            <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-10">
               <Mascot message="Say your answer out loud first. Then check it!" size={84} />
-              <Button size="lg" onClick={() => setRevealed(true)} className="uppercase">
+              <Button size="lg" onClick={() => setRevealed(true)}>
                 <Eye className="h-5 w-5" />
                 Reveal answer
               </Button>
-              <p className="hidden text-xs font-bold text-muted-foreground sm:block">
-                or press <kbd className="rounded-md border-2 border-border bg-card px-1.5 text-[11px]">Space</kbd>
+              <p className="hidden text-xs text-muted-foreground sm:block">
+                or press <kbd className="rounded-md border border-white/10 bg-white/[0.03] px-1.5 text-[11px]">Space</kbd>
               </p>
             </div>
           ) : (
@@ -920,11 +905,11 @@ function PracticeMode({
         </div>
 
         {/* Footer controls */}
-        <div className="flex flex-wrap items-center gap-2 border-t-2 border-border px-4 py-3 sm:px-5">
+        <div className="flex flex-wrap items-center gap-2 border-t border-white/[0.06] px-4 py-3 sm:px-5">
           <Button variant="outline" size="sm" onClick={prev} disabled={idx === 0} className="h-11">
-            <ChevronLeft className="h-4 w-4" strokeWidth={3} />
+            <ChevronLeft className="h-4 w-4" strokeWidth={2.4} />
             Prev
-            <kbd className="ml-1 hidden rounded-md border-2 border-border px-1 text-[10px] sm:inline">K</kbd>
+            <kbd className="ml-1 hidden rounded-md border border-white/15 px-1 font-mono text-[10px] sm:inline">K</kbd>
           </Button>
 
           <div className="order-last flex w-full justify-center gap-2 sm:order-none sm:w-auto sm:flex-1">
@@ -938,15 +923,15 @@ function PracticeMode({
 
           <div className="ml-auto sm:ml-0">
             {!isLast ? (
-              <Button size="sm" onClick={next} className="h-11 uppercase">
+              <Button size="sm" onClick={next} className="h-11">
                 Next
-                <ChevronRight className="h-4 w-4" strokeWidth={3} />
-                <kbd className="ml-1 hidden rounded-md bg-white/20 px-1 text-[10px] sm:inline">J</kbd>
+                <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
+                <kbd className="ml-1 hidden rounded-md bg-black/15 px-1 font-mono text-[10px] sm:inline">J</kbd>
               </Button>
             ) : (
-              <Button size="sm" onClick={onClose} className="h-11 uppercase">
+              <Button size="sm" onClick={onClose} className="h-11">
                 {allReviewed ? "All reviewed — done" : "Finish"}
-                <ArrowRight className="h-4 w-4" strokeWidth={3} />
+                <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
               </Button>
             )}
           </div>
@@ -964,26 +949,35 @@ function BackLink({ slug }: { slug: string }) {
   return (
     <Link
       href={`/domains/${slug}`}
-      className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
+      className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
-      <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+      <ArrowLeft className="h-4 w-4" strokeWidth={2.4} />
       Roadmap
     </Link>
   );
 }
+
+// Role-tinted icon wells, keyed by the historic fill class each caller passes.
+const TILE_TONES: Record<string, string> = {
+  "bg-grape-bright": "bg-grape/10 text-grape ring-grape/25 shadow-[0_0_24px_-6px_hsl(var(--grape)/0.6)]",
+  "bg-destructive-bright": "bg-destructive/10 text-destructive-text ring-destructive/25 shadow-[0_0_24px_-6px_hsl(var(--destructive)/0.6)]",
+  "bg-xp-bright": "bg-xp/10 text-xp ring-xp/25 shadow-[0_0_24px_-6px_hsl(var(--xp)/0.6)]",
+  "bg-primary-bright": "bg-primary/10 text-primary ring-primary/25 shadow-[0_0_24px_-6px_hsl(var(--primary)/0.6)]",
+  "bg-secondary-bright": "bg-secondary/10 text-secondary ring-secondary/25 shadow-[0_0_24px_-6px_hsl(var(--secondary)/0.6)]",
+};
 
 function IconTile({ icon: Icon, tone, edge, size = "md" }: { icon: LucideIcon; tone: string; edge: string; size?: "sm" | "md" }) {
   return (
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 -rotate-6 items-center justify-center text-white",
+        "flex shrink-0 items-center justify-center ring-1",
         size === "sm" ? "h-9 w-9 rounded-lg" : "h-11 w-11 rounded-xl",
-        tone
+        TILE_TONES[tone] ?? TILE_TONES["bg-grape-bright"]
       )}
-      style={{ boxShadow: `0 ${size === "sm" ? 3 : 4}px 0 ${edge}` }}
+
     >
-      <Icon className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} strokeWidth={2.6} />
+      <Icon className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} strokeWidth={2.2} />
     </span>
   );
 }
@@ -1005,7 +999,7 @@ function Card({
     <div className="card-chunky p-5">
       <div className="flex items-center gap-3">
         <IconTile icon={icon} tone={tone} edge={edge} size="sm" />
-        <h2 className="text-lg font-black text-foreground">{title}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
       </div>
       <div className="mt-4">{children}</div>
     </div>
@@ -1029,8 +1023,8 @@ function SectionHeader({
     <div className="flex items-center gap-3">
       <IconTile icon={icon} tone={tone} edge={edge} />
       <div>
-        <h2 className="font-display text-2xl leading-tight text-foreground">{title}</h2>
-        {subtitle && <p className="text-sm font-semibold text-muted-foreground">{subtitle}</p>}
+        <h2 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">{title}</h2>
+        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </div>
     </div>
   );
@@ -1051,10 +1045,10 @@ function FilterChip({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "focus-ring inline-flex h-10 items-center gap-1.5 rounded-xl border-2 border-b-4 px-3 text-xs font-extrabold transition-[transform,border-width,background-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
+        "focus-ring inline-flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-[background-color,border-color,box-shadow] duration-200 motion-reduce:transition-none",
         active
-          ? "border-secondary-shade bg-secondary text-secondary-foreground"
-          : "border-border bg-card text-foreground hover:bg-muted"
+          ? "border-secondary/60 bg-secondary/15 text-secondary-bright shadow-[0_0_20px_-6px_hsl(var(--secondary)/0.7)]"
+          : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-foreground"
       )}
     >
       {children}
@@ -1069,8 +1063,8 @@ function SystemDesignCard({
 }) {
   return (
     <div className="card-chunky p-5">
-      <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-extrabold text-grape">Scenario</span>
-      <h3 className="mt-2 text-lg font-black leading-snug text-foreground">{item.scenario}</h3>
+      <span className="rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">Scenario</span>
+      <h3 className="mt-2 text-lg font-semibold leading-snug text-foreground">{item.scenario}</h3>
 
       <div className={cn(LABEL, "mt-5")}>Solution outline</div>
       <div className={cn(PROSE, "mt-1")}>
@@ -1078,10 +1072,10 @@ function SystemDesignCard({
       </div>
 
       <div className={cn(LABEL, "mt-5")}>Likely follow-ups</div>
-      <ul className="mt-2 space-y-2 text-sm font-semibold text-foreground">
+      <ul className="mt-2 space-y-2 text-sm text-foreground/90">
         {item.followUps.map((f, i) => (
           <li key={i} className="flex gap-2">
-            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-grape-bright" />
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-grape shadow-[0_0_8px_hsl(var(--grape)/0.8)]" />
             <span>{f}</span>
           </li>
         ))}

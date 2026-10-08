@@ -1,75 +1,55 @@
 "use client";
 
 /**
- * Landing-page dramatic CTA reveal — final design.
+ * The landing page's light moment.
  *
- * Layout (always in this order, top → bottom inside h-[100svh] section):
+ * A full-bleed dark band where an aurora (violet → blue → cyan → volt)
+ * blooms out of the giant "SkillStreak AI" wordmark, with a horizon of light
+ * running under it and the sign-up CTA rising beneath.
  *
- *   ┌─────────────────────────────────────────────┐
- *   │  SkillStreak AI  ← wordmark, always visible │
- *   │  Free forever · Built for students · …      │
- *   │                                             │
- *   │  Sparkles                                   │
- *   │  Start learning, the smart way.             │
- *   │  Subtitle copy                              │
- *   │  [ Get started ] [ I already have account ] │
- *   │  • Free • Students • 60-second signup       │
- *   └─────────────────────────────────────────────┘
+ * Layout (top → bottom, inside a min-h-[100svh] section):
+ *   wordmark (WebGL mesh on desktop, real type below) · tagline
+ *   horizon line
+ *   "Start learning, the smart way." · copy · CTAs · reassurance row
  *
- * Both the wordmark and the CTA are permanently rendered. Scrolling up shows
- * the wordmark just as readily as scrolling down. The burst circle expands
- * BEHIND both, originating from the measured "a" position so it visually
- * emerges from the letter.
+ * Choreography (triggered once by `useInView`, amount 0.55):
+ *   0.00 → 0.80s  Aurora bloom scales 0 → 1 from the measured "a" position.
+ *   0.15 → 0.75s  Wordmark rises in.
+ *   0.45 → 1.35s  Horizon line draws outward from the centre.
+ *   0.70 → 1.20s  CTA block rises in below.
  *
- * Why no scroll-pinning anymore:
- *   The earlier sticky-pinned approach kept producing windows where nothing
- *   was visible (just a gradient with no text), and scroll-up didn't reveal
- *   the wordmark again. Switched to a purely time-based, in-view-triggered
- *   choreography that replays whenever the section re-enters view.
- *
- * Timeline (all triggered by `useInView` with `once: false`):
- *   0.00 → 0.70s  Wordmark fades in from below (translateY 60 → 0).
- *   0.40 → 0.95s  The "a" letter scale-bounces (1 → 1.18 → 1) — the "pop".
- *   0.90 → 1.70s  Burst circle scales 0 → 1.4 from the measured "a" position.
- *   1.30 → 1.85s  CTA fades in BELOW the wordmark.
+ * No scroll pinning: an in-view, time-based reveal can never leave a window
+ * where nothing is visible, and the wordmark stays put once shown.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
-import { Sparkles } from "lucide-react";
 import { HeroCTA } from "./HeroCTA";
 import { MeshText } from "./MeshText";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function BurstSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const aRef = useRef<HTMLSpanElement | null>(null);
   const reduce = useReducedMotion();
 
-  // Trigger only when the section is roughly centred in the viewport, so the
-  // user actually sees the burst happen — not finishes off-screen as they're
-  // still scrolling toward it. `amount: 0.55` ≈ half the section visible;
-  // `once: true` because once the user has seen the reveal we don't want to
-  // replay it every time they scroll back.
   const isInView = useInView(sectionRef, { once: true, amount: 0.55 });
 
   const [origin, setOrigin] = useState({ x: 50, y: 30 });
 
-  // Measure the "a" position relative to the section. Re-measure on resize,
-  // and once after the wordmark has settled so the burst really bursts from
-  // the letter the user can see.
+  // Measure the wordmark centre relative to the section, so the bloom really
+  // grows out of the mark the user can see. Re-measure on resize and once the
+  // wordmark has settled.
   useEffect(() => {
     function measure() {
       if (!aRef.current || !sectionRef.current) return;
       const aRect = aRef.current.getBoundingClientRect();
       const sectionRect = sectionRef.current.getBoundingClientRect();
-      const x =
-        ((aRect.left + aRect.width / 2 - sectionRect.left) / sectionRect.width) *
-        100;
-      const y =
-        ((aRect.top + aRect.height / 2 - sectionRect.top) / sectionRect.height) *
-        100;
+      const x = ((aRect.left + aRect.width / 2 - sectionRect.left) / sectionRect.width) * 100;
+      const y = ((aRect.top + aRect.height / 2 - sectionRect.top) / sectionRect.height) * 100;
       setOrigin({ x, y });
     }
     const t1 = setTimeout(measure, 200);
@@ -86,12 +66,8 @@ export function BurstSection() {
       if (!aRef.current || !sectionRef.current) return;
       const aRect = aRef.current.getBoundingClientRect();
       const sectionRect = sectionRef.current.getBoundingClientRect();
-      const x =
-        ((aRect.left + aRect.width / 2 - sectionRect.left) / sectionRect.width) *
-        100;
-      const y =
-        ((aRect.top + aRect.height / 2 - sectionRect.top) / sectionRect.height) *
-        100;
+      const x = ((aRect.left + aRect.width / 2 - sectionRect.left) / sectionRect.width) * 100;
+      const y = ((aRect.top + aRect.height / 2 - sectionRect.top) / sectionRect.height) * 100;
       setOrigin({ x, y });
     }, 700);
     return () => clearTimeout(t);
@@ -104,114 +80,111 @@ export function BurstSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-primary py-16"
+      className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-background py-20"
     >
-      {/* ── Burst circle — behind everything (z-0). Centre = measured "a".
-          Animates simultaneously with the wordmark so there's never a
-          moment where the wordmark sits alone on a dark background. */}
+      {/* ── Aurora bloom: grows out of the wordmark ───────────────── */}
       <motion.div
-        initial={{ scale: reduced ? 1.4 : 0 }}
-        animate={{ scale: animate ? 1.4 : 0 }}
-        transition={{
-          delay: reduced ? 0 : 0.05,
-          duration: reduced ? 0 : 0.8,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className="pointer-events-none absolute z-0 rounded-full will-change-transform"
+        initial={{ scale: reduced ? 1 : 0, opacity: reduced ? 1 : 0 }}
+        animate={{ scale: animate ? 1 : 0, opacity: animate ? 1 : 0 }}
+        transition={{ delay: reduced ? 0 : 0.05, duration: reduced ? 0 : 1.1, ease: EASE }}
+        className="pointer-events-none absolute -z-10 rounded-full will-change-transform"
         style={{
-          width: "140vmax",
-          height: "140vmax",
-          left: `calc(${origin.x}% - 70vmax)`,
-          top: `calc(${origin.y}% - 70vmax)`,
-          transformOrigin: "center",
+          width: "130vmax",
+          height: "90vmax",
+          left: `calc(${origin.x}% - 65vmax)`,
+          top: `calc(${origin.y}% - 45vmax)`,
           contain: "paint",
-          // A lime burst glowing out of the wordmark across the green band.
-          background:
-            "radial-gradient(circle, hsl(var(--primary-bright) / 0.85) 0%, hsl(var(--primary-bright) / 0.25) 28%, transparent 58%)",
+          background: [
+            "radial-gradient(closest-side, hsl(var(--aurora-4) / 0.30), transparent 34%)",
+            "radial-gradient(closest-side at 38% 46%, hsl(var(--aurora-3) / 0.28), transparent 60%)",
+            "radial-gradient(closest-side at 64% 54%, hsl(var(--aurora-1) / 0.30), transparent 62%)",
+            "radial-gradient(closest-side, hsl(var(--aurora-2) / 0.22), transparent 78%)",
+          ].join(", "),
         }}
         aria-hidden
       />
 
-      {/* ── Foreground stack: wordmark (always visible) + CTA (fades in) ── */}
-      <div className="relative z-10 flex w-full flex-col items-center gap-8 px-4 py-10 text-center sm:gap-10 lg:gap-12">
-        {/* Wordmark — fades in once, stays put forever after */}
+      {/* Slow aurora curtains drifting across the band */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <motion.div
+          className="absolute -left-[10%] top-[8%] h-[55%] w-[55%] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.22),transparent)] blur-3xl"
+          animate={reduced || !animate ? undefined : { x: ["0%", "14%", "0%"], y: ["0%", "6%", "0%"] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -right-[12%] bottom-[4%] h-[60%] w-[55%] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-3)/0.16),transparent)] blur-3xl"
+          animate={reduced || !animate ? undefined : { x: ["0%", "-12%", "0%"], y: ["0%", "-5%", "0%"] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Faint grid, and top/bottom fades so the band has no hard seams */}
+        <div className="grid-faint absolute inset-0 opacity-60" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
+      {/* ── Foreground stack ───────────────────────────────────────── */}
+      <div className="relative z-10 flex w-full flex-col items-center px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 40 }}
-          transition={{
-            delay: reduced ? 0 : 0.15,
-            duration: reduced ? 0 : 0.6,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="flex flex-col items-center"
+          transition={{ delay: reduced ? 0 : 0.15, duration: reduced ? 0 : 0.6, ease: EASE }}
+          className="flex w-full flex-col items-center"
         >
-          <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white drop-shadow">
-            Ready when you are
-          </p>
-          {/* WebGL mesh wordmark — glyphs are a fine mesh the cursor drags
-              through, springing back with a cyan/violet chromatic fringe. The
-              aRef sits on it so the burst glow still emanates from the mark. */}
-          {/* The mesh is a cursor-drag effect: on touch it burns a per-frame
-              96x40 spring simulation to deliver nothing. Below desktop we set
-              the wordmark as real type, which also fixes the 67px-tall
-              wordmark that 18vw produced on a 375px screen. */}
+          <p className="font-serif-accent text-xl text-foreground/90 sm:text-2xl">Ready when you are.</p>
+          {/* WebGL mesh wordmark on desktop: the glyphs are a fine mesh the
+              cursor drags through, springing back with an aurora fringe.
+              Below desktop it is real type (the mesh is a cursor effect). */}
           <span
             ref={aRef}
-            className="block w-full max-w-[1500px] drop-shadow-lg lg:h-[13vw]"
+            className="mt-2 block w-full max-w-[1500px] [filter:drop-shadow(0_0_40px_hsl(var(--aurora-2)/0.35))] lg:h-[13vw]"
           >
             {isDesktop ? (
-              <MeshText text="SkillStreak AI" />
+              <MeshText text="SkillStreak AI" weight={800} />
             ) : (
-              <span className="block font-display text-[clamp(2.25rem,11vw,5rem)] font-bold leading-[1.05] tracking-[-0.03em] text-white [text-wrap:balance]">
+              <span className="block font-display text-[clamp(2.75rem,14vw,5.5rem)] leading-[0.95] text-foreground [text-wrap:balance]">
                 SkillStreak AI
               </span>
             )}
           </span>
-          <p className="mt-3 text-sm text-white sm:text-base">
+          <p className="mt-4 text-[15px] text-muted-foreground sm:text-base">
             Free forever · Built for students · Pick up where you left off
           </p>
         </motion.div>
 
-        {/* CTA — fades in below the wordmark, both visible together */}
+        {/* Horizon of light under the wordmark */}
+        <motion.div
+          aria-hidden
+          initial={{ scaleX: reduced ? 1 : 0, opacity: reduced ? 1 : 0 }}
+          animate={{ scaleX: animate ? 1 : 0, opacity: animate ? 1 : 0 }}
+          transition={{ delay: reduced ? 0 : 0.45, duration: reduced ? 0 : 0.9, ease: EASE }}
+          className="my-10 h-px w-full max-w-4xl bg-[linear-gradient(90deg,transparent,hsl(var(--aurora-1)/0.8)_25%,hsl(var(--aurora-3))_50%,hsl(var(--aurora-4)/0.8)_75%,transparent)] shadow-[0_0_24px_2px_hsl(var(--aurora-3)/0.45)] sm:my-12"
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{
-            opacity: animate ? 1 : 0,
-            y: animate ? 0 : 30,
-          }}
-          transition={{
-            delay: reduced ? 0 : 0.7,
-            duration: reduced ? 0 : 0.5,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="flex w-full max-w-2xl flex-col items-center text-white"
+          animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 30 }}
+          transition={{ delay: reduced ? 0 : 0.7, duration: reduced ? 0 : 0.5, ease: EASE }}
+          className="flex w-full max-w-2xl flex-col items-center"
         >
-          <Sparkles className="h-8 w-8 drop-shadow-lg" />
-          <h3 className="mt-3 font-display text-2xl font-bold tracking-tight drop-shadow-lg sm:text-3xl lg:text-4xl">
-            Start learning, the smart way.
+          <h3 className="font-display text-3xl leading-tight [text-wrap:balance] sm:text-4xl lg:text-5xl">
+            Start learning, the <span className="font-serif-accent text-primary text-glow">smart</span> way.
           </h3>
-          <p className="mt-3 max-w-xl text-sm text-white sm:text-base">
-            Join the platform that adapts to your level, recommends your next
-            move, and keeps you accountable.
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
+            Join the platform that adapts to your level, recommends your next move, and keeps you
+            accountable.
           </p>
 
-          <div className="mt-6">
+          <div className="mt-8 w-full">
             <HeroCTA />
           </div>
 
-          <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white">
-            <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
-              Free forever
-            </li>
-            <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
-              Built for students
-            </li>
-            <li className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-xp-bright" />
-              Sign up in 60 seconds
-            </li>
+          <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            {["Free forever", "Built for students", "Sign up in 60 seconds"].map((t) => (
+              <li key={t} className="inline-flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.9)]" />
+                {t}
+              </li>
+            ))}
           </ul>
         </motion.div>
       </div>

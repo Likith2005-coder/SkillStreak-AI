@@ -121,16 +121,24 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
 
   if (phase === "loading") {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin motion-reduce:animate-none" />
-        <p className="text-sm">Generating a 5-question quiz on {topicTitle}…</p>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-5 text-center" role="status">
+        <span className="relative flex h-14 w-14 items-center justify-center">
+          <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-primary/20 motion-reduce:animate-none" />
+          <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30 shadow-[0_0_32px_-4px_hsl(var(--primary)/0.6)]">
+            <Sparkles className="h-6 w-6" strokeWidth={2} />
+          </span>
+        </span>
+        <div>
+          <p className="font-display text-2xl text-foreground">Writing your quiz</p>
+          <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">5 questions on {topicTitle}, tuned to your level…</p>
+        </div>
       </div>
     );
   }
 
   if (phase === "error" || !quiz) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6">
+      <div className="mx-auto max-w-2xl rounded-xl border border-destructive/30 bg-destructive/10 p-6">
         <p className="text-sm text-destructive-text">{errorMsg ?? "Quiz unavailable."}</p>
         <Button onClick={() => load(true)} variant="outline" className="mt-4">
           Try again
@@ -161,7 +169,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
     <div className="mx-auto max-w-2xl">
       <header className="flex items-center gap-4">
         <div
-          className="h-4 flex-1 overflow-hidden rounded-full bg-muted"
+          className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]"
           role="progressbar"
           aria-valuenow={Math.round(progressPct)}
           aria-valuemin={0}
@@ -169,11 +177,9 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
           aria-label={`Question ${current + 1} of ${total}`}
         >
           <div
-            className="relative h-full rounded-full bg-primary-bright transition-[width] duration-500 ease-out motion-reduce:transition-none"
-            style={{ width: `${Math.max(progressPct, 4)}%` }}
-          >
-            <span className="absolute inset-x-2 top-[3px] h-1.5 rounded-full bg-white/35" />
-          </div>
+            className="h-full rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-[width] duration-500 ease-out motion-reduce:transition-none"
+            style={{ width: `${Math.max(progressPct, 3)}%` }}
+          />
         </div>
         {timerOn && (
           <QuizTimer
@@ -185,18 +191,18 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
         )}
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-extrabold text-grape">
-        <span className="flex items-center gap-1.5">
-          <Sparkles className="h-4 w-4" aria-hidden /> {topicTitle}
+      <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+        <span className="flex min-w-0 items-center gap-1.5 font-medium text-grape">
+          <Sparkles className="h-4 w-4 shrink-0" aria-hidden /> <span className="truncate">{topicTitle}</span>
         </span>
-        <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs uppercase tracking-wider">{quiz.level}</span>
-        <span className="ml-auto text-muted-foreground">
-          {current + 1} / {total}
+        <span className="rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium capitalize text-grape">{quiz.level}</span>
+        <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">
+          {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
         <button
           type="button"
           onClick={() => setTimerOn((v) => !v)}
-          className="focus-ring rounded-md text-xs font-bold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          className="focus-ring inline-flex min-h-9 items-center rounded-md px-1 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
         >
           Timer {timerOn ? "on" : "off"}
         </button>
@@ -217,16 +223,27 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
         </AnimatePresence>
       </div>
 
-      {/* The feedback slab: neutral until checked, then green or red with the
-          explanation and the Continue key, Duolingo-style. */}
+      {/* The feedback slab: quiet until checked, then tinted volt or red with
+          the explanation and the Continue key inside. */}
       <div
         className={cn(
-          "mt-8 rounded-2xl border-2 p-4 transition-colors duration-200 sm:p-5",
+          "relative mt-8 overflow-hidden rounded-xl border p-4 transition-[background-color,border-color,box-shadow] duration-300 sm:p-5",
           !revealed && "border-transparent",
-          revealed && gotIt && "border-primary-bright/40 bg-primary-bright/10",
-          revealed && !gotIt && "border-destructive-bright/40 bg-destructive-bright/10",
+          revealed && gotIt && "border-primary/35 bg-primary/[0.07] shadow-[0_0_48px_-16px_hsl(var(--primary)/0.6)]",
+          revealed && !gotIt && "border-destructive/35 bg-destructive/[0.07] shadow-[0_0_48px_-16px_hsl(var(--destructive)/0.6)]",
         )}
       >
+        {revealed && (
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-x-0 top-0 h-px",
+              gotIt
+                ? "bg-gradient-to-r from-transparent via-primary to-transparent"
+                : "bg-gradient-to-r from-transparent via-destructive to-transparent",
+            )}
+          />
+        )}
         <AnimatePresence initial={false}>
           {revealed && (
             <motion.div
@@ -242,31 +259,41 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 420, damping: 14 }}
                 className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white",
-                  gotIt ? "bg-primary-bright" : "bg-destructive-bright",
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                  gotIt
+                    ? "bg-primary text-primary-foreground shadow-[0_0_24px_-2px_hsl(var(--primary)/0.8)]"
+                    : "bg-destructive text-destructive-foreground shadow-[0_0_24px_-2px_hsl(var(--destructive)/0.8)]",
                 )}
                 aria-hidden
               >
-                {gotIt ? <Check className="h-6 w-6" strokeWidth={4} /> : <X className="h-6 w-6" strokeWidth={4} />}
+                {gotIt ? <Check className="h-5 w-5" strokeWidth={3} /> : <X className="h-5 w-5" strokeWidth={3} />}
               </motion.span>
               <div>
-                <p className={cn("font-display text-xl", gotIt ? "text-primary" : "text-destructive-text")}>
+                <p className={cn("font-display text-2xl", gotIt ? "text-primary text-glow" : "text-destructive-text")}>
                   {gotIt ? PRAISE[current % PRAISE.length] : selected === null ? "Out of time!" : "Not quite."}
                 </p>
                 {!gotIt && q.correctIndex !== undefined && (
-                  <p className="mt-0.5 text-sm font-bold text-destructive-text">
+                  <p className="mt-1 text-sm font-medium text-destructive-text">
                     Correct answer: {q.options[q.correctIndex]}
                   </p>
                 )}
-                {q.explanation && <p className="mt-1.5 text-sm font-semibold text-foreground">{q.explanation}</p>}
+                {q.explanation && <p className="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-foreground/85">{q.explanation}</p>}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="flex items-center justify-between gap-3">
-          <p className="hidden text-xs font-bold text-muted-foreground sm:block">
-            {revealed ? "Press Enter to continue" : "Keys 1-4 to pick, Enter to check"}
+          <p className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
+            {revealed ? (
+              <>
+                Press <Kbd>Enter</Kbd> to continue
+              </>
+            ) : (
+              <>
+                <Kbd>1</Kbd>–<Kbd>4</Kbd> to pick, <Kbd>Enter</Kbd> to check
+              </>
+            )}
           </p>
           {!revealed ? (
             <Button size="lg" className="w-full sm:ml-auto sm:w-44" onClick={() => reveal(selected)} disabled={selected === null}>
@@ -286,7 +313,7 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
                 "See result"
               ) : (
                 <>
-                  Continue <ArrowRight className="h-5 w-5" />
+                  Continue <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
                 </>
               )}
             </Button>
@@ -294,5 +321,13 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-white/15 bg-white/[0.04] px-1 font-mono text-[10px] text-foreground/80">
+      {children}
+    </kbd>
   );
 }

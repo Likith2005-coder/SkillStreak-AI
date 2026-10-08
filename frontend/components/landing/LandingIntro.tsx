@@ -135,7 +135,7 @@ export function LandingIntro() {
       ref={overlayRef}
       aria-hidden
       onPointerDown={startReveal}
-      className="dark landing-intro fixed inset-0 z-[100] cursor-pointer select-none overflow-hidden bg-background"
+      className="landing-intro fixed inset-0 z-[100] cursor-pointer select-none overflow-hidden bg-background"
       initial={{ clipPath: "inset(0 0 0% 0)" }}
       animate={{ clipPath: revealing ? "inset(0 0 100% 0)" : "inset(0 0 0% 0)" }}
       transition={{ duration: 0.9, ease: CURTAIN }}
@@ -148,7 +148,7 @@ export function LandingIntro() {
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(hsl(187 92% 52% / 0.05) 1px, transparent 1px), linear-gradient(90deg, hsl(187 92% 52% / 0.05) 1px, transparent 1px)",
+            "linear-gradient(hsl(var(--aurora-2) / 0.06) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--aurora-2) / 0.06) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }}
         initial={{ opacity: 0 }}
@@ -157,6 +157,11 @@ export function LandingIntro() {
       />
       {/* Vignette — grid strongest at center, dissolving to ink at edges */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_44%,transparent_0%,hsl(var(--background))_80%)]" />
+      {/* Aurora light pooled behind the glyph */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[44%] h-[70vmin] w-[90vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.16),hsl(var(--aurora-2)/0.08)_55%,transparent)] blur-2xl"
+      />
       {/* Film grain, matching the page beneath */}
       <div className="noise-overlay" aria-hidden />
 
@@ -186,7 +191,7 @@ export function LandingIntro() {
           {/* No blur filter here — a filter layer clips the text-shadow
               glow into a visible rectangle. Rise + fade only. */}
           <motion.span
-            className="ml-[0.35em] inline-block text-primary [text-shadow:0_0_16px_hsl(187_92%_52%/0.3)]"
+            className="ml-[0.35em] inline-block text-primary [text-shadow:0_0_22px_hsl(var(--primary)/0.55)]"
             initial={{ y: "115%", opacity: 0 }}
             animate={{ y: "0%", opacity: 1 }}
             transition={{ delay: T.word + WORD.length * 0.028 + 0.05, duration: 0.6, ease: EASE }}
@@ -214,7 +219,7 @@ export function LandingIntro() {
 
       {/* Boot progress hairline */}
       <motion.div
-        className="absolute bottom-0 left-0 h-px bg-primary/80 shadow-[0_0_12px_hsl(187_92%_52%/0.8)]"
+        className="absolute bottom-0 left-0 h-px bg-[linear-gradient(90deg,hsl(var(--aurora-1)),hsl(var(--aurora-3)),hsl(var(--primary)))] shadow-[0_0_12px_hsl(var(--primary)/0.8)]"
         initial={{ width: "0%" }}
         animate={{ width: "100%" }}
         transition={{ duration: T.status + 0.5 + T.holdAfterStatus, ease: "linear" }}
@@ -244,7 +249,7 @@ function BlueprintGlyph() {
     >
       {/* Construction guides — dim to a whisper once the bolt ignites */}
       <motion.g
-        stroke="hsl(187 92% 60% / 0.3)"
+        stroke="hsl(var(--aurora-2) / 0.35)"
         strokeWidth="1"
         initial={{ opacity: 1 }}
         animate={{ opacity: 0.28 }}
@@ -300,7 +305,7 @@ function BlueprintGlyph() {
           cx="360"
           cy="360"
           r="120"
-          stroke="hsl(265 85% 68% / 0.3)"
+          stroke="hsl(var(--aurora-1) / 0.4)"
           strokeDasharray="4 8"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -310,7 +315,7 @@ function BlueprintGlyph() {
         <motion.text
           x="46"
           y="104"
-          fill="hsl(187 92% 60% / 0.5)"
+          fill="hsl(var(--aurora-3) / 0.55)"
           stroke="none"
           fontFamily="ui-monospace, monospace"
           fontSize="15"
@@ -324,7 +329,7 @@ function BlueprintGlyph() {
         <motion.text
           x="470"
           y="632"
-          fill="hsl(187 92% 60% / 0.5)"
+          fill="hsl(var(--aurora-3) / 0.55)"
           stroke="none"
           fontFamily="ui-monospace, monospace"
           fontSize="15"
@@ -339,7 +344,7 @@ function BlueprintGlyph() {
         {VERTICES.map(([x, y], i) => (
           <motion.g
             key={`t${i}`}
-            stroke="hsl(187 92% 65% / 0.8)"
+            stroke="hsl(var(--aurora-3) / 0.85)"
             strokeWidth="1.5"
             initial={{ opacity: 0, scale: 0.4 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -357,7 +362,7 @@ function BlueprintGlyph() {
         cx="360"
         cy="360"
         r="215"
-        stroke="hsl(187 92% 60%)"
+        stroke="hsl(var(--primary))"
         strokeWidth="1.5"
         initial={{ scale: 1, opacity: 0 }}
         animate={{ scale: 1.55, opacity: [0, 0.55, 0] }}
@@ -368,11 +373,11 @@ function BlueprintGlyph() {
       {/* The streak bolt — stroked in, then ignites with a tube flicker */}
       <motion.path
         d={BOLT}
-        stroke="hsl(187 92% 64%)"
+        stroke="hsl(var(--primary-bright))"
         strokeWidth="4"
         strokeLinejoin="round"
-        fill="hsl(187 92% 52%)"
-        style={{ filter: "drop-shadow(0 0 20px hsl(187 92% 52% / 0.75))" }}
+        fill="hsl(var(--primary))"
+        style={{ filter: "drop-shadow(0 0 22px hsl(var(--primary) / 0.75))" }}
         initial={{ pathLength: 0, fillOpacity: 0 }}
         animate={{ pathLength: 1, fillOpacity: [0, 0.95, 0.25, 0.9] }}
         transition={{

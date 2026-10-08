@@ -56,8 +56,14 @@ function ChatbotPage() {
       <div className="hidden md:block">
         <SessionSidebar />
       </div>
-      <div className="flex-1 overflow-hidden">
-        <ChatWindow />
+      <div className="relative flex-1 overflow-hidden">
+        {/* Ambient light: a faint violet pool high in the conversation pane
+            so the empty dark reads as depth, not void. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 left-1/2 h-80 w-[44rem] max-w-[120%] -translate-x-1/2 rounded-full bg-aurora-1/[0.12] blur-3xl" />
+          <div className="grid-faint absolute inset-x-0 top-0 h-96 opacity-60" />
+        </div>
+        <ChatWindow className="relative" />
       </div>
     </main>
   );

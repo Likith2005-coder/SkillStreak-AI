@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * One question, playground style: a big friendly prompt and four chunky
- * answer keys. Picking a key presses it into a blue "selected" state; once
- * the answer is checked the right key turns green and a wrong pick turns red
- * and shakes. Keys 1–4 pick from the keyboard (wired in QuizPlayer).
+ * One question, Midnight style: a big display prompt and four sleek answer
+ * rows. Picking a row lights it blue ("selected"); once the answer is checked
+ * the right row glows volt with a check and a wrong pick turns red and shakes.
+ * Keys 1–4 pick from the keyboard (wired in QuizPlayer).
  */
 
 import { motion } from "framer-motion";
@@ -32,9 +32,9 @@ export function QuestionCard({ index, question, options, selected, revealed, cor
       exit={reduce ? { opacity: 0 } : { opacity: 0, x: -24 }}
       transition={{ duration: reduce ? 0.12 : 0.25, ease: [0.22, 1, 0.36, 1] }}
     >
-      <h2 className="font-display text-2xl text-foreground sm:text-3xl [text-wrap:balance]">{question}</h2>
+      <h2 className="font-display text-[1.5rem] leading-[1.15] text-foreground sm:text-4xl sm:leading-[1.1] [text-wrap:balance]">{question}</h2>
 
-      <div className="mt-7 grid gap-3" role="radiogroup" aria-label="Answers">
+      <div className="mt-8 grid gap-2.5" role="radiogroup" aria-label="Answers">
         {options.map((opt, i) => {
           const isSelected = selected === i;
           const isCorrect = revealed && i === correctIndex;
@@ -53,36 +53,38 @@ export function QuestionCard({ index, question, options, selected, revealed, cor
                 isWrongPick && !reduce
                   ? { x: [0, -10, 10, -7, 7, 0] }
                   : isCorrect && !reduce
-                    ? { scale: [1, 1.03, 1] }
+                    ? { scale: [1, 1.02, 1] }
                     : { x: 0, scale: 1 }
               }
               transition={{ duration: 0.4 }}
               className={cn(
-                "focus-ring group flex w-full items-center gap-4 rounded-2xl border-2 border-b-[5px] px-4 py-3.5 text-left transition-[transform,background-color,border-color] duration-100",
-                !revealed && "active:translate-y-[3px] active:border-b-2",
-                !revealed && !isSelected && "border-border bg-card hover:bg-muted",
-                !revealed && isSelected && "border-secondary-bright bg-secondary-bright/10",
-                isCorrect && "border-primary-bright bg-primary-bright/15",
-                isWrongPick && "border-destructive-bright bg-destructive-bright/10",
-                idle && "border-border bg-card opacity-60",
+                "focus-ring group flex min-h-[60px] w-full items-center gap-4 rounded-xl border px-4 py-3.5 text-left transition-[background-color,border-color,box-shadow,opacity] duration-200",
+                !revealed && !isSelected && "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]",
+                !revealed && isSelected &&
+                  "border-secondary/70 bg-secondary/10 shadow-[0_0_0_1px_hsl(var(--secondary)/0.5),0_0_32px_-8px_hsl(var(--secondary)/0.7)]",
+                isCorrect &&
+                  "border-primary/70 bg-primary/10 shadow-[0_0_0_1px_hsl(var(--primary)/0.5),0_0_36px_-8px_hsl(var(--primary)/0.75)]",
+                isWrongPick &&
+                  "border-destructive/70 bg-destructive/10 shadow-[0_0_0_1px_hsl(var(--destructive)/0.45),0_0_32px_-10px_hsl(var(--destructive)/0.7)]",
+                idle && "border-white/[0.06] bg-white/[0.02] opacity-60",
               )}
             >
               <span
                 className={cn(
-                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 text-sm font-black",
-                  !revealed && !isSelected && "border-border text-muted-foreground",
-                  !revealed && isSelected && "border-secondary-bright text-secondary",
-                  isCorrect && "border-primary-bright bg-primary-bright text-white",
-                  isWrongPick && "border-destructive-bright bg-destructive-bright text-white",
-                  idle && "border-border text-muted-foreground",
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border font-mono text-[13px] font-medium transition-colors duration-200",
+                  !revealed && !isSelected && "border-white/15 text-muted-foreground group-hover:border-white/25 group-hover:text-foreground",
+                  !revealed && isSelected && "border-secondary bg-secondary text-secondary-foreground",
+                  isCorrect && "border-primary bg-primary text-primary-foreground",
+                  isWrongPick && "border-destructive bg-destructive text-destructive-foreground",
+                  idle && "border-white/10 text-muted-foreground",
                 )}
               >
-                {isCorrect ? <Check className="h-4 w-4" strokeWidth={4} /> : isWrongPick ? <X className="h-4 w-4" strokeWidth={4} /> : i + 1}
+                {isCorrect ? <Check className="h-4 w-4" strokeWidth={3} /> : isWrongPick ? <X className="h-4 w-4" strokeWidth={3} /> : i + 1}
               </span>
               <span
                 className={cn(
-                  "text-base font-bold leading-snug",
-                  !revealed && isSelected ? "text-secondary" : isCorrect ? "text-primary" : isWrongPick ? "text-destructive-text" : "text-foreground",
+                  "text-base font-medium leading-snug",
+                  !revealed && isSelected ? "text-secondary-bright" : isCorrect ? "text-primary" : isWrongPick ? "text-destructive-text" : "text-foreground",
                 )}
               >
                 {opt}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { BookOpen, Layers, ListChecks, Trophy } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Stat = {
   icon: typeof BookOpen;
@@ -11,35 +12,84 @@ type Stat = {
   suffix?: string;
   label: string;
   hint: string;
-  text: string; // numeral colour (AA on white)
-  face: string; // icon tile face
-  edge: string; // icon tile 3D edge
-  tilt: number;
+  text: string; // numeral + icon colour (bright on dark)
+  well: string; // role-tinted icon well
+  glow: string; // numeral glow (text-shadow)
 };
 
+// Written out in full so Tailwind can see every class.
 const STATS: Stat[] = [
-  { icon: BookOpen, value: 9, label: "Tech domains", hint: "Cybersecurity to Cloud", text: "text-secondary", face: "bg-secondary-bright", edge: "hsl(var(--secondary-shade))", tilt: -8 },
-  { icon: Layers, value: 90, suffix: "+", label: "Curated topics", hint: "Across 5 deep roadmaps", text: "text-grape", face: "bg-grape-bright", edge: "hsl(var(--grape-shade))", tilt: 6 },
-  { icon: ListChecks, value: 5, label: "AI MCQs per topic", hint: "Checked by a second AI pass", text: "text-primary", face: "bg-primary-bright", edge: "hsl(var(--primary-shade))", tilt: -5 },
-  { icon: Trophy, value: 8, label: "Badges to unlock", hint: "Streaks, perfect quizzes, more", text: "text-xp", face: "bg-xp-bright", edge: "hsl(var(--xp-shade))", tilt: 9 },
+  {
+    icon: BookOpen,
+    value: 9,
+    label: "Tech domains",
+    hint: "Cybersecurity to Cloud",
+    text: "text-secondary",
+    well: "bg-secondary/10 text-secondary ring-secondary/20",
+    glow: "[text-shadow:0_0_36px_hsl(var(--secondary)/0.55)]",
+  },
+  {
+    icon: Layers,
+    value: 90,
+    suffix: "+",
+    label: "Curated topics",
+    hint: "Across 5 deep roadmaps",
+    text: "text-grape",
+    well: "bg-grape/10 text-grape ring-grape/20",
+    glow: "[text-shadow:0_0_36px_hsl(var(--grape)/0.55)]",
+  },
+  {
+    icon: ListChecks,
+    value: 5,
+    label: "AI MCQs per topic",
+    hint: "Checked by a second AI pass",
+    text: "text-primary",
+    well: "bg-primary/10 text-primary ring-primary/20",
+    glow: "[text-shadow:0_0_36px_hsl(var(--primary)/0.55)]",
+  },
+  {
+    icon: Trophy,
+    value: 8,
+    label: "Badges to unlock",
+    hint: "Streaks, perfect quizzes, more",
+    text: "text-xp",
+    well: "bg-xp/10 text-xp ring-xp/20",
+    glow: "[text-shadow:0_0_36px_hsl(var(--xp)/0.5)]",
+  },
 ];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Stats, playground edition: four chunky tiles, each with a tilted sticker
- * icon that pops in, and a numeral that counts up and bounces when it lands.
+ * Stats, Midnight edition: one lit instrument panel split into four cells by
+ * hairlines. Each numeral counts up in its role colour and glows when it
+ * lands; a faint aurora pool sits behind the panel.
  */
 export function StatsBanner() {
+  const reduce = useReducedMotion();
   return (
     <section className="relative px-4 py-20 lg:px-12 lg:py-28">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="mb-12 text-center font-display text-3xl md:text-5xl [text-wrap:balance]">
-          Built end to end. <span className="text-primary">Live today.</span>
-        </h2>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
+      {/* Aurora pool + grid behind the panel */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div className="absolute left-1/2 top-1/2 h-[26rem] w-[60rem] max-w-[140vw] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-2)/0.16),hsl(var(--aurora-1)/0.08)_55%,transparent)] blur-2xl" />
+        <div className="grid-faint absolute inset-0" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl">
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
+          className="mx-auto mb-12 max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl"
+        >
+          Built end to end.{" "}
+          <span className="font-serif-accent text-primary text-glow">Live today.</span>
+        </motion.h2>
+
+        <div className="card-chunky spotlight grid grid-cols-2 overflow-hidden lg:grid-cols-4">
           {STATS.map((s, i) => (
-            <StatTile key={s.label} stat={s} index={i} />
+            <StatCell key={s.label} stat={s} index={i} />
           ))}
         </div>
       </div>
@@ -47,44 +97,48 @@ export function StatsBanner() {
   );
 }
 
-function StatTile({ stat, index }: { stat: Stat; index: number }) {
+function StatCell({ stat, index }: { stat: Stat; index: number }) {
   const reduce = useReducedMotion();
   const [counting, setCounting] = useState(false);
-  const display = useCountUp(stat.value, counting, 1100);
+  const display = useCountUp(stat.value, counting, 1300);
   const landed = counting && display === stat.value;
   const Icon = stat.icon;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       onViewportEnter={() => setCounting(true)}
       viewport={{ once: true, amount: 0.4 }}
-      transition={{ duration: reduce ? 0 : 0.55, delay: reduce ? 0 : index * 0.08, ease: EASE }}
-      className="card-chunky flex flex-col items-center px-4 pb-6 pt-7 text-center"
+      transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : index * 0.08, ease: EASE }}
+      className={cn(
+        "relative flex flex-col px-5 py-7 sm:px-7 sm:py-9",
+        // Hairline dividers: between columns, and between the two rows on
+        // the 2-up phone/tablet grid.
+        index % 2 === 1 && "border-l border-white/[0.06]",
+        index >= 2 && "border-t border-white/[0.06] lg:border-t-0",
+        index === 2 && "lg:border-l",
+      )}
     >
-      <motion.span
+      <span
         aria-hidden
-        initial={{ scale: 0.4, rotate: 0 }}
-        whileInView={{ scale: 1, rotate: stat.tilt }}
-        viewport={{ once: true, amount: 0.4 }}
-        transition={{ type: "spring", stiffness: 380, damping: 14, delay: reduce ? 0 : 0.15 + index * 0.08 }}
-        className={`flex h-14 w-14 items-center justify-center rounded-2xl ${stat.face}`}
-        style={{ boxShadow: `0 5px 0 ${stat.edge}` }}
+        className={cn("flex h-9 w-9 items-center justify-center rounded-lg ring-1", stat.well)}
       >
-        <Icon className="h-7 w-7 text-white" strokeWidth={2.6} />
-      </motion.span>
+        <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+      </span>
 
-      <motion.div
-        animate={reduce ? undefined : landed ? { scale: [1, 1.12, 1] } : { scale: 1 }}
-        transition={{ duration: 0.4, ease: EASE }}
-        className={`mt-5 font-display text-6xl tabular-nums sm:text-7xl ${stat.text}`}
+      <div
+        className={cn(
+          "mt-6 font-display text-6xl leading-none tabular-nums transition-[text-shadow] duration-700 sm:text-7xl",
+          stat.text,
+          landed && stat.glow,
+        )}
       >
         {display}
         {stat.suffix}
-      </motion.div>
-      <p className="mt-2 text-base font-black text-foreground">{stat.label}</p>
-      <p className="mt-1 text-sm font-semibold text-muted-foreground">{stat.hint}</p>
+      </div>
+      <p className="mt-4 text-[15px] font-semibold text-foreground">{stat.label}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{stat.hint}</p>
     </motion.div>
   );
 }
@@ -104,7 +158,7 @@ function useCountUp(target: number, start: boolean, durationMs: number): number 
     let raf = 0;
     const tick = (t: number) => {
       const p = Math.min(1, (t - startTime) / durationMs);
-      const eased = 1 - Math.pow(1 - p, 3);
+      const eased = 1 - Math.pow(1 - p, 4);
       setV(Math.round(target * eased));
       if (p < 1) raf = requestAnimationFrame(tick);
     };

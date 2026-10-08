@@ -1,7 +1,8 @@
 "use client";
 
 /**
- * A faint sky-blue pool of light that trails the cursor on the landing page. Uses
+ * A faint aurora pool of light (blue into violet) that trails the cursor on
+ * the landing page. Uses
  * framer-motion's motion values + spring so movement is smooth and runs
  * entirely on the compositor — no React state per pointermove frame.
  *
@@ -13,7 +14,7 @@ import { useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
-const SIZE = 320;
+const SIZE = 420;
 
 export function CursorFollower() {
   const reduce = useReducedMotion();
@@ -49,7 +50,7 @@ export function CursorFollower() {
         // competes with scroll — dropping it keeps the same soft look for free.
         willChange: "transform",
         background:
-          "radial-gradient(closest-side, hsl(var(--secondary-bright) / 0.10), hsl(var(--primary-bright) / 0.05) 45%, transparent 70%)",
+          "radial-gradient(closest-side, hsl(var(--aurora-2) / 0.10), hsl(var(--aurora-1) / 0.05) 45%, transparent 70%)",
       }}
     />
   );

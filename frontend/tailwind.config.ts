@@ -66,14 +66,21 @@ const config: Config = {
           bright: "hsl(var(--grape-bright))",
           shade: "hsl(var(--grape-shade))",
         },
+        aurora: {
+          1: "hsl(var(--aurora-1))",
+          2: "hsl(var(--aurora-2))",
+          3: "hsl(var(--aurora-3))",
+          4: "hsl(var(--aurora-4))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
       },
       fontFamily: {
-        sans: ["var(--font-nunito)", "system-ui", "sans-serif"],
-        display: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {

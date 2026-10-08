@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, MessageSquarePlus, Pencil, Search, Trash2, X } from "lucide-react";
+import { Check, MessageSquare, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -36,33 +36,29 @@ export function SessionSidebar() {
   }, [sessions, query]);
 
   return (
-    <aside className="flex h-full w-72 flex-col border-r-2 border-border bg-background">
-      <div className="p-3 pb-1">
-        <Button
-          variant="secondary"
-          className="w-full uppercase"
-          onClick={() => start({})}
-        >
-          <MessageSquarePlus className="h-5 w-5" strokeWidth={2.6} />
+    <aside className="flex h-full w-72 flex-col border-r border-white/[0.06] bg-card/60">
+      <div className="space-y-2.5 p-3">
+        <Button variant="outline" className="w-full justify-start" onClick={() => start({})}>
+          <Plus className="h-4 w-4 text-primary" />
           New chat
         </Button>
-      </div>
-
-      <div className="p-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={2.6} />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search chats…"
-            className="h-11 rounded-2xl border-2 bg-card pl-9 text-sm font-semibold focus-visible:border-secondary-bright focus-visible:ring-0 focus-visible:ring-offset-0"
+            aria-label="Search chats"
+            className="h-10 bg-transparent pl-9 text-sm"
           />
         </div>
       </div>
 
-      <ul className="flex-1 overflow-y-auto pb-3">
+      <div className="label-mono px-5 pb-2 pt-3 text-muted-foreground">Recent</div>
+
+      <ul className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-3">
         {filtered.length === 0 && (
-          <li className="px-3 py-6 text-center text-sm font-bold text-muted-foreground">
+          <li className="px-3 py-6 text-center text-sm text-muted-foreground">
             {sessions.length === 0
               ? "No conversations yet."
               : "No matches."}
@@ -75,10 +71,10 @@ export function SessionSidebar() {
             <li key={session.id}>
               <div
                 className={cn(
-                  "group mx-3 my-1.5 flex items-center gap-1 rounded-2xl border-2 px-3 py-2 text-sm transition-colors",
+                  "group flex items-center gap-1 rounded-lg px-2 py-1 text-sm transition-colors",
                   isActive
-                    ? "border-secondary-bright bg-secondary/10 text-foreground"
-                    : "border-transparent text-foreground hover:bg-muted"
+                    ? "bg-secondary/[0.1] shadow-[inset_0_0_0_1px_hsl(var(--secondary)/0.3)]"
+                    : "hover:bg-white/[0.04]"
                 )}
               >
                 {isEditing ? (
@@ -86,6 +82,7 @@ export function SessionSidebar() {
                     <Input
                       autoFocus
                       value={editValue}
+                      aria-label="Conversation title"
                       onChange={(e) => setEditValue(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -93,7 +90,7 @@ export function SessionSidebar() {
                           setEditingId(null);
                         } else if (e.key === "Escape") setEditingId(null);
                       }}
-                      className="h-9 rounded-xl border-2 text-sm font-semibold"
+                      className="h-9 rounded-lg px-2.5 text-sm"
                     />
                     <button
                       type="button"
@@ -104,15 +101,15 @@ export function SessionSidebar() {
                       aria-label="Save"
                       className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-primary hover:bg-primary/10"
                     >
-                      <Check className="h-5 w-5" strokeWidth={3} />
+                      <Check className="h-4 w-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
                       aria-label="Cancel"
-                      className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                      className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
                     >
-                      <X className="h-5 w-5" strokeWidth={3} />
+                      <X className="h-4 w-4" />
                     </button>
                   </>
                 ) : (
@@ -120,14 +117,27 @@ export function SessionSidebar() {
                     <button
                       type="button"
                       onClick={() => open(session.id)}
-                      className="focus-ring min-w-0 flex-1 rounded-lg py-0.5 text-left"
+                      className="focus-ring flex min-h-[40px] min-w-0 flex-1 items-center gap-2.5 rounded-md py-1 pl-1 text-left"
                     >
-                      <div className={cn("truncate text-sm font-extrabold", isActive && "text-secondary")}>{session.title}</div>
-                      {session.topicTitle && (
-                        <div className="truncate text-xs font-semibold text-muted-foreground">
-                          {session.topicTitle}
-                        </div>
-                      )}
+                      <MessageSquare
+                        aria-hidden
+                        className={cn("h-4 w-4 shrink-0", isActive ? "text-secondary" : "text-muted-foreground")}
+                      />
+                      <span className="min-w-0">
+                        <span
+                          className={cn(
+                            "block truncate text-sm",
+                            isActive ? "font-medium text-foreground" : "text-foreground/85"
+                          )}
+                        >
+                          {session.title}
+                        </span>
+                        {session.topicTitle && (
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {session.topicTitle}
+                          </span>
+                        )}
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -137,9 +147,9 @@ export function SessionSidebar() {
                         setEditValue(session.title);
                       }}
                       aria-label="Rename"
-                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-card hover:text-foreground focus-visible:opacity-100"
+                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-white/[0.06] hover:text-foreground focus-visible:opacity-100"
                     >
-                      <Pencil className="h-4 w-4" strokeWidth={2.6} />
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button
                       type="button"
@@ -148,9 +158,9 @@ export function SessionSidebar() {
                         if (confirm("Delete this conversation?")) remove(session.id);
                       }}
                       aria-label="Delete"
-                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-card hover:text-destructive-text focus-visible:opacity-100"
+                      className="focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive-text focus-visible:opacity-100"
                     >
-                      <Trash2 className="h-4 w-4" strokeWidth={2.6} />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </>
                 )}

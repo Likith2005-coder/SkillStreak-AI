@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "next-view-transitions";
 import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
 import { cachedDomain } from "@/lib/domainCache";
@@ -32,11 +32,11 @@ import {
 } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
 import { styleFor } from "@/lib/domain-style";
-import { DomainTile, domainPalette } from "@/components/shared/DomainIcon";
+import { DomainTile, domainPalette, withAlpha } from "@/components/shared/DomainIcon";
 import { WindingRoadmap } from "@/components/roadmap/WindingRoadmap";
 import { AssessmentIntro, AssessmentWizard } from "@/components/domains/AssessmentWizard";
 import { Mascot } from "@/components/playground/Mascot";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type ProgressStatus = "not_started" | "in_progress" | "completed";
@@ -114,7 +114,7 @@ export default function RoadmapPage() {
     return (
       <main className="container px-4 py-8">
         <BackToDomains />
-        <div className="mt-4 rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
+        <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text">
           {error}
         </div>
       </main>
@@ -171,7 +171,7 @@ export default function RoadmapPage() {
               onSkip={() => setSkippedAssessment(true)}
             />
           ) : (
-            <div className="flex items-center justify-center gap-3 py-16 text-base font-bold text-muted-foreground">
+            <div className="flex items-center justify-center gap-3 py-16 text-base font-medium text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin text-grape motion-reduce:animate-none" /> Preparing your questions…
             </div>
           )}
@@ -190,11 +190,11 @@ export default function RoadmapPage() {
         <section className="card-chunky mx-auto mt-10 flex max-w-2xl flex-col items-center p-8 text-center">
           <Mascot size={96} />
           <h2 className="mt-4 font-display text-2xl text-foreground">Roadmap on demand</h2>
-          <p className="mx-auto mt-2 max-w-md text-base font-semibold text-muted-foreground">
+          <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-muted-foreground">
             We don&apos;t have a curated roadmap for this domain yet. Open the AI
             tutor and ask for one — it&apos;ll generate a personalized path on the fly.
           </p>
-          <Button asChild variant="grape" size="lg" className="mt-6 uppercase">
+          <Button asChild variant="grape" size="lg" className="mt-6">
             <Link href={`/chatbot?domain=${data.slug}`}>
               <MessageCircle className="h-5 w-5" />
               Ask the AI tutor
@@ -222,24 +222,24 @@ export default function RoadmapPage() {
         {hasPlan && (
           <Link
             href={`/domains/${data.slug}/plan`}
-            className="card-chunky card-press focus-ring group mt-6 flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
+            className="card-chunky card-press spotlight focus-ring group mt-6 flex items-center gap-4 px-5 py-4"
+            style={{ "--spot": "var(--grape)" } as CSSProperties}
           >
             <span
               aria-hidden
-              className="flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-xl bg-grape-bright"
-              style={{ boxShadow: "0 4px 0 hsl(var(--grape-shade))" }}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-grape/10 text-grape ring-1 ring-grape/25 shadow-[0_0_24px_-6px_hsl(var(--grape)/0.6)]"
             >
-              <Sparkles className="h-5 w-5 text-white" strokeWidth={2.6} />
+              <Sparkles className="h-5 w-5" strokeWidth={2.2} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-base font-black text-foreground">Your personalized plan</span>
-              <span className="block text-sm font-semibold text-muted-foreground">
+              <span className="block text-base font-semibold text-foreground">Your personalized plan</span>
+              <span className="block text-sm text-muted-foreground">
                 Phases, resources, projects and your capstone build.
               </span>
             </span>
             <ChevronRight
-              className="h-5 w-5 shrink-0 text-grape transition-transform group-hover:translate-x-0.5"
-              strokeWidth={3}
+              className="h-5 w-5 shrink-0 text-grape transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+              strokeWidth={2.4}
             />
           </Link>
         )}
@@ -247,12 +247,12 @@ export default function RoadmapPage() {
         <InterviewUnlockCTA slug={data.slug} completed={completedCount} total={total} />
       </div>
 
-      <div className="mt-12 space-y-14">
+      <div className="mt-14 space-y-20">
         {phases.map((phase, i) => (
           <section key={phase} aria-labelledby={`phase-${phase}`}>
             <PhaseHeader phase={phase} index={i} count={grouped[phase].length} colorStyle={s} />
-            {/* room for the current node's floating START bubble */}
-            <div className="mt-12">
+            {/* room for the current node's floating Start tooltip */}
+            <div className="mt-14">
               <WindingRoadmap topics={grouped[phase]} progressMap={progressByTopic} color={data.color} />
             </div>
           </section>
@@ -272,19 +272,19 @@ function BackToDomains() {
   return (
     <Link
       href="/domains"
-      className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
+      className="focus-ring group -ml-2 inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
-      <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+      <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 motion-reduce:transition-none" strokeWidth={2.2} />
       All domains
     </Link>
   );
 }
 
 /**
- * The domain's unit banner: a solid slab in the domain's face colour with a
- * 3D bottom edge, like the dashboard's "next up" banner. It carries the
- * same view-transition names as the domains-grid card, so the card morphs
- * straight into it.
+ * The domain's cinematic banner: a dark panel lit from above by the domain's
+ * own aurora, a big display title and a glowing progress meter. It carries
+ * the same view-transition names as the domains-grid card, so the card
+ * morphs straight into it.
  */
 function DomainHeader({
   data,
@@ -296,92 +296,113 @@ function DomainHeader({
   progress?: { completed: number; total: number; percent: number };
 }) {
   const p = domainPalette(data.color);
-  const pill = "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white";
+  const pill =
+    "inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-xs font-medium text-foreground/90";
   return (
     <header
-      style={{
-        viewTransitionName: `domain-card-${data.slug}`,
-        background: p.face,
-        boxShadow: `0 6px 0 ${p.shade}`,
-      }}
-      className="mt-2 flex flex-col gap-5 rounded-[1.5rem] p-6 text-white sm:flex-row sm:items-center sm:gap-6 sm:p-7"
+      style={{ viewTransitionName: `domain-card-${data.slug}` }}
+      className="card-chunky relative mt-2 overflow-hidden"
     >
-      <DomainTile
-        name={data.icon}
-        color={data.color}
-        tone="white"
-        size={72}
-        tilt={-6}
-        style={{ viewTransitionName: `domain-icon-${data.slug}` }}
-      />
-
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className={pill} style={{ background: p.shade }}>
-            <BookOpen className="h-3.5 w-3.5" aria-hidden />
-            {data.isCurated ? "Curated roadmap" : "On-demand"}
-          </span>
-          <span className={cn(pill, "capitalize")} style={{ background: p.shade }}>
-            {data.difficulty}
-          </span>
-          {data.roadmap && (
-            <span className={pill} style={{ background: p.shade }}>
-              <Clock className="h-3.5 w-3.5" aria-hidden />~{data.roadmap.estimatedDays} days
-            </span>
-          )}
-        </div>
-        <MorphTextStyle slugs={[data.slug]} />
-        <h1
-          style={{ viewTransitionName: `domain-title-${data.slug}` }}
-          className="mt-3 w-fit font-display text-3xl leading-tight sm:text-4xl"
-        >
-          {data.name}
-        </h1>
-        <p className="mt-2 max-w-2xl text-base font-semibold text-white">{data.description}</p>
+      {/* Domain aurora: two pools of the domain colour bleeding in from the top */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute -left-24 -top-40 h-[380px] w-[620px] rounded-full blur-[80px]"
+          style={{ background: `radial-gradient(closest-side, ${withAlpha(p.bright, 0.4)}, transparent)` }}
+        />
+        <div
+          className="absolute -top-32 right-[-10%] h-[300px] w-[420px] rounded-full blur-[90px]"
+          style={{ background: `radial-gradient(closest-side, ${withAlpha(p.edge, 0.45)}, transparent)` }}
+        />
+        <div className="grid-faint absolute inset-0 opacity-70" />
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, ${withAlpha(p.bright, 0.8)}, transparent)` }}
+        />
       </div>
 
-      {progress && (
-        <div className="w-full sm:w-auto sm:min-w-[200px]">
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="text-sm font-extrabold">Progress</span>
-            <span className="font-display text-xl tabular-nums">
-              {progress.completed}/{progress.total}
-            </span>
-          </div>
-          <div
-            className="mt-2 h-4 overflow-hidden rounded-full"
-            style={{ background: p.shade }}
-            role="progressbar"
-            aria-valuenow={progress.percent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`${progress.completed} of ${progress.total} topics complete`}
-          >
-            <div
-              className="h-full rounded-full bg-white transition-[width] duration-500 motion-reduce:transition-none"
-              style={{ width: `${progress.percent === 0 ? 0 : Math.max(progress.percent, 6)}%` }}
+      <div className="relative flex flex-col gap-6 p-6 sm:p-9 lg:flex-row lg:items-end lg:gap-10">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-4">
+            <DomainTile
+              name={data.icon}
+              color={data.color}
+              tone="white"
+              size={60}
+              style={{ viewTransitionName: `domain-icon-${data.slug}` }}
             />
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className={pill}>
+                <BookOpen className="h-3.5 w-3.5" aria-hidden style={{ color: p.light }} />
+                {data.isCurated ? "Curated roadmap" : "On-demand"}
+              </span>
+              <span className={cn(pill, "capitalize")}>{data.difficulty}</span>
+              {data.roadmap && (
+                <span className={cn(pill, "font-mono")}>
+                  <Clock className="h-3.5 w-3.5" aria-hidden style={{ color: p.light }} />~{data.roadmap.estimatedDays} days
+                </span>
+              )}
+            </div>
           </div>
-          <div className="mt-1.5 text-right text-sm font-extrabold tabular-nums">{progress.percent}% complete</div>
+          <MorphTextStyle slugs={[data.slug]} />
+          <h1
+            style={{ viewTransitionName: `domain-title-${data.slug}` }}
+            className="mt-6 w-fit font-display text-[clamp(2.4rem,6.5vw,5rem)] leading-[0.95] text-foreground [text-wrap:balance]"
+          >
+            {data.name}
+          </h1>
+          <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-muted-foreground">{data.description}</p>
         </div>
-      )}
+
+        {progress && (
+          <div className="w-full shrink-0 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 lg:w-[260px]">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="label-mono text-muted-foreground">Progress</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
+                {progress.completed}
+                <span className="text-muted-foreground">/{progress.total}</span>
+              </span>
+            </div>
+            <div className="mt-2 font-display text-5xl tabular-nums leading-none" style={{ color: p.light, textShadow: `0 0 28px ${withAlpha(p.bright, 0.55)}` }}>
+              {progress.percent}
+              <span className="ml-0.5 text-2xl text-muted-foreground">%</span>
+            </div>
+            <div
+              className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"
+              role="progressbar"
+              aria-valuenow={progress.percent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${progress.completed} of ${progress.total} topics complete`}
+            >
+              <div
+                className="h-full rounded-full transition-[width] duration-700 motion-reduce:transition-none"
+                style={{
+                  width: `${progress.percent === 0 ? 0 : Math.max(progress.percent, 4)}%`,
+                  background: p.bright,
+                  boxShadow: `0 0 12px ${withAlpha(p.bright, 0.8)}`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </header>
   );
 }
 
 function HeaderSkeleton() {
-  return <div className="mt-2 h-[180px] animate-pulse rounded-[1.5rem] bg-muted motion-reduce:animate-none" aria-hidden />;
+  return <div className="card-chunky mt-2 h-[260px] animate-pulse motion-reduce:animate-none" aria-hidden />;
 }
 
 function TrailSkeleton() {
   const offsets = [0, 70, 100, 70, 0];
   return (
-    <div className="mt-12 flex flex-col items-center gap-10" aria-label="Loading the trail" role="status">
+    <div className="mt-14 flex flex-col items-center gap-12" aria-label="Loading the trail" role="status">
       {offsets.map((x, i) => (
         <div
           key={i}
-          className="relative h-20 w-20 animate-pulse rounded-full bg-muted motion-reduce:animate-none"
-          style={{ left: x, boxShadow: "0 7px 0 hsl(var(--border))" }}
+          className="relative h-16 w-16 animate-pulse rounded-full border border-white/10 bg-white/[0.04] motion-reduce:animate-none"
+          style={{ left: x }}
         />
       ))}
     </div>
@@ -402,21 +423,19 @@ function PhaseHeader({
   return (
     <div className="mx-auto max-w-3xl text-center">
       <div className="flex items-center gap-4">
-        <span aria-hidden className="h-[3px] flex-1 rounded-full bg-border" />
-        <h2 id={`phase-${phase}`} className="font-display text-2xl text-foreground sm:text-3xl">
-          {PHASE_LABEL[phase]}
-        </h2>
-        <span aria-hidden className="h-[3px] flex-1 rounded-full bg-border" />
-      </div>
-      <p className="mt-1.5 text-sm font-semibold text-muted-foreground">{PHASE_DESCRIPTION[phase]}</p>
-      <div className="mt-3 flex justify-center gap-1.5">
-        <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-extrabold", colorStyle.iconBg, colorStyle.text)}>
-          Section {index + 1}
+        <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-transparent to-white/15" />
+        <span className={cn("rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-medium", colorStyle.badgeBg)}>
+          {String(index + 1).padStart(2, "0")}
         </span>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold tabular-nums text-foreground">
-          {count} topics
-        </span>
+        <span aria-hidden className="h-px flex-1 bg-gradient-to-l from-transparent to-white/15" />
       </div>
+      <h2 id={`phase-${phase}`} className="mt-4 font-display text-3xl text-foreground sm:text-4xl">
+        {PHASE_LABEL[phase]}
+      </h2>
+      <p className="mt-2 text-[15px] text-muted-foreground">
+        {PHASE_DESCRIPTION[phase]}
+        <span className="mt-1 block font-mono text-xs tabular-nums text-muted-foreground">{count} topics</span>
+      </p>
     </div>
   );
 }
@@ -434,14 +453,28 @@ function groupTopics(topics: RoadmapTopic[]): Record<RoadmapTopic["phase"], Road
 /* ── Unlockables: interview prep and the career map ─────────────────── */
 
 const UNLOCK_TONES = {
-  grape: { face: "bg-grape", shade: "hsl(var(--grape-shade))", text: "text-grape", fill: "bg-grape-bright" },
-  primary: { face: "bg-primary", shade: "hsl(var(--primary-shade))", text: "text-primary", fill: "bg-primary-bright" },
+  grape: {
+    text: "text-grape",
+    well: "bg-grape/10 text-grape ring-1 ring-grape/25 shadow-[0_0_28px_-6px_hsl(var(--grape)/0.6)]",
+    pill: "border-grape/25 bg-grape/10 text-grape",
+    fill: "bg-grape shadow-[0_0_12px_hsl(var(--grape)/0.6)]",
+    light: "hsl(var(--grape) / 0.22)",
+    variant: "grape",
+  },
+  primary: {
+    text: "text-primary",
+    well: "bg-primary/10 text-primary ring-1 ring-primary/25 shadow-[0_0_28px_-6px_hsl(var(--primary)/0.6)]",
+    pill: "border-primary/25 bg-primary/10 text-primary",
+    fill: "bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)]",
+    light: "hsl(var(--primary) / 0.16)",
+    variant: "default",
+  },
 } as const;
 
 /**
- * Shared look for both unlockables. Unlocked: a solid role-coloured slab with
- * a white pressable "button". Locked: a plain chunky card with a lock tile and
- * a juicy bar showing how close the learner is.
+ * Shared look for both unlockables. Unlocked: a lit panel washed in the role
+ * colour with a border beam and a lit button. Locked: a quiet panel with a
+ * lock well and a thin glowing bar showing how close the learner is.
  */
 function UnlockCard({
   unlocked,
@@ -480,41 +513,34 @@ function UnlockCard({
     return (
       <Link
         href={href}
-        className={cn(
-          "focus-ring group block rounded-[1.5rem] p-6 text-white transition-transform duration-100 active:translate-y-[3px] motion-reduce:transition-none",
-          t.face,
-          className
-        )}
-        style={{ boxShadow: `0 6px 0 ${t.shade}` }}
+        className={cn("card-chunky card-press border-beam focus-ring group block p-6 sm:p-7", className)}
       >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
           <span
-            aria-hidden
-            className="flex h-14 w-14 shrink-0 -rotate-6 items-center justify-center rounded-2xl bg-white"
-            style={{ boxShadow: "0 5px 0 rgba(0,0,0,0.22)" }}
-          >
-            <Icon className={cn("h-7 w-7", t.text)} strokeWidth={2.6} />
+            className="absolute -left-10 -top-24 h-64 w-[28rem] rounded-full blur-3xl"
+            style={{ background: `radial-gradient(closest-side, ${t.light}, transparent)` }}
+          />
+        </span>
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
+          <span aria-hidden className={cn("flex h-14 w-14 shrink-0 items-center justify-center rounded-xl", t.well)}>
+            <Icon className="h-6 w-6" strokeWidth={2.2} />
           </span>
           <div className="min-w-0 flex-1">
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white"
-              style={{ background: t.shade }}
-            >
+            <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium", t.pill)}>
               <Sparkles className="h-3.5 w-3.5" aria-hidden />
               {pillText}
             </span>
-            <h3 className="mt-2 font-display text-2xl leading-tight [text-wrap:balance]">{title}</h3>
-            <p className="mt-1.5 max-w-2xl text-sm font-semibold text-white">{body}</p>
+            <h3 className="mt-3 font-display text-2xl leading-tight text-foreground sm:text-[1.75rem] [text-wrap:balance]">{title}</h3>
+            <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">{body}</p>
           </div>
           <span
             className={cn(
-              "inline-flex h-12 shrink-0 items-center justify-center gap-2 self-start rounded-2xl bg-white px-6 text-sm font-black uppercase tracking-wide sm:self-center",
-              t.text
+              buttonVariants({ variant: t.variant, size: "lg" }),
+              "shrink-0 self-start sm:self-center"
             )}
-            style={{ boxShadow: `0 4px 0 ${t.shade}` }}
           >
             {cta}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={3} />
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={2.4} />
           </span>
         </div>
       </Link>
@@ -523,20 +549,20 @@ function UnlockCard({
 
   return (
     <div className={cn("card-chunky flex items-start gap-4 p-5", className)}>
-      <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted">
-        <Lock className="h-6 w-6 text-muted-foreground" strokeWidth={2.6} />
+      <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04]">
+        <Lock className="h-5 w-5 text-muted-foreground" strokeWidth={2.2} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-base font-black text-foreground">{lockedTitle}</h3>
-          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">Locked</span>
+          <h3 className="text-base font-semibold text-foreground">{lockedTitle}</h3>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium text-muted-foreground">Locked</span>
         </div>
-        <p className="mt-1 text-sm font-semibold text-muted-foreground">{lockedBody}</p>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{lockedBody}</p>
         <div className="mt-3 flex items-center gap-3">
-          <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden>
-            <div className={cn("h-full rounded-full", t.fill)} style={{ width: `${pct === 0 ? 0 : Math.max(pct, 4)}%` }} />
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]" aria-hidden>
+            <div className={cn("h-full rounded-full", t.fill)} style={{ width: `${pct === 0 ? 0 : Math.max(pct, 3)}%` }} />
           </div>
-          <span className={cn("shrink-0 text-xs font-extrabold", t.text)}>
+          <span className={cn("shrink-0 font-mono text-xs font-medium tabular-nums", t.text)}>
             {left === 0 ? "Finish your last topic!" : `${left} ${left === 1 ? "topic" : "topics"} to go`}
           </span>
         </div>

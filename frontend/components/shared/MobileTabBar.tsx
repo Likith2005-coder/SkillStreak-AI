@@ -6,8 +6,9 @@
  * only reachable pages on a phone were Settings and Log out.
  *
  * A bottom bar is the pattern phone users already know, keeps the targets in
- * thumb reach, and the active pill slides between tabs (layoutId) rather than
- * jumping.
+ * thumb reach, and the lit active pill slides between tabs (layoutId) rather
+ * than jumping. Midnight: blurred dark glass over a hairline, a volt glow
+ * line on top of the active tab.
  */
 
 import { Link } from "next-view-transitions";
@@ -41,7 +42,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="vt-tabbar fixed inset-x-0 bottom-0 z-40 border-t-2 border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="vt-tabbar fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.07] bg-background/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150 md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5 gap-1 px-2 py-1.5">
         {TABS.map((t, i) => {
@@ -53,19 +54,25 @@ export function MobileTabBar() {
                 href={t.href}
                 aria-current={on ? "page" : undefined}
                 className={cn(
-                  "focus-ring relative flex h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[11px] font-extrabold transition-colors",
-                  on ? "text-secondary" : "text-muted-foreground active:bg-muted",
+                  "focus-ring relative flex h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-medium transition-colors",
+                  on ? "text-foreground" : "text-muted-foreground active:bg-white/[0.05]",
                 )}
               >
                 {on && (
                   <motion.span
                     layoutId="tab-pill"
-                    className="absolute inset-0 rounded-2xl border-2 border-secondary-bright bg-secondary/10"
+                    className="absolute inset-0 rounded-xl border border-white/10 bg-white/[0.06]"
                     transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 38 }}
                     aria-hidden
-                  />
+                  >
+                    <span className="absolute inset-x-4 -top-[7px] h-px rounded-full bg-primary shadow-[0_0_10px_1px_hsl(var(--primary)/0.8)]" />
+                  </motion.span>
                 )}
-                <Icon className="relative h-6 w-6" strokeWidth={on ? 2.75 : 2.25} aria-hidden />
+                <Icon
+                  className={cn("relative h-5 w-5", on && "text-primary")}
+                  strokeWidth={on ? 2.25 : 1.85}
+                  aria-hidden
+                />
                 <span className="relative">{t.label}</span>
               </Link>
             </li>

@@ -38,11 +38,10 @@ that feels like a game you want to come back to, not a course catalog you browse
 
 ## Brand Personality
 
-Playful, encouraging, energetic. It should feel like a game board for your own skills:
-bright colour, chunky buttons you want to press, a mascot cheering you on, and rewards that
-land with a pop. It is friendly without being childish: the content is serious tech, and the
-delight is what keeps the learner showing up tomorrow. The one exception is the Arsenal, a
-dark hacker-terminal "secret level" that rewards curiosity with a change of world.
+Confident, electric, premium. It should feel like the best-made product the learner has ever
+used: a deep, quiet dark canvas where light means something (the streak glows, progress lights
+up volt, the next step is the brightest thing on screen). Serious about skill, with a sense of
+spectacle. The Arsenal is a dark hacker-terminal "secret level" that rewards curiosity.
 
 ## Anti-references
 
@@ -53,24 +52,22 @@ marketplace or an admin template someone downloaded, it has failed.
 
 ## Design Principles
 
-A game board, not a catalog. Every screen should make the next action obvious and pressable.
+Light is meaning. On a near-black canvas, glow is reserved for what is live or next: the
+current topic, an alive streak, the main action. If everything glows, nothing does.
 
-Momentum is the product. Streak, XP and level are the emotional core. They have fixed
-colours (orange, gold, grape) and are felt on every surface, not buried in a stat box.
+Momentum is the product. Streak, XP and level have fixed colours (ember, gold, violet) and are
+felt on every surface.
 
-Celebrate the right things. Correct answers, finished topics and kept streaks get motion,
-colour and confetti. Everything else stays calm so the celebration means something.
+Spectacle where it persuades, calm where it works. The landing and celebrations earn the big
+moments; lessons and quizzes stay focused and legible.
 
-One meaning per colour. Green moves you forward, red tells you it was wrong. The palette is
-information.
-
-Show mastery, don't claim it. The craft of the interface is the proof that the platform takes
-skill seriously.
+Professional first. Precise type, hairline structure and restraint make the spectacle read as
+craft rather than noise.
 
 ## Accessibility & Inclusion
 
-Target WCAG 2.1 AA. On a bright palette the discipline is contrast: small text uses a
-colour's *face* tone, never its *bright* tone, and coloured slabs carry white text only.
-Body text and placeholders must clear 4.5:1. Every animation already has a `prefers-reduced-motion` path; keep
+Target WCAG 2.1 AA. On dark the discipline is contrast in both directions: role colours
+are bright enough to be text on the ground, fills carry dark ink, and body copy never drops
+below `muted-foreground`. Text over the hero light sits on a dark scrim. Every animation already has a `prefers-reduced-motion` path; keep
 that invariant as motion grows. Signal is carried by more than hue (icons, weight, position)
 so the colour language stays legible for color-blind users.

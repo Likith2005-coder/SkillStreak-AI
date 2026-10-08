@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -51,15 +50,34 @@ export function QuizTimer({ resetKey, seconds, onExpire, paused = false }: Props
   const pct = Math.max(0, Math.min(100, (remaining / seconds) * 100));
   const danger = remaining <= 10;
 
+  // A sleek pill with a ring that drains as time runs out; red under 10s.
+  const R = 7;
+  const C = 2 * Math.PI * R;
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 rounded-xl border-2 border-b-4 px-2.5 py-1 text-sm font-black tabular-nums",
-        danger ? "border-destructive-bright/60 text-destructive-text" : "border-border text-secondary",
+        "flex h-9 items-center gap-2 rounded-full border px-3 font-mono text-xs font-medium tabular-nums transition-colors duration-300",
+        danger
+          ? "border-destructive/40 bg-destructive/10 text-destructive-text shadow-[0_0_20px_-6px_hsl(var(--destructive)/0.7)]"
+          : "border-white/10 bg-white/[0.04] text-foreground",
       )}
       aria-label={`${remaining} seconds left`}
     >
-      <Timer className={cn("h-4 w-4", danger && "animate-pulse motion-reduce:animate-none")} strokeWidth={2.75} aria-hidden />
+      <svg viewBox="0 0 18 18" className={cn("h-[18px] w-[18px] -rotate-90", danger && "animate-pulse motion-reduce:animate-none")} aria-hidden>
+        <circle cx="9" cy="9" r={R} fill="none" stroke="currentColor" strokeOpacity="0.15" strokeWidth="2" />
+        <circle
+          cx="9"
+          cy="9"
+          r={R}
+          fill="none"
+          stroke={danger ? "hsl(var(--destructive))" : "hsl(var(--secondary))"}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={C}
+          strokeDashoffset={C * (1 - pct / 100)}
+          className="transition-[stroke-dashoffset] duration-1000 ease-linear motion-reduce:transition-none"
+        />
+      </svg>
       <span className="w-7 text-right">{remaining}s</span>
       <span className="sr-only">{pct}% of the time left</span>
     </div>

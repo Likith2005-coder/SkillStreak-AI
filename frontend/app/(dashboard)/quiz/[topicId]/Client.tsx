@@ -33,11 +33,11 @@ export default function QuizPage() {
   if (error) {
     return (
       <main className="container max-w-3xl px-4 py-8">
-        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text">
           {error}
         </div>
         <Button variant="outline" className="mt-4" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4" strokeWidth={3} /> Back
+          <ArrowLeft className="h-4 w-4" strokeWidth={2.2} /> Back
         </Button>
       </main>
     );
@@ -52,12 +52,16 @@ export default function QuizPage() {
   }
 
   return (
-    <main className="container max-w-3xl px-4 py-8">
+    <main className="container relative max-w-3xl px-4 py-8">
+      {/* A faint pool of light above the question */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-10 -z-10 h-[320px] overflow-hidden">
+        <div className="absolute left-1/2 top-[-40%] h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-aurora-2/10 blur-[90px]" />
+      </div>
       <Link
         href={`/topic/${topic.id}`}
-        className="focus-ring -ml-2 inline-flex h-11 max-w-full items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
+        className="focus-ring group -ml-2 inline-flex h-11 max-w-full items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={3} />
+        <ArrowLeft className="h-4 w-4 shrink-0 transition-transform group-hover:-translate-x-0.5 motion-reduce:transition-none" strokeWidth={2.2} />
         <span className="truncate">Back to {topic.title}</span>
       </Link>
 

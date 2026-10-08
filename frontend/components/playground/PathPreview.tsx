@@ -1,27 +1,44 @@
 "use client";
 
 /**
- * The learner's real path, Duolingo-style: the topics around where they are,
- * as chunky pressable nodes on a winding line. Done topics are filled green
- * with a check, the current one carries a bobbing "START" bubble and a ring,
- * upcoming ones wait in grey. The mascot sits beside the path.
+ * The learner's real path, Midnight edition: the five topics around where
+ * they are, as glowing orbs strung on a luminous winding line. Done topics
+ * are lit volt rings with a check; the current one is a solid volt orb with
+ * a pulsing halo and a "Start" tooltip; upcoming ones wait as hollow
+ * hairline rings. The lit part of the line draws itself up to the current
+ * node. Titles sit on the side away from each bend so the path stays
+ * compact enough to live inside the dashboard's hero panel.
+ *
+ * `mascot` renders SignalBot beside the path (off by default; the dashboard
+ * hosts the mascot in its welcome header instead).
  */
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "next-view-transitions";
-import { Check, Star, BookOpen } from "lucide-react";
+import { BookOpen, Check, Play } from "lucide-react";
 import { fetchDomainProgress, type DomainProgressDetail } from "@/lib/api";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
 import { Mascot } from "./Mascot";
 
 // Horizontal offsets (px) that give the path its wind.
-const WIND = [0, 52, 78, 52, 0, -52, -78, -52];
+const WIND = [0, 44, 64, 44, 0, -44, -64, -44];
+const STEP = 92; // vertical distance between node centres
+const TOP = 52; // room above the first node for the Start tooltip
+const NODE = 56;
 
 type Node = DomainProgressDetail["topics"][number];
 
-export function PathPreview({ slug, currentTopicId }: { slug: string; currentTopicId: string }) {
+export function PathPreview({
+  slug,
+  currentTopicId,
+  mascot = false,
+}: {
+  slug: string;
+  currentTopicId: string;
+  mascot?: boolean;
+}) {
   const reduce = useReducedMotionSafe();
   const [topics, setTopics] = useState<Node[] | null>(null);
 
@@ -37,9 +54,18 @@ export function PathPreview({ slug, currentTopicId }: { slug: string; currentTop
 
   if (!topics) {
     return (
-      <div className="flex flex-col items-center gap-6 py-6" aria-hidden>
+      <div className="relative mx-auto" style={{ height: TOP + STEP * 4 + NODE }} aria-hidden>
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="relative h-[72px] w-[72px] animate-pulse rounded-full bg-muted motion-reduce:animate-none" style={{ left: WIND[i] }} />
+          <div
+            key={i}
+            className="absolute animate-pulse rounded-full border border-white/10 bg-white/[0.04] motion-reduce:animate-none"
+            style={{
+              width: NODE,
+              height: NODE,
+              left: `calc(50% + ${WIND[i]}px - ${NODE / 2}px)`,
+              top: TOP + i * STEP,
+            }}
+          />
         ))}
       </div>
     );
@@ -48,75 +74,134 @@ export function PathPreview({ slug, currentTopicId }: { slug: string; currentTop
 
   const cur = Math.max(0, topics.findIndex((t) => t.id === currentTopicId));
   const start = Math.max(0, Math.min(cur - 1, topics.length - 5));
-  const window = topics.slice(start, start + 5);
+  const win = topics.slice(start, start + 5);
   const message =
     cur === 0 ? "Every expert started at node one. Let's go!" : `${cur} down. Ready for the next one?`;
 
-  return (
-    // Phones: just the path, centred. From sm up, a 3-column grid puts the
-    // mascot to its left and keeps the path itself centred.
-    <div className="relative flex justify-center gap-4 py-4 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-start">
-      <div className="hidden justify-end self-center sm:flex">
-        <Mascot message={message} size={110} side="left" />
+  // Node centres relative to the column's horizontal centre.
+  const pts = win.map((_, i) => ({ x: WIND[(start + i) % WIND.length], y: TOP + NODE / 2 + i * STEP }));
+  const curve = (upto: number) =>
+    pts
+      .slice(0, upto + 1)
+      .map((p, i) => {
+        if (i === 0) return `M ${p.x} ${p.y}`;
+        const prev = pts[i - 1];
+        const mid = (prev.y + p.y) / 2;
+        return `C ${prev.x} ${mid}, ${p.x} ${mid}, ${p.x} ${p.y}`;
+      })
+      .join(" ");
+  const curLocal = Math.min(Math.max(cur - start, 0), win.length - 1);
+  const height = TOP + NODE + STEP * (win.length - 1) + 8;
+
+  const path = (
+    <div className="relative w-full" style={{ height }}>
+      {/* The line: a zero-width anchor at the column centre, SVG overflows. */}
+      <div className="pointer-events-none absolute left-1/2 top-0" aria-hidden>
+        <svg width="1" height={height} overflow="visible" className="block">
+          <path d={curve(win.length - 1)} fill="none" stroke="rgb(255 255 255 / 0.09)" strokeWidth={2} strokeDasharray="2 6" strokeLinecap="round" />
+          {curLocal > 0 && (
+            <motion.path
+              d={curve(curLocal)}
+              fill="none"
+              stroke="hsl(var(--primary))"
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.9))" }}
+              initial={reduce ? false : { pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: reduce ? 0 : 1.1, delay: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+            />
+          )}
+        </svg>
       </div>
 
-      <ol className="flex flex-col items-center gap-7">
-        {window.map((t, i) => {
-          const idx = start + i;
+      <ol>
+        {win.map((t, i) => {
           const done = t.status === "completed";
-          const current = idx === cur;
-          const face = done || current ? "bg-primary-bright" : "bg-muted";
-          const edge = done || current ? "hsl(var(--primary-shade))" : "hsl(var(--border))";
+          const current = i === curLocal;
+          const { x } = pts[i];
+          const labelLeft = x > 0;
           return (
-            <motion.li
+            // `left/top` place the node; the motion element inside owns the
+            // transform for the scale-in.
+            <li
               key={t.id}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: reduce ? 0 : 0.4, delay: reduce ? 0 : i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-              // `left`, not transform: framer-motion owns transform for the
-              // scale-in and would overwrite the wind offset.
-              style={{ left: WIND[idx % WIND.length] }}
-              className="relative"
+              className="absolute"
+              style={{ left: `calc(50% + ${x}px - ${NODE / 2}px)`, top: TOP + i * STEP, width: NODE, height: NODE }}
             >
-              {current && (
-                <motion.span
-                  aria-hidden
-                  animate={reduce ? undefined : { y: [0, -5, 0] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-11 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-2 border-border bg-card px-3 py-1.5 text-xs font-black uppercase tracking-wider text-primary"
-                >
-                  Start
-                  <span className="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-border bg-card" />
-                </motion.span>
-              )}
-              {current && (
-                <span aria-hidden className="absolute -inset-[9px] rounded-full border-[6px] border-primary-bright/30" />
-              )}
-              <Link
-                href={`/topic/${t.id}`}
-                aria-label={`${t.title} — ${done ? "completed" : current ? "current topic" : "up next"}`}
-                className={cn(
-                  "focus-ring relative flex h-[72px] w-[72px] items-center justify-center rounded-full transition-[transform,box-shadow] duration-100 active:translate-y-[6px] active:!shadow-none motion-reduce:transition-none",
-                  face,
-                )}
-                style={{ boxShadow: `0 6px 0 ${edge}` }}
+              <motion.div
+                initial={reduce ? false : { opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: reduce ? 0 : 0.45, delay: reduce ? 0 : 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="relative h-full w-full"
               >
-                {done ? (
-                  <Check className="h-8 w-8 text-white" strokeWidth={4} />
-                ) : current ? (
-                  <Star className="h-8 w-8 fill-white text-white" />
-                ) : (
-                  <BookOpen className="h-7 w-7 text-muted-foreground" strokeWidth={2.5} />
+                {current && (
+                  <>
+                    {!reduce && (
+                      <motion.span
+                        aria-hidden
+                        className="absolute inset-0 rounded-full bg-primary/40"
+                        animate={{ scale: [1, 1.9], opacity: [0.55, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                      />
+                    )}
+                    <span aria-hidden className="absolute -inset-2 rounded-full border border-primary/30" />
+                    <motion.span
+                      aria-hidden
+                      animate={reduce ? undefined : { y: [0, -4, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute -top-11 left-1/2 z-10 -ml-[30px] w-[60px] rounded-md bg-primary py-1 text-center text-xs font-semibold text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.8)]"
+                    >
+                      Start
+                      <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-primary" />
+                    </motion.span>
+                  </>
                 )}
-              </Link>
-              <span className="pointer-events-none absolute left-[calc(100%+14px)] top-1/2 hidden w-44 -translate-y-1/2 text-sm font-bold leading-tight text-foreground lg:block">
-                <span className={cn(!done && !current && "text-muted-foreground")}>{t.title}</span>
-              </span>
-            </motion.li>
+                <Link
+                  href={`/topic/${t.id}`}
+                  aria-label={`${t.title} — ${done ? "completed" : current ? "current topic" : "up next"}`}
+                  className={cn(
+                    "focus-ring relative flex h-full w-full items-center justify-center rounded-full transition-[transform,box-shadow,border-color] duration-200 hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+                    current
+                      ? "bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.45),0_0_0_1px_hsl(var(--primary)/0.6),0_0_32px_-2px_hsl(var(--primary)/0.75)]"
+                      : done
+                        ? "border border-primary/50 bg-primary/10 text-primary shadow-[0_0_18px_-4px_hsl(var(--primary)/0.6)]"
+                        : "border border-white/10 bg-card text-muted-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] hover:border-white/25",
+                  )}
+                >
+                  {done ? (
+                    <Check className="h-6 w-6" strokeWidth={2.5} />
+                  ) : current ? (
+                    <Play className="ml-0.5 h-6 w-6" fill="currentColor" strokeWidth={2} />
+                  ) : (
+                    <BookOpen className="h-5 w-5" strokeWidth={2} />
+                  )}
+                </Link>
+                <span
+                  className={cn(
+                    "pointer-events-none absolute top-1/2 w-28 -translate-y-1/2 text-[13px] leading-snug sm:w-36",
+                    labelLeft ? "right-[calc(100%+14px)] text-right" : "left-[calc(100%+14px)]",
+                    current ? "font-semibold text-foreground" : done ? "text-muted-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  <span className="line-clamp-2">{t.title}</span>
+                </span>
+              </motion.div>
+            </li>
           );
         })}
       </ol>
+    </div>
+  );
 
+  if (!mascot) return path;
+
+  return (
+    <div className="relative flex justify-center gap-4 sm:grid sm:grid-cols-[1fr_minmax(0,22rem)_1fr] sm:items-center">
+      <div className="hidden justify-end sm:flex">
+        <Mascot message={message} size={96} side="left" />
+      </div>
+      {path}
       <div className="hidden sm:block" />
     </div>
   );

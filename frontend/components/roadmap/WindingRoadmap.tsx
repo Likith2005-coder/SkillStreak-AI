@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { BookOpen, Check, Play, Star } from "lucide-react";
 import type { RoadmapTopic } from "@/lib/api";
 import { styleFor } from "@/lib/domain-style";
-import { domainPalette } from "@/components/shared/DomainIcon";
+import { domainPalette, withAlpha } from "@/components/shared/DomainIcon";
 import { cn } from "@/lib/utils";
 
 type Status = "completed" | "current" | "in_progress" | "available";
@@ -19,7 +20,7 @@ type Props = {
 };
 
 // Layout constants — tuned so the winding path looks natural on most screens.
-const NODE_SIZE = 80; // px diameter of each topic node
+const NODE_SIZE = 68; // px diameter of each topic orb
 const ROW_HEIGHT = 150; // vertical distance between adjacent nodes
 const LABEL_HALF = 92; // half the 176px label + breathing room
 const MAX_AMPLITUDE = 110; // peak horizontal sway on roomy screens
@@ -31,6 +32,8 @@ const BOTTOM_PADDING = 80;
 export function WindingRoadmap({ topics, progressMap, color }: Props) {
   const reduce = useReducedMotion();
   const s = styleFor(color);
+  const pal = domainPalette(color);
+  const uid = useId().replace(/:/g, "");
 
   // The sway shrinks with the container so the outermost labels never run
   // off a phone screen; the full wind returns wherever there is room.
@@ -100,42 +103,41 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
         className="relative mx-auto"
         style={{ width: halfWidth * 2, maxWidth: "100%", height: totalHeight }}
       >
-        {/* SVG path behind the nodes */}
+        {/* The trail: a dim hairline for the road ahead, lit in the domain
+            colour (a soft bloom under a bright core) up to where you are. */}
         <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
           viewBox={`0 0 ${halfWidth * 2} ${totalHeight}`}
           preserveAspectRatio="xMidYMin meet"
           aria-hidden
         >
           <defs>
-            <linearGradient id={`path-${color}`} x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor={pathStop(color, "from")}
-                stopOpacity="0.55"
-              />
-              <stop
-                offset="100%"
-                stopColor={pathStop(color, "to")}
-                stopOpacity="0.4"
-              />
+            <linearGradient id={`${uid}-lit`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={pal.light} />
+              <stop offset="100%" stopColor={pal.bright} />
             </linearGradient>
+            <filter id={`${uid}-bloom`} x="-50%" y="-10%" width="200%" height="120%">
+              <feGaussianBlur stdDeviation="6" />
+            </filter>
           </defs>
-          {/* Dashed underlay for "future" path */}
+          {/* the road ahead */}
+          <path d={pathD} fill="none" stroke="rgb(255 255 255 / 0.07)" strokeWidth="10" strokeLinecap="round" />
           <path
             d={pathD}
             fill="none"
-            stroke="hsl(var(--muted))"
-            strokeWidth="14"
+            stroke="rgb(255 255 255 / 0.16)"
+            strokeWidth="1.5"
             strokeLinecap="round"
+            strokeDasharray="2 8"
           />
-          {/* Solid coloured overlay up to current progress */}
+          {/* lit up to current progress */}
           {currentIndex !== 0 && (
             <ProgressPath
               d={pathD}
               currentIndex={currentIndex < 0 ? topics.length : currentIndex}
               total={topics.length}
-              color={color}
+              uid={uid}
+              bloom={pal.bright}
               reduce={!!reduce}
             />
           )}
@@ -178,33 +180,52 @@ function ProgressPath({
   d,
   currentIndex,
   total,
-  color,
+  uid,
+  bloom,
   reduce,
 }: {
   d: string;
   currentIndex: number;
   total: number;
-  color: string;
+  uid: string;
+  bloom: string;
   reduce: boolean;
 }) {
   // Approximate the visible portion as a fraction of the path, by node count.
   // Real path-length-based stroke-dashoffset would be more accurate; this is
   // a close-enough approximation for a winding path with evenly-spaced nodes.
   const fraction = total <= 1 ? 0 : currentIndex / (total - 1);
+  const transition = { duration: reduce ? 0 : 1.4, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
-    <motion.path
-      d={d}
-      fill="none"
-      stroke={`url(#path-${color})`}
-      strokeWidth="14"
-      strokeLinecap="round"
-      strokeDasharray="1"
-      pathLength={1}
-      initial={{ strokeDashoffset: 1 }}
-      animate={{ strokeDashoffset: 1 - fraction }}
-      transition={{ duration: reduce ? 0 : 1.2, ease: [0.22, 1, 0.36, 1] }}
-    />
+    <>
+      <motion.path
+        d={d}
+        fill="none"
+        stroke={bloom}
+        strokeOpacity={0.55}
+        strokeWidth="12"
+        strokeLinecap="round"
+        filter={`url(#${uid}-bloom)`}
+        strokeDasharray="1"
+        pathLength={1}
+        initial={{ strokeDashoffset: 1 }}
+        animate={{ strokeDashoffset: 1 - fraction }}
+        transition={transition}
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke={`url(#${uid}-lit)`}
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        strokeDasharray="1"
+        pathLength={1}
+        initial={{ strokeDashoffset: 1 }}
+        animate={{ strokeDashoffset: 1 - fraction }}
+        transition={transition}
+      />
+    </>
   );
 }
 
@@ -225,21 +246,36 @@ function RoadmapNode({
   reduce: boolean;
 }) {
   const isCurrent = status === "current";
-  const { bright: face, edge } = domainPalette(color);
-  const palette =
-    status === "completed" || status === "current"
-      ? { face, edge, fg: "#fff" }
-      : status === "in_progress"
+  const pal = domainPalette(color);
+  const ink = "hsl(var(--primary-foreground))";
+
+  // Orb looks: done = a solid lit orb with dark ink; current = a dark orb
+  // ringed and filled with the domain's light; in progress = a gold ring;
+  // upcoming = a dim glass orb.
+  const orb: React.CSSProperties =
+    status === "completed"
+      ? {
+          background: `radial-gradient(circle at 35% 25%, ${pal.light}, ${pal.bright} 60%)`,
+          color: ink,
+          boxShadow: `inset 0 1px 0 rgb(255 255 255 / 0.45), 0 0 0 1px ${withAlpha(pal.bright, 0.7)}, 0 0 28px -4px ${withAlpha(pal.bright, 0.75)}`,
+        }
+      : isCurrent
         ? {
-            face: "hsl(var(--xp-bright))",
-            edge: "hsl(var(--xp-shade))",
-            fg: "#fff",
+            background: `radial-gradient(circle at 50% 30%, ${withAlpha(pal.bright, 0.45)}, ${withAlpha(pal.bright, 0.12)} 70%), hsl(var(--card))`,
+            color: pal.light,
+            boxShadow: `inset 0 1px 0 rgb(255 255 255 / 0.2), 0 0 0 2px ${pal.bright}, 0 0 40px -2px ${withAlpha(pal.bright, 0.8)}`,
           }
-        : {
-            face: "hsl(var(--muted))",
-            edge: "hsl(var(--border))",
-            fg: "hsl(var(--muted-foreground))",
-          };
+        : status === "in_progress"
+          ? {
+              background: "radial-gradient(circle at 50% 30%, hsl(var(--xp) / 0.22), hsl(var(--xp) / 0.05) 70%), hsl(var(--card))",
+              color: "hsl(var(--xp))",
+              boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.12), 0 0 0 1.5px hsl(var(--xp) / 0.7), 0 0 24px -6px hsl(var(--xp) / 0.6)",
+            }
+          : {
+              background: "radial-gradient(circle at 50% 25%, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.015) 70%), hsl(var(--card))",
+              color: "hsl(var(--muted-foreground))",
+              boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 0 1px rgb(255 255 255 / 0.1), 0 8px 24px -10px rgb(0 0 0 / 0.8)",
+            };
 
   return (
     <motion.div
@@ -250,7 +286,7 @@ function RoadmapNode({
         delay: reduce ? 0 : Math.min(index * 0.05, 0.6),
         type: reduce ? undefined : "spring",
         stiffness: 260,
-        damping: 16,
+        damping: 18,
       }}
       style={{
         position: "absolute",
@@ -262,86 +298,80 @@ function RoadmapNode({
       className="group"
     >
       {isCurrent && (
-        <motion.span
-          aria-hidden
-          animate={reduce ? undefined : { y: [0, -6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-2 border-border bg-card px-3 py-1.5 text-xs font-black uppercase tracking-wider"
-          style={{ color: edge }}
-        >
-          Start
-          <span className="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-border bg-card" />
-        </motion.span>
+        // Static wrapper owns the centring; the motion child owns the float.
+        <span aria-hidden className="pointer-events-none absolute -top-14 left-1/2 z-10 -translate-x-1/2">
+          <motion.span
+            animate={reduce ? undefined : { y: [0, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="relative block whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold"
+            style={{
+              background: pal.bright,
+              color: ink,
+              boxShadow: `0 0 0 1px ${withAlpha(pal.light, 0.6)}, 0 8px 28px -6px ${withAlpha(pal.bright, 0.8)}`,
+            }}
+          >
+            Start
+            <span
+              className="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 rounded-[2px]"
+              style={{ background: pal.bright }}
+            />
+          </motion.span>
+        </span>
       )}
       {isCurrent && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -inset-[10px] rounded-full border-[7px]"
-          style={{ borderColor: face, opacity: 0.28 }}
-        />
+        <>
+          {/* pulsing halo: two rings breathing out of the orb */}
+          {[0, 1].map((k) => (
+            <motion.span
+              key={k}
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-full"
+              style={{ boxShadow: `0 0 0 2px ${withAlpha(pal.bright, 0.7)}` }}
+              initial={{ scale: 1, opacity: reduce ? 0.35 : 0 }}
+              animate={reduce ? { scale: 1.25, opacity: 0.35 } : { scale: [1, 1.7], opacity: [0.7, 0] }}
+              transition={reduce ? { duration: 0 } : { duration: 2.4, repeat: Infinity, ease: "easeOut", delay: k * 1.2 }}
+            />
+          ))}
+        </>
       )}
 
       <Link
         href={`/topic/${topic.id}`}
         aria-label={`${topic.orderIndex}. ${topic.title}: ${status === "completed" ? "completed" : isCurrent ? "current topic" : status === "in_progress" ? "in progress" : "not started"}`}
-        className="focus-ring relative flex h-full w-full items-center justify-center rounded-full transition-[transform,box-shadow] duration-100 hover:brightness-105 active:translate-y-[7px] active:!shadow-none motion-reduce:transition-none"
-        style={{
-          background: palette.face,
-          color: palette.fg,
-          boxShadow: `0 7px 0 ${palette.edge}`,
-        }}
+        className={cn(
+          "focus-ring relative flex h-full w-full items-center justify-center rounded-full transition-[transform,filter] duration-300 ease-out hover:scale-[1.07] hover:brightness-110 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+          status === "available" && "hover:!shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_0_0_1px_rgb(255_255_255/0.25)]"
+        )}
+        style={orb}
       >
-        {/* glossy highlight, the toy-button detail */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute left-[22%] top-[12%] h-[18%] w-[34%] -rotate-12 rounded-full bg-white/30"
-        />
         {status === "completed" ? (
-          <Check className="h-9 w-9" strokeWidth={4} />
+          <Check className="h-7 w-7" strokeWidth={3.2} />
         ) : isCurrent ? (
-          <Star className="h-9 w-9" fill="currentColor" strokeWidth={2} />
+          <Play className="ml-0.5 h-7 w-7 drop-shadow-[0_0_8px_currentColor]" fill="currentColor" strokeWidth={1.5} />
         ) : status === "in_progress" ? (
-          <Play className="h-8 w-8" fill="currentColor" strokeWidth={2} />
+          <Star className="h-6 w-6" fill="currentColor" strokeWidth={1.5} />
         ) : (
-          <BookOpen className="h-8 w-8" strokeWidth={2.5} />
+          <BookOpen className="h-6 w-6" strokeWidth={2} />
         )}
       </Link>
 
       <div className="pointer-events-none absolute left-1/2 top-full mt-4 w-44 -translate-x-1/2 text-center">
         <span
           className={cn(
-            "inline-block max-w-full truncate rounded-xl border-2 border-border bg-card px-2.5 py-1 text-xs font-extrabold",
-            status === "available"
-              ? "text-muted-foreground"
-              : "text-foreground",
+            "inline-flex max-w-full items-center gap-1.5 rounded-full border bg-card/90 px-3 py-1 text-xs font-medium backdrop-blur-sm",
+            isCurrent ? "text-foreground" : status === "available" ? "border-white/[0.08] text-muted-foreground" : "border-white/10 text-foreground",
           )}
+          style={isCurrent ? { borderColor: withAlpha(pal.bright, 0.45) } : undefined}
         >
           <span
-            className="mr-1 tabular-nums"
-            style={{ color: status === "available" ? undefined : edge }}
+            className="shrink-0 font-mono text-[11px] tabular-nums"
+            style={{ color: status === "available" ? undefined : status === "in_progress" ? "hsl(var(--xp))" : pal.light }}
           >
-            {topic.orderIndex}
+            {String(topic.orderIndex).padStart(2, "0")}
           </span>
-          {topic.title}
+          <span className="truncate">{topic.title}</span>
         </span>
       </div>
     </motion.div>
   );
-}
-
-function pathStop(color: string, end: "from" | "to"): string {
-  const map: Record<string, [string, string]> = {
-    rose: ["#f43f5e", "#ec4899"],
-    blue: ["#3b82f6", "#6366f1"],
-    violet: ["#8b5cf6", "#d946ef"],
-    emerald: ["#10b981", "#14b8a6"],
-    cyan: ["#06b6d4", "#0ea5e9"],
-    sky: ["#0ea5e9", "#3b82f6"],
-    orange: ["#f97316", "#f59e0b"],
-    amber: ["#f59e0b", "#eab308"],
-    teal: ["#14b8a6", "#10b981"],
-    indigo: ["#6366f1", "#8b5cf6"],
-  };
-  const stops = map[color] ?? map.indigo;
-  return end === "from" ? stops[0] : stops[1];
 }

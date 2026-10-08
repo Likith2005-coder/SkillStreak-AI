@@ -13,14 +13,15 @@ type Props = {
   index?: number;
 };
 
-const SIZE = 104;
-const STROKE = 12;
+const SIZE = 92;
+const STROKE = 6;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUM = 2 * Math.PI * RADIUS;
 
 /**
- * One domain as a chunky pressable tile: a fat progress ring in the domain's
- * own colour, the icon in the middle, and the numbers beside it.
+ * One domain as a pressable panel: a thin glowing progress ring in the
+ * domain's own colour, the icon in a tinted well at its centre, and the
+ * numbers beside it as instrument readouts.
  */
 export function DomainProgressRing({ tile, index = 0 }: Props) {
   const reduce = useReducedMotionSafe();
@@ -38,7 +39,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
     >
       <Link
         href={`/domains/${tile.slug}`}
-        className="card-chunky card-press focus-ring flex items-center gap-4 p-4 transition-colors hover:bg-muted/50"
+        className="card-chunky card-press spotlight focus-ring flex items-center gap-4 p-4 [--spot:var(--secondary)]"
       >
         <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
           <svg width={SIZE} height={SIZE} className="-rotate-90" aria-hidden>
@@ -47,7 +48,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
               cy={SIZE / 2}
               r={RADIUS}
               fill="none"
-              stroke="hsl(var(--muted))"
+              stroke="rgb(255 255 255 / 0.06)"
               strokeWidth={STROKE}
             />
             {pct > 0 && (
@@ -60,6 +61,7 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
                 strokeWidth={STROKE}
                 strokeLinecap="round"
                 strokeDasharray={CIRCUM}
+                style={{ filter: `drop-shadow(0 0 5px ${hex})` }}
                 initial={reduce ? false : { strokeDashoffset: CIRCUM }}
                 animate={{ strokeDashoffset: dashOffset }}
                 transition={{ duration: reduce ? 0 : 1, delay: reduce ? 0 : 0.15 + index * 0.05, ease: [0.22, 1, 0.36, 1] }}
@@ -67,29 +69,29 @@ export function DomainProgressRing({ tile, index = 0 }: Props) {
             )}
           </svg>
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <span className={cn("flex h-12 w-12 items-center justify-center rounded-full", s.iconBg)}>
-              <DomainIcon name={tile.icon} className={cn("h-6 w-6", s.text)} />
+            <span className={cn("flex h-11 w-11 items-center justify-center rounded-full ring-1", s.iconBg, s.ring)}>
+              <DomainIcon name={tile.icon} className={cn("h-5 w-5", s.text)} />
             </span>
           </div>
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-black text-foreground">{tile.name}</div>
-          <div className={cn("mt-0.5 text-2xl font-black tabular-nums", s.text)}>
+          <div className="truncate text-[15px] font-semibold text-foreground">{tile.name}</div>
+          <div className={cn("mt-0.5 font-display text-3xl tabular-nums leading-tight", s.text)}>
             {Math.round(pct * 100)}%
           </div>
-          <div className="text-xs font-bold text-muted-foreground">
+          <div className="font-mono text-[11px] text-muted-foreground">
             {tile.done} of {tile.total} topics
           </div>
           {(tile.avgScore !== null || done) && (
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {done && (
-                <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-extrabold text-primary">
+                <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                   Complete
                 </span>
               )}
               {tile.avgScore !== null && (
-                <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[11px] text-muted-foreground">
                   Avg {tile.avgScore}/5
                 </span>
               )}

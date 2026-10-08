@@ -1,55 +1,49 @@
 "use client";
 
 /**
- * Closing CTA section just before the footer. Mirror of the BurstSection's
- * gradient panel, but a small static one so users who scroll past the bento
- * grid still get a clear "sign up" prompt without scrolling back up.
+ * Closing CTA just before the footer: one glowing panel with a light beam
+ * sweeping its border (the page's single `border-beam`), an aurora pool
+ * rising from below, and the shared sign-up pair.
  */
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Flame } from "lucide-react";
+import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { HeroCTA } from "./HeroCTA";
 
 export function FinalCTA() {
+  const reduce = useReducedMotion();
   return (
-    <section className="px-4 py-24 lg:px-12">
+    <section className="px-4 py-24 lg:px-12 lg:py-32">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-grape px-6 py-16 text-center text-white sm:px-12 sm:py-20"
-        style={{ boxShadow: "0 8px 0 hsl(var(--grape-shade))" }}
+        transition={{ duration: reduce ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+        // No overflow-hidden here: the beam rides the border, outside the
+        // padding box, and would be clipped. No `spotlight` either: both
+        // utilities draw with ::before.
+        className="card-chunky border-beam relative mx-auto max-w-4xl rounded-[1.6rem] px-6 py-16 text-center shadow-[0_40px_120px_-40px_hsl(var(--aurora-2)/0.45)] sm:px-12 sm:py-20"
       >
-        {/* Decorative blobs */}
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_75%,rgba(255,255,255,0.18),transparent_55%)]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_25%,rgba(217,70,239,0.30),transparent_50%)]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-          aria-hidden
-        />
+        {/* Aurora pool rising from the bottom edge + faint grid */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+          <div className="absolute -bottom-40 left-1/2 h-80 w-[46rem] max-w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-4)/0.22),hsl(var(--aurora-3)/0.14)_45%,hsl(var(--aurora-1)/0.10)_70%,transparent)] blur-2xl" />
+          <div className="grid-faint absolute inset-0 opacity-70" />
+        </div>
 
         <div className="relative">
-          <Sparkles className="mx-auto h-9 w-9" />
-          <h3 className="mx-auto mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight md:text-5xl">
-            Your first streak is one click away.
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-energy/10 text-energy ring-1 ring-energy/25 shadow-[0_0_32px_-6px_hsl(var(--energy)/0.7)]">
+            <Flame className="h-6 w-6" fill="currentColor" aria-hidden />
+          </span>
+          <h3 className="mx-auto mt-6 max-w-2xl font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
+            Your first <span className="font-serif-accent text-energy [text-shadow:0_0_28px_hsl(var(--energy)/0.5)]">streak</span> is one
+            click away.
           </h3>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-white md:text-base">
+          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground md:text-base">
             Sign up in 60 seconds. Start with the topic the AI tutor recommends.
           </p>
 
-          <div className="mt-8">
+          <div className="mx-auto mt-9 max-w-md sm:max-w-none">
             <HeroCTA />
           </div>
         </div>

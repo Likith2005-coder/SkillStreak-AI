@@ -26,9 +26,10 @@ const DAMPING = 0.9;
 const DT = 0.1;
 const CHROMA = 0.005;
 
-// Signal palette split colours (0..1 rgb): cyan and violet.
-const COLOR_A: [number, number, number] = [0x22 / 255, 0xd3 / 255, 0xee / 255];
-const COLOR_B: [number, number, number] = [0xa8 / 255, 0x55 / 255, 0xf7 / 255];
+// Midnight aurora split colours (0..1 rgb): cyan (aurora-3) and violet
+// (aurora-1), so the drag fringe matches the light blooming behind the mark.
+const COLOR_A: [number, number, number] = [0x1f / 255, 0xe2 / 255, 0xff / 255];
+const COLOR_B: [number, number, number] = [0x8c / 255, 0x52 / 255, 0xff / 255];
 
 const VERT_SRC = `#version 300 es
 in vec2 aPos;
@@ -331,10 +332,11 @@ export function MeshText({
       cursor.vx = 0;
       cursor.vy = 0;
     };
-    wrapper.addEventListener("pointermove", (e) => {
+    const onPointerMove = (e: PointerEvent) => {
       onMove(e);
       ensureRunning();
-    });
+    };
+    wrapper.addEventListener("pointermove", onPointerMove);
     wrapper.addEventListener("pointerleave", onLeave);
 
     // Only simulate when the wordmark is actually on screen AND there is
@@ -412,7 +414,7 @@ export function MeshText({
       cancelAnimationFrame(rafId);
       io.disconnect();
       ro.disconnect();
-      wrapper.removeEventListener("pointermove", onMove);
+      wrapper.removeEventListener("pointermove", onPointerMove);
       wrapper.removeEventListener("pointerleave", onLeave);
       gl.deleteBuffer(posBuf);
       gl.deleteBuffer(uvBuf);

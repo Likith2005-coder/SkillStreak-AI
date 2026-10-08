@@ -41,10 +41,10 @@ import { cn } from "@/lib/utils";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const CERT_LEVEL_STYLES: Record<string, { badge: string; label: string }> = {
-  foundation: { badge: "bg-primary/10 text-primary", label: "Foundation" },
-  intermediate: { badge: "bg-secondary/10 text-secondary", label: "Intermediate" },
-  advanced: { badge: "bg-grape/10 text-grape", label: "Advanced" },
-  expert: { badge: "bg-xp/10 text-xp", label: "Expert" },
+  foundation: { badge: "border-primary/25 bg-primary/10 text-primary", label: "Foundation" },
+  intermediate: { badge: "border-secondary/25 bg-secondary/10 text-secondary", label: "Intermediate" },
+  advanced: { badge: "border-grape/25 bg-grape/10 text-grape", label: "Advanced" },
+  expert: { badge: "border-xp/25 bg-xp/10 text-xp", label: "Expert" },
 };
 
 const SENIORITY_STYLES: Record<string, string> = {
@@ -115,9 +115,9 @@ export default function CareerPathPage() {
     <main className="mx-auto max-w-5xl px-4 pb-24 pt-8 lg:px-8">
       <Link
         href={slug ? `/domains/${slug}` : "/domains"}
-        className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-2 text-sm font-extrabold text-muted-foreground transition-colors hover:text-foreground"
+        className="focus-ring -ml-2 inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+        <ArrowLeft className="h-4 w-4" strokeWidth={2.4} />
         Back to roadmap
       </Link>
 
@@ -127,11 +127,11 @@ export default function CareerPathPage() {
         <LockedState slug={slug} />
       ) : error ? (
         <div className="mt-16 flex flex-col items-center text-center">
-          <p className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive-text">
+          <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text">
             {error}
           </p>
           <Button variant="outline" className="mt-4" onClick={() => slug && load(slug)}>
-            <RefreshCcw className="h-4 w-4" strokeWidth={3} /> Try again
+            <RefreshCcw className="h-4 w-4" strokeWidth={2.4} /> Try again
           </Button>
         </div>
       ) : career ? (
@@ -146,19 +146,18 @@ function LockedState({ slug }: { slug?: string }) {
     <div className="card-chunky mx-auto mt-10 flex max-w-xl flex-col items-center p-8 text-center">
       <span
         aria-hidden
-        className="flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl bg-muted"
-        style={{ boxShadow: "0 5px 0 hsl(var(--border))" }}
+        className="flex h-16 w-16 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]"
       >
-        <Lock className="h-8 w-8 text-muted-foreground" strokeWidth={2.6} />
+        <Lock className="h-8 w-8 text-muted-foreground" strokeWidth={2.2} />
       </span>
       <h1 className="mt-5 font-display text-2xl text-foreground">
         Your career path is waiting at the end of the roadmap.
       </h1>
-      <p className="mt-2 max-w-sm text-base font-semibold text-muted-foreground">
+      <p className="mt-2 max-w-sm text-base text-muted-foreground">
         Complete every topic in this domain to unlock your personalized career
         map — stages, certifications, roles and salaries.
       </p>
-      <Button asChild size="lg" className="mt-6 uppercase">
+      <Button asChild size="lg" className="mt-6">
         <Link href={slug ? `/domains/${slug}` : "/domains"}>Back to the roadmap</Link>
       </Button>
     </div>
@@ -177,7 +176,7 @@ function LoadingState() {
       <div className="mt-6" aria-live="polite">
         <Mascot message={LOADING_LINES[i]} size={110} />
       </div>
-      <p className="mt-6 max-w-sm text-sm font-semibold text-muted-foreground">
+      <p className="mt-6 max-w-sm text-sm text-muted-foreground">
         First generation for a persona takes up to ~30 seconds. After that it
         loads instantly.
       </p>
@@ -186,11 +185,11 @@ function LoadingState() {
 }
 
 const SECTION_TONES = {
-  energy: { face: "bg-energy-bright", edge: "hsl(var(--energy-shade))" },
-  primary: { face: "bg-primary-bright", edge: "hsl(var(--primary-shade))" },
-  xp: { face: "bg-xp-bright", edge: "hsl(var(--xp-shade))" },
-  secondary: { face: "bg-secondary-bright", edge: "hsl(var(--secondary-shade))" },
-  grape: { face: "bg-grape-bright", edge: "hsl(var(--grape-shade))" },
+  energy: { face: "bg-energy/10 text-energy ring-1 ring-energy/25 shadow-[0_0_24px_-6px_hsl(var(--energy)/0.6)]" },
+  primary: { face: "bg-primary/10 text-primary ring-1 ring-primary/25 shadow-[0_0_24px_-6px_hsl(var(--primary)/0.6)]" },
+  xp: { face: "bg-xp/10 text-xp ring-1 ring-xp/25 shadow-[0_0_24px_-6px_hsl(var(--xp)/0.6)]" },
+  secondary: { face: "bg-secondary/10 text-secondary ring-1 ring-secondary/25 shadow-[0_0_24px_-6px_hsl(var(--secondary)/0.6)]" },
+  grape: { face: "bg-grape/10 text-grape ring-1 ring-grape/25 shadow-[0_0_24px_-6px_hsl(var(--grape)/0.6)]" },
 } as const;
 
 function Section({
@@ -219,14 +218,13 @@ function Section({
       <div className="flex items-center gap-3">
         <span
           aria-hidden
-          className={cn("flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-xl text-white", t.face)}
-          style={{ boxShadow: `0 4px 0 ${t.edge}` }}
+          className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl", t.face)}
         >
-          <Icon className="h-5 w-5" strokeWidth={2.6} />
+          <Icon className="h-5 w-5" strokeWidth={2.2} />
         </span>
         <div>
-          <h2 className="font-display text-2xl leading-tight text-foreground">{title}</h2>
-          {sub && <p className="text-sm font-semibold text-muted-foreground">{sub}</p>}
+          <h2 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">{title}</h2>
+          {sub && <p className="text-sm text-muted-foreground">{sub}</p>}
         </div>
       </div>
       <div className="mt-6">{children}</div>
@@ -238,7 +236,7 @@ function SkillChips({ skills }: { skills: string[] }) {
   return (
     <div className="mt-3 flex flex-wrap gap-1.5">
       {skills.map((sk) => (
-        <span key={sk} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-foreground">
+        <span key={sk} className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium text-foreground">
           {sk}
         </span>
       ))}
@@ -264,28 +262,27 @@ function CareerView({
   return (
     <div>
       {/* ── Headline: the reward slab ── */}
-      <header
-        className="mt-2 rounded-[1.5rem] bg-primary p-6 text-primary-foreground sm:p-8"
-        style={{ boxShadow: "0 6px 0 hsl(var(--primary-shade))" }}
-      >
-        <div className="flex flex-col gap-6 md:flex-row md:items-center">
+      <header className="card-chunky border-beam mt-2">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+          <div className="absolute -left-20 -top-40 h-[360px] w-[560px] rounded-full bg-primary/15 blur-[80px]" />
+          <div className="absolute -top-32 right-[-8%] h-[300px] w-[380px] rounded-full bg-aurora-3/10 blur-[90px]" />
+          <div className="grid-faint absolute inset-0" />
+        </div>
+        <div className="relative flex flex-col gap-6 p-6 sm:p-9 md:flex-row md:items-center">
           <div className="min-w-0 flex-1">
-            <p
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold text-white"
-              style={{ background: "hsl(var(--primary-shade))" }}
-            >
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Star className="h-3.5 w-3.5 fill-current" />
               {adminOverride ? "Admin preview" : `Roadmap completed — your ${career.domainName} career map`}
             </p>
-            <h1 className="mt-3 font-display text-3xl leading-tight sm:text-4xl [text-wrap:balance]">
+            <h1 className="mt-4 font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] text-foreground [text-wrap:balance]">
               {career.headline}
             </h1>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-relaxed text-white">{career.summary}</p>
+            <p className="mt-4 max-w-[65ch] text-base leading-relaxed text-muted-foreground">{career.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {[...personaChips, `Tailored to ${career.domainName}`].map((c) => (
                 <span
                   key={c}
-                  className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-primary"
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-foreground"
                 >
                   {c}
                 </span>
@@ -294,10 +291,9 @@ function CareerView({
           </div>
           <span
             aria-hidden
-            className="hidden h-24 w-24 shrink-0 rotate-6 items-center justify-center rounded-3xl bg-xp-bright md:flex"
-            style={{ boxShadow: "0 6px 0 hsl(var(--xp-shade))" }}
+            className="hidden h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-xp/10 text-xp ring-1 ring-xp/30 shadow-[0_0_48px_-6px_hsl(var(--xp)/0.6)] md:flex"
           >
-            <Trophy className="h-12 w-12 text-white" strokeWidth={2.4} />
+            <Trophy className="h-11 w-11 drop-shadow-[0_0_12px_currentColor]" strokeWidth={1.8} />
           </span>
         </div>
       </header>
@@ -308,12 +304,11 @@ function CareerView({
           {career.firstSteps.map((s, i) => (
             <li key={i} className="card-chunky p-5">
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-energy-bright font-display text-base text-white"
-                style={{ boxShadow: "0 3px 0 hsl(var(--energy-shade))" }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-energy/10 font-mono text-sm font-semibold text-energy ring-1 ring-energy/30"
               >
                 {i + 1}
               </span>
-              <p className="mt-3 text-sm font-bold leading-relaxed text-foreground">{s}</p>
+              <p className="mt-3 text-[15px] leading-relaxed text-foreground">{s}</p>
             </li>
           ))}
         </ol>
@@ -323,28 +318,27 @@ function CareerView({
       <Section icon={Flag} tone="primary" title="The road" sub="Your stages, in order — timeframes already adjusted to your pace.">
         <ol className="relative space-y-6">
           {/* the road itself */}
-          <span aria-hidden className="absolute bottom-6 left-[21px] top-6 w-1.5 rounded-full bg-primary-bright/30" />
+          <span aria-hidden className="absolute bottom-6 left-[23px] top-6 w-0.5 rounded-full bg-gradient-to-b from-primary via-primary/40 to-white/[0.06] shadow-[0_0_12px_hsl(var(--primary)/0.5)]" />
           {career.stages.map((st) => (
             <li key={st.phase} className="relative flex gap-4">
               <span
-                className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-bright font-display text-lg text-white"
-                style={{ boxShadow: "0 4px 0 hsl(var(--primary-shade))" }}
+                className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-card font-mono text-base font-semibold text-primary ring-1 ring-primary/50 shadow-[0_0_24px_-4px_hsl(var(--primary)/0.6)]"
               >
                 {st.phase}
               </span>
               <div className="card-chunky min-w-0 flex-1 p-5">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <h3 className="text-lg font-black text-foreground">{st.title}</h3>
-                  <span className="rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-extrabold text-secondary">
+                  <h3 className="text-lg font-semibold text-foreground">{st.title}</h3>
+                  <span className="rounded-full border border-secondary/25 bg-secondary/10 px-2.5 py-0.5 font-mono text-xs font-medium text-secondary">
                     {st.timeframe}
                   </span>
                 </div>
-                <p className="mt-2 text-sm font-semibold leading-relaxed text-muted-foreground">{st.focus}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{st.focus}</p>
                 <SkillChips skills={st.skills} />
                 <p className="mt-3 flex items-start gap-1.5 text-sm font-semibold text-foreground">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2.6} />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
                   <span>
-                    <span className="font-black text-primary">Done when:</span> {st.milestone}
+                    <span className="font-semibold text-primary">Done when:</span> {st.milestone}
                   </span>
                 </p>
               </div>
@@ -362,17 +356,17 @@ function CareerView({
               <div key={c.name} className="card-chunky p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-base font-black text-foreground">{c.name}</h3>
-                    <p className="mt-0.5 text-sm font-semibold text-muted-foreground">{c.org}</p>
+                    <h3 className="text-base font-semibold text-foreground">{c.name}</h3>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{c.org}</p>
                   </div>
-                  <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-extrabold", style.badge)}>
+                  <span className={cn("shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium", style.badge)}>
                     {style.label}
                   </span>
                 </div>
-                <p className="mt-3 text-sm font-semibold leading-relaxed text-muted-foreground">{c.whyItMatters}</p>
-                <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-extrabold text-foreground">
-                  <span className="rounded-full bg-muted px-2.5 py-0.5">When: {c.whenToTake}</span>
-                  <span className="rounded-full bg-muted px-2.5 py-0.5">Cost: {c.cost}</span>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{c.whyItMatters}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-medium text-foreground">
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5">When: {c.whenToTake}</span>
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5">Cost: {c.cost}</span>
                 </div>
               </div>
             );
@@ -385,14 +379,14 @@ function CareerView({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {career.roles.map((r, i) => (
             <div key={r.title} className="card-chunky p-5">
-              <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-extrabold text-muted-foreground">
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                 Step {i + 1}
               </span>
-              <h3 className={cn("mt-3 text-base font-black leading-snug", SENIORITY_STYLES[r.seniority] ?? "text-foreground")}>
+              <h3 className={cn("mt-3 text-base font-semibold leading-snug", SENIORITY_STYLES[r.seniority] ?? "text-foreground")}>
                 {r.title}
               </h3>
-              <p className="mt-2 font-display text-xl tabular-nums text-foreground">{r.salaryRange}</p>
-              <p className="mt-1.5 text-sm font-semibold leading-relaxed text-muted-foreground">{r.whenReady}</p>
+              <p className="mt-2 font-mono text-lg font-semibold tabular-nums text-foreground">{r.salaryRange}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{r.whenReady}</p>
             </div>
           ))}
         </div>
@@ -403,15 +397,15 @@ function CareerView({
         <div className="grid gap-4 lg:grid-cols-3">
           {career.projects.map((p) => (
             <div key={p.title} className="card-chunky p-5">
-              <h3 className="text-base font-black text-foreground">{p.title}</h3>
-              <p className="mt-2 text-sm font-semibold leading-relaxed text-muted-foreground">{p.description}</p>
+              <h3 className="text-base font-semibold text-foreground">{p.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
               <SkillChips skills={p.skills} />
             </div>
           ))}
         </div>
       </Section>
 
-      <p className="mt-16 text-center text-sm font-semibold text-muted-foreground">
+      <p className="mt-16 text-center text-sm text-muted-foreground">
         Generated from your onboarding answers — experience, goal and pace.
         Salary bands are indicative, not guarantees.
       </p>

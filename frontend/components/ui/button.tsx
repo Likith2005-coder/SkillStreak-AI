@@ -5,32 +5,45 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// The chunky "pressable" button. A solid face sits on a darker edge (the
-// box-shadow); pressing sinks the face into the edge (translate-y + shadow
-// collapse) so it feels like a physical key, not a hover effect. The edge
-// height is a CSS variable so each size can carry a proportional depth.
-const PRESS =
-  "[--edge:4px] shadow-[0_var(--edge)_0_var(--edge-color)] hover:brightness-[1.06] active:translate-y-[var(--edge)] active:shadow-[0_0_0_var(--edge-color)]";
+// Midnight buttons. Filled variants are lit from within: a bright face, a
+// thin inner highlight on the top lip, and a coloured halo that grows on
+// hover, as if the button were a light source. Press = a tiny scale-down.
+// Fills carry dark ink (`*-foreground`), the role colours are too bright for
+// white text.
+// Written out in full (not built from a template) so Tailwind can see them.
+const LIT = {
+  primary:
+    "bg-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_hsl(var(--primary)/0.6),0_8px_24px_-10px_hsl(var(--primary)/0.7)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_0_1px_hsl(var(--primary)/0.8),0_10px_36px_-8px_hsl(var(--primary)/0.85)] hover:brightness-110",
+  secondary:
+    "bg-secondary shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_hsl(var(--secondary)/0.6),0_8px_24px_-10px_hsl(var(--secondary)/0.7)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_0_1px_hsl(var(--secondary)/0.8),0_10px_36px_-8px_hsl(var(--secondary)/0.85)] hover:brightness-110",
+  energy:
+    "bg-energy shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_hsl(var(--energy)/0.6),0_8px_24px_-10px_hsl(var(--energy)/0.7)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_0_1px_hsl(var(--energy)/0.8),0_10px_36px_-8px_hsl(var(--energy)/0.85)] hover:brightness-110",
+  grape:
+    "bg-grape shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_hsl(var(--grape)/0.6),0_8px_24px_-10px_hsl(var(--grape)/0.7)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_0_1px_hsl(var(--grape)/0.8),0_10px_36px_-8px_hsl(var(--grape)/0.85)] hover:brightness-110",
+  destructive:
+    "bg-destructive shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_hsl(var(--destructive)/0.6),0_8px_24px_-10px_hsl(var(--destructive)/0.7)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_0_1px_hsl(var(--destructive)/0.8),0_10px_36px_-8px_hsl(var(--destructive)/0.85)] hover:brightness-110",
+};
 
 const buttonVariants = cva(
-  "relative inline-flex select-none items-center justify-center gap-2 rounded-2xl font-extrabold tracking-wide ring-offset-background transition-[transform,box-shadow,filter,background-color] duration-100 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none motion-reduce:transition-none",
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold tracking-[-0.01em] ring-offset-background transition-[transform,box-shadow,filter,background-color,border-color] duration-200 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:border-white/[0.06] disabled:bg-white/[0.06] disabled:text-muted-foreground disabled:shadow-none disabled:brightness-100 motion-reduce:transition-none motion-reduce:active:scale-100",
   {
     variants: {
       variant: {
-        default: `${PRESS} bg-primary text-primary-foreground [--edge-color:hsl(var(--primary-shade))]`,
-        secondary: `${PRESS} bg-secondary text-secondary-foreground [--edge-color:hsl(var(--secondary-shade))]`,
-        energy: `${PRESS} bg-energy text-white [--edge-color:hsl(var(--energy-shade))]`,
-        grape: `${PRESS} bg-grape text-white [--edge-color:hsl(var(--grape-shade))]`,
-        outline: `${PRESS} border-2 border-border bg-card text-foreground [--edge-color:hsl(var(--border))] hover:bg-muted`,
-        ghost: "text-foreground hover:bg-muted",
-        destructive: `${PRESS} bg-destructive text-destructive-foreground [--edge-color:hsl(var(--destructive-shade))]`,
-        link: "h-auto px-0 text-secondary underline-offset-4 hover:underline",
+        default: `${LIT.primary} text-primary-foreground`,
+        secondary: `${LIT.secondary} text-secondary-foreground`,
+        energy: `${LIT.energy} text-primary-foreground`,
+        grape: `${LIT.grape} text-primary-foreground`,
+        outline:
+          "border border-white/10 bg-white/[0.03] text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] hover:border-white/20 hover:bg-white/[0.07]",
+        ghost: "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
+        destructive: `${LIT.destructive} text-destructive-foreground`,
+        link: "h-auto px-0 text-secondary underline-offset-4 hover:underline active:scale-100",
       },
       size: {
-        sm: "h-9 px-4 text-xs [--edge:3px]",
+        sm: "h-9 px-3.5 text-[13px]",
         md: "h-11 px-5 text-sm",
-        lg: "h-14 px-8 text-base",
-        icon: "h-11 w-11",
+        lg: "h-12 px-7 text-[15px]",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: { variant: "default", size: "md" },

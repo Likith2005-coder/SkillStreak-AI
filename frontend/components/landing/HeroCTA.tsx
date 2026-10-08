@@ -1,30 +1,27 @@
 "use client";
 
 /**
- * The shared "Get started" + "I already have an account" pair, for the
- * coloured bands (BurstSection, FinalCTA).
- *
- * Chunky keys that work on any colour: a white face (or a white-outlined
- * clear one) sitting on a translucent dark edge, so the 3D depth reads the
- * same over green, grape or blue. Pressing sinks the key into its edge.
+ * The shared "Get started" + "I have an account" pair for the closing
+ * moments of the landing page (BurstSection, FinalCTA): the lit volt primary
+ * and a hairline outline, both from the Midnight Button.
  */
 
 import { Link } from "next-view-transitions";
 import { ArrowRight } from "lucide-react";
-
-const KEY =
-  "focus-ring inline-flex h-14 items-center justify-center gap-2 rounded-2xl px-8 text-base font-black uppercase tracking-wider transition-[transform,box-shadow] duration-100 [box-shadow:0_5px_0_rgb(0_0_0/0.22)] active:translate-y-[5px] active:[box-shadow:none] motion-reduce:transition-none";
+import { Button } from "@/components/ui/button";
 
 export function HeroCTA() {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-      <Link href="/register" className={`${KEY} group bg-white text-primary hover:brightness-95`}>
-        Get started — it&apos;s free
-        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" strokeWidth={3} aria-hidden />
-      </Link>
-      <Link href="/login" className={`${KEY} border-2 border-white/80 bg-transparent text-white hover:bg-white/10`}>
-        I have an account
-      </Link>
+    <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+      <Button asChild size="lg" className="group h-[52px] px-8 text-base">
+        <Link href="/register">
+          Get started — it&apos;s free
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+        </Link>
+      </Button>
+      <Button asChild size="lg" variant="outline" className="h-[52px] px-7 text-base">
+        <Link href="/login">I have an account</Link>
+      </Button>
     </div>
   );
 }

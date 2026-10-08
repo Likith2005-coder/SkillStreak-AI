@@ -10,33 +10,40 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <main className="relative flex min-h-[100svh] items-center justify-center bg-background px-4 py-16">
-      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-        <Mascot size={110} message="Hmm, this trail doesn't go anywhere." className="mb-6" />
+    <main className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-background px-4 py-16">
+      {/* Aurora light + faint grid behind the numerals */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-[38%] h-[34rem] w-[52rem] max-w-[150vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-2)/0.18),hsl(var(--aurora-1)/0.10)_50%,transparent)] blur-2xl" />
+        <div className="grid-faint absolute inset-0" />
+      </div>
 
-        <h1 className="flex items-center gap-3 font-display text-[clamp(5rem,22vw,9rem)] leading-none text-secondary">
+      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
+        <Mascot size={96} message="Hmm, this trail doesn't go anywhere." className="mb-8" />
+
+        <h1 className="flex items-center gap-[0.12em] font-display text-[clamp(5.5rem,24vw,10rem)] leading-none text-foreground [text-shadow:0_0_60px_hsl(var(--aurora-2)/0.35)]">
           <span aria-hidden>4</span>
           <span
             aria-hidden
-            className="flex h-[0.8em] w-[0.8em] -rotate-6 items-center justify-center rounded-[0.22em] bg-energy-bright"
-            style={{ boxShadow: "0 0.06em 0 hsl(var(--energy-shade))" }}
+            className="relative flex h-[0.78em] w-[0.78em] items-center justify-center rounded-full border border-secondary/50 bg-card text-secondary shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_0_0_0.06em_hsl(var(--secondary)/0.08),0_0_60px_-6px_hsl(var(--secondary)/0.6)]"
           >
-            <Compass className="h-1/2 w-1/2 text-white" strokeWidth={2.6} />
+            <Compass className="h-1/2 w-1/2" strokeWidth={1.75} />
           </span>
           <span aria-hidden>4</span>
           <span className="sr-only">404: page not found</span>
         </h1>
 
-        <h2 className="mt-6 font-display text-3xl text-foreground sm:text-4xl">You wandered off the path.</h2>
-        <p className="mt-3 max-w-md text-lg font-semibold text-muted-foreground [text-wrap:pretty]">
+        <h2 className="mt-8 font-display text-3xl leading-tight text-foreground [text-wrap:balance] sm:text-5xl">
+          You wandered off the <span className="font-serif-accent text-primary text-glow">path</span>.
+        </h2>
+        <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground [text-wrap:pretty]">
           Maybe a topic got renamed, or the link was typed wrong. No streak lost. Let&apos;s get you back.
         </p>
 
-        <div className="mt-9 flex w-full max-w-sm flex-col gap-3">
-          <Button asChild size="lg" className="w-full uppercase tracking-wider">
+        <div className="mt-9 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
+          <Button asChild size="lg">
             <Link href="/dashboard">Back to my path</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="w-full uppercase tracking-wider text-secondary">
+          <Button asChild size="lg" variant="outline">
             <Link href="/">Home</Link>
           </Button>
         </div>

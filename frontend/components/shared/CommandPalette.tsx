@@ -5,16 +5,20 @@
  *
  * Opens on the keyboard shortcut anywhere in the dashboard. Lets the user
  * jump to the major pages, open the chatbot, or navigate to any domain.
- * Pattern: cmdk + a thin shadcn-style dialog shell.
+ * Pattern: cmdk + a thin dialog shell. Midnight: a Raycast-grade floating
+ * panel over a blurred dim, icon wells, a lit selection row with a volt
+ * edge glow, and mono key hints.
  */
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   Bot,
   ChartLine,
+  CornerDownLeft,
   Flame,
   LayoutDashboard,
   ListChecks,
@@ -24,9 +28,14 @@ import {
   Trophy,
 } from "lucide-react";
 import { fetchDomains, type Domain } from "@/lib/api";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+
+const GROUP =
+  "[&_[cmdk-group-heading]]:label-mono [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-muted-foreground";
 
 export function CommandPalette() {
   const router = useRouter();
+  const reduce = useReducedMotionSafe();
   const [open, setOpen] = useState(false);
   const [domains, setDomains] = useState<Domain[]>([]);
 
@@ -37,6 +46,7 @@ export function CommandPalette() {
         e.preventDefault();
         setOpen((v) => !v);
       }
+      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -61,73 +71,106 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start justify-center bg-foreground/40 px-4 pt-[12vh]"
+      className="fixed inset-0 z-[80] flex items-start justify-center bg-black/60 px-4 pt-[12vh] backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) setOpen(false);
       }}
     >
-      <Command
-        label="Command palette"
-        className="w-full max-w-xl overflow-hidden rounded-3xl border-2 border-b-[6px] border-border bg-card"
+      <motion.div
+        initial={reduce ? false : { opacity: 0, y: -8, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-xl"
       >
-        <div className="flex items-center gap-2 border-b-2 border-border px-4 focus-within:border-secondary-bright">
-          <Search className="h-5 w-5 text-muted-foreground" strokeWidth={2.5} />
-          <Command.Input
-            placeholder="Jump to anywhere — try 'domains', 'leaderboard', or 'cybersecurity'…"
-            className="flex-1 bg-transparent px-1 py-4 text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
-            aria-label="Search commands and destinations"
-          />
-          <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5 text-[11px] font-extrabold text-muted-foreground">
-            ESC
-          </kbd>
-        </div>
+        {/* Aurora light leaking from behind the panel. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -inset-x-10 -top-16 h-40 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.25),transparent)] blur-2xl"
+        />
+        <Command
+          label="Command palette"
+          className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/95 shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_30px_80px_-20px_rgb(0_0_0/0.9),0_0_0_1px_rgb(0_0_0/0.5)]"
+        >
+          <div className="flex items-center gap-3 border-b border-white/[0.07] px-4">
+            <Search className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={2} />
+            <Command.Input
+              autoFocus
+              placeholder="Jump to anywhere: 'domains', 'leaderboard', 'cybersecurity'…"
+              className="h-14 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground"
+              aria-label="Search commands and destinations"
+            />
+            <kbd className="rounded-md border border-white/10 bg-white/[0.05] px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+              ESC
+            </kbd>
+          </div>
 
-        <Command.List className="max-h-[60vh] overflow-y-auto p-2 text-sm">
-          <Command.Empty className="px-3 py-8 text-center text-sm font-bold text-muted-foreground">
-            Nothing matches that. Try a domain name?
-          </Command.Empty>
+          <Command.List className="max-h-[60vh] overflow-y-auto p-2 text-sm">
+            <Command.Empty className="px-3 py-10 text-center text-sm text-muted-foreground">
+              Nothing matches that. Try a domain name?
+            </Command.Empty>
 
-          <Command.Group heading="Navigate" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
-            <Item icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" onSelect={() => go("/dashboard")} />
-            <Item icon={<BookOpen className="h-4 w-4" />} label="Domains" onSelect={() => go("/domains")} />
-            <Item icon={<Bot className="h-4 w-4" />} label="Chatbot" onSelect={() => go("/chatbot")} />
-            <Item icon={<ListChecks className="h-4 w-4" />} label="Quiz history" onSelect={() => go("/progress")} />
-            <Item icon={<ChartLine className="h-4 w-4" />} label="Progress" onSelect={() => go("/progress")} />
-            <Item icon={<Trophy className="h-4 w-4" />} label="Leaderboard" onSelect={() => go("/leaderboard")} />
-            <Item icon={<Settings className="h-4 w-4" />} label="Settings" onSelect={() => go("/settings")} />
-          </Command.Group>
-
-          {domains.length > 0 && (
-            <Command.Group heading="Domains" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
-              {domains.map((d) => (
-                <Item
-                  key={d.id}
-                  icon={<Sparkles className="h-4 w-4 text-primary" />}
-                  label={d.name}
-                  subtitle={d.roadmap ? `${d.roadmap.totalTopics} topics` : "via chatbot"}
-                  onSelect={() =>
-                    go(d.isCurated ? `/domains/${d.slug}` : `/chatbot?domain=${d.slug}`)
-                  }
-                />
-              ))}
+            <Command.Group heading="Navigate" className={GROUP}>
+              <Item icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" onSelect={() => go("/dashboard")} />
+              <Item icon={<BookOpen className="h-4 w-4" />} label="Domains" onSelect={() => go("/domains")} />
+              <Item icon={<Bot className="h-4 w-4" />} label="Chatbot" onSelect={() => go("/chatbot")} />
+              <Item icon={<ListChecks className="h-4 w-4" />} label="Quiz history" onSelect={() => go("/progress")} />
+              <Item icon={<ChartLine className="h-4 w-4" />} label="Progress" onSelect={() => go("/progress")} />
+              <Item icon={<Trophy className="h-4 w-4" />} label="Leaderboard" onSelect={() => go("/leaderboard")} />
+              <Item icon={<Settings className="h-4 w-4" />} label="Settings" onSelect={() => go("/settings")} />
             </Command.Group>
-          )}
 
-          <Command.Group heading="Actions" className="text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-extrabold">
-            <Item icon={<Flame className="h-4 w-4 text-energy-bright" fill="currentColor" />} label="Use a streak freeze" subtitle="Rescue a missed day" onSelect={() => go("/settings")} />
-          </Command.Group>
-        </Command.List>
+            {domains.length > 0 && (
+              <Command.Group heading="Domains" className={GROUP}>
+                {domains.map((d) => (
+                  <Item
+                    key={d.id}
+                    icon={<Sparkles className="h-4 w-4 text-primary" />}
+                    label={d.name}
+                    subtitle={d.roadmap ? `${d.roadmap.totalTopics} topics` : "via chatbot"}
+                    onSelect={() =>
+                      go(d.isCurated ? `/domains/${d.slug}` : `/chatbot?domain=${d.slug}`)
+                    }
+                  />
+                ))}
+              </Command.Group>
+            )}
 
-        <div className="flex items-center justify-between border-t-2 border-border px-4 py-2.5 text-xs font-bold text-muted-foreground">
-          <span>
-            <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5">↑ ↓</kbd> navigate
-            <span className="mx-1">·</span>
-            <kbd className="rounded-lg border-2 border-b-[3px] border-border bg-card px-1.5 py-0.5">↵</kbd> select
-          </span>
-          <span>Ctrl / ⌘ K</span>
-        </div>
-      </Command>
+            <Command.Group heading="Actions" className={GROUP}>
+              <Item
+                icon={<Flame className="h-4 w-4 text-energy" fill="currentColor" />}
+                label="Use a streak freeze"
+                subtitle="Rescue a missed day"
+                onSelect={() => go("/settings")}
+              />
+            </Command.Group>
+          </Command.List>
+
+          <div className="flex items-center justify-between border-t border-white/[0.07] bg-white/[0.02] px-4 py-2.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <Kbd>↑</Kbd>
+                <Kbd>↓</Kbd> navigate
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Kbd>
+                  <CornerDownLeft className="h-3 w-3" />
+                </Kbd>{" "}
+                select
+              </span>
+            </span>
+            <span className="font-mono text-[11px]">Ctrl / ⌘ K</span>
+          </div>
+        </Command>
+      </motion.div>
     </div>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-white/10 bg-white/[0.05] px-1 font-mono text-[10px] text-foreground/80">
+      {children}
+    </kbd>
   );
 }
 
@@ -145,15 +188,19 @@ function Item({
   return (
     <Command.Item
       onSelect={onSelect}
-      className="flex min-h-11 cursor-pointer items-center justify-between rounded-2xl border-2 border-transparent px-3 py-2 font-bold text-foreground aria-selected:border-secondary-bright aria-selected:bg-secondary/10 aria-selected:text-secondary"
+      className="group relative flex min-h-11 cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-foreground transition-colors aria-selected:bg-white/[0.06]"
     >
+      <span
+        aria-hidden
+        className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary opacity-0 shadow-[0_0_10px_hsl(var(--primary)/0.9)] transition-opacity group-aria-selected:opacity-100"
+      />
       <div className="flex items-center gap-3">
-        <span className="text-muted-foreground">{icon}</span>
-        <span>{label}</span>
+        <span className="grid h-7 w-7 place-items-center rounded-md border border-white/10 bg-white/[0.04] text-muted-foreground group-aria-selected:text-foreground">
+          {icon}
+        </span>
+        <span className="font-medium">{label}</span>
       </div>
-      {subtitle && (
-        <span className="text-xs font-semibold text-muted-foreground">{subtitle}</span>
-      )}
+      {subtitle && <span className="font-mono text-[11px] text-muted-foreground">{subtitle}</span>}
     </Command.Item>
   );
 }

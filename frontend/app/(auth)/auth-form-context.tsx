@@ -63,15 +63,15 @@ export function useAuthForm(): Ctx {
 }
 
 /**
- * Shared playground styling for the auth form controls: a chunky field with a
- * soft grey fill and a thicker bottom edge, turning blue on focus. Applied via
- * className so the shared <Input> primitive stays untouched.
+ * Shared Midnight styling for the auth form controls. The shared <Input>
+ * already carries the look (hairline well, inset shadow, volt focus halo);
+ * the auth forms only make it a touch taller. Applied via className so the
+ * primitive stays untouched.
  */
-export const AUTH_INPUT =
-  "h-12 rounded-2xl border-2 border-b-4 border-border bg-muted/60 px-4 text-base font-semibold placeholder:font-semibold focus-visible:border-secondary-bright focus-visible:bg-card focus-visible:ring-4 focus-visible:ring-secondary-bright/20 focus-visible:ring-offset-0";
+export const AUTH_INPUT = "h-12 text-[15px]";
 
 /** Added on top of AUTH_INPUT when a field is invalid. */
 export const AUTH_INPUT_ERROR =
-  "border-destructive-bright bg-destructive/5 focus-visible:border-destructive-bright focus-visible:ring-destructive-bright/20";
+  "border-destructive/60 bg-destructive/[0.06] hover:border-destructive/70 focus-visible:border-destructive focus-visible:bg-destructive/[0.06] focus-visible:shadow-[0_0_0_4px_hsl(var(--destructive)/0.18)]";
 
-export const AUTH_LABEL = "text-sm font-extrabold text-foreground";
+export const AUTH_LABEL = "text-sm font-medium text-foreground";

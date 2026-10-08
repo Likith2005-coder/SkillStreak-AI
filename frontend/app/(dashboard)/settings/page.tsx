@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "next-view-transitions";
 import { useRouter } from "next/navigation";
 import {
@@ -176,35 +176,41 @@ export default function SettingsPage() {
     <main className="container max-w-3xl px-4 py-8">
       <Link
         href="/dashboard"
-        className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-extrabold text-muted-foreground transition hover:text-foreground"
+        className="focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-medium text-muted-foreground transition hover:text-foreground"
       >
-        <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+        <ArrowLeft className="h-4 w-4" aria-hidden />
         Back to dashboard
       </Link>
 
-      <header className="mt-2">
-        <h1 className="font-display text-3xl text-foreground sm:text-4xl">Settings</h1>
-        <p className="mt-1 text-base font-semibold text-muted-foreground">
+      <header className="relative mt-3">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-10 -top-16 h-48 w-80 rounded-full bg-aurora-2/[0.12] blur-3xl"
+        />
+        <h1 className="relative font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.02] text-foreground">
+          <span className="font-serif-accent text-primary">Your</span> settings
+        </h1>
+        <p className="relative mt-3 max-w-[60ch] text-[15px] leading-relaxed text-muted-foreground">
           Profile, preferences, notifications, and account actions.
         </p>
       </header>
 
-      <section className="mt-8 space-y-6">
+      <section className="mt-10 space-y-5">
         {/* ── Account info (read-only) ─────────────────────── */}
         <SettingCard
           icon={User}
-          face="bg-secondary-bright"
-          edge="hsl(var(--secondary-shade))"
+          tone="bg-secondary/10 text-secondary ring-secondary/20"
+          spot="var(--secondary)"
           title="Account"
           hint="Your profile snapshot."
         >
-          <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] sm:grid-cols-3">
             <Field label="Name" value={user.name} />
             <Field
               label="Role"
               value={
                 user.role === "admin" ? (
-                  <span className="rounded-full bg-grape/10 px-2.5 py-0.5 text-xs font-extrabold text-grape">
+                  <span className="rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">
                     Admin
                   </span>
                 ) : (
@@ -221,7 +227,7 @@ export default function SettingsPage() {
               label="Level"
               value={
                 <span className="inline-flex items-center gap-1.5 text-grape">
-                  <Star className="h-4 w-4" fill="currentColor" aria-hidden />
+                  <Star className="h-4 w-4" aria-hidden />
                   Level {user.level}
                 </span>
               }
@@ -229,8 +235,8 @@ export default function SettingsPage() {
             <Field
               label="Total XP"
               value={
-                <span className="inline-flex items-center gap-1.5 tabular-nums text-xp">
-                  <Gem className="h-4 w-4" fill="currentColor" aria-hidden />
+                <span className="inline-flex items-center gap-1.5 font-mono tabular-nums text-xp">
+                  <Gem className="h-4 w-4" aria-hidden />
                   {user.xp.toLocaleString()}
                 </span>
               }
@@ -250,23 +256,24 @@ export default function SettingsPage() {
         {/* ── Streak rescue ─────────────────────────────────── */}
         <SettingCard
           icon={Flame}
-          face="bg-energy-bright"
-          edge="hsl(var(--energy-shade))"
+          tone="bg-energy/10 text-energy ring-energy/20"
+          spot="var(--energy)"
           title="Streak"
           hint="Use a freeze proactively to protect tomorrow's day."
         >
-          <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-5">
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="font-display text-5xl tabular-nums text-energy">
+                <span className="font-display text-6xl leading-none tabular-nums text-energy [text-shadow:0_0_28px_hsl(var(--energy)/0.5)]">
                   {streak?.currentStreak ?? "—"}
                 </span>
-                <span className="text-base font-extrabold text-muted-foreground">
+                <span className="text-[15px] text-muted-foreground">
                   day{(streak?.currentStreak ?? 0) === 1 ? "" : "s"} current
                 </span>
               </div>
-              <div className="mt-1 text-sm font-bold text-muted-foreground">
-                Longest streak: {streak?.longestStreak ?? "—"}
+              <div className="mt-2 text-sm text-muted-foreground">
+                Longest streak:{" "}
+                <span className="font-mono font-semibold tabular-nums text-foreground">{streak?.longestStreak ?? "—"}</span>
               </div>
             </div>
 
@@ -276,26 +283,25 @@ export default function SettingsPage() {
                   <span
                     key={i}
                     title="Streak freeze"
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-bright text-white"
-                    style={{ boxShadow: "0 4px 0 hsl(var(--secondary-shade))" }}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary shadow-[0_0_18px_-4px_hsl(var(--secondary)/0.6)] ring-1 ring-secondary/30"
                   >
-                    <Snowflake className="h-5 w-5" strokeWidth={2.6} aria-hidden />
+                    <Snowflake className="h-5 w-5" aria-hidden />
                     <span className="sr-only">Streak freeze available</span>
                   </span>
                 ))}
                 {(streak?.freezesAvailable ?? 0) === 0 && (
-                  <span className="text-sm font-bold text-muted-foreground">No freezes. They refill on Monday.</span>
+                  <span className="text-sm text-muted-foreground">No freezes. They refill on Monday.</span>
                 )}
               </div>
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={handleUseFreeze}
                 disabled={usingFreeze || !streak || streak.freezesAvailable <= 0}
               >
                 {usingFreeze ? (
                   <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                 ) : (
-                  <Snowflake className="h-4 w-4" strokeWidth={2.6} />
+                  <Snowflake className="h-4 w-4 text-secondary" />
                 )}
                 Use a freeze
               </Button>
@@ -306,100 +312,115 @@ export default function SettingsPage() {
         {/* ── Learning preferences ──────────────────────────── */}
         <SettingCard
           icon={Target}
-          face="bg-grape-bright"
-          edge="hsl(var(--grape-shade))"
+          tone="bg-grape/10 text-grape ring-grape/20"
+          spot="var(--grape)"
           title="Learning preferences"
           hint="Adjust what the AI tutor knows about your level and goals."
-        >
-          <div className="mt-6 space-y-6">
-            <RadioGroup
-              label="Prior level"
-              options={PRIOR_LEVELS}
-              value={priorLevel}
-              onChange={setPriorLevel}
-            />
-            <RadioGroup label="Goal" options={GOALS} value={goal} onChange={setGoal} />
-            <RadioGroup label="Pace" options={PACES} value={pace} onChange={setPace} />
-
-            {domains.length > 0 && (
-              <fieldset>
-                <legend className="text-base font-black text-foreground">Preferred domains</legend>
-                <p className="mt-0.5 text-sm font-semibold text-muted-foreground">
-                  Used by the recommender to prioritise your next topic.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {domains.map((d) => {
-                    const s = styleFor(d.color);
-                    const active = preferredDomains.includes(d.slug);
-                    return (
-                      <button
-                        key={d.slug}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() =>
-                          setPreferredDomains((prev) =>
-                            active ? prev.filter((x) => x !== d.slug) : [...prev, d.slug]
-                          )
-                        }
-                        className={cn(
-                          "focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-2xl border-2 border-b-4 px-4 py-2 text-sm font-extrabold transition-[transform,border-width,background-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
-                          active
-                            ? cn(s.badgeBg)
-                            : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-                        )}
-                      >
-                        {active && <Check className="h-4 w-4" strokeWidth={3.5} aria-hidden />}
-                        {d.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            )}
-          </div>
-
-          <div className="mt-7 flex justify-end">
-            <Button onClick={handleSavePrefs} disabled={savingPrefs} className="w-full uppercase sm:w-auto">
+          footer={
+            <Button onClick={handleSavePrefs} disabled={savingPrefs} className="w-full sm:w-auto">
               {savingPrefs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
               {savingPrefs ? "Saving…" : "Save preferences"}
             </Button>
+          }
+        >
+          <div className="divide-y divide-white/[0.06]">
+            <Row>
+              <RadioGroup
+                label="Prior level"
+                options={PRIOR_LEVELS}
+                value={priorLevel}
+                onChange={setPriorLevel}
+              />
+            </Row>
+            <Row>
+              <RadioGroup label="Goal" options={GOALS} value={goal} onChange={setGoal} />
+            </Row>
+            <Row>
+              <RadioGroup label="Pace" options={PACES} value={pace} onChange={setPace} />
+            </Row>
+
+            {domains.length > 0 && (
+              <Row>
+                <fieldset>
+                  <legend className="text-sm font-semibold text-foreground">Preferred domains</legend>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Used by the recommender to prioritise your next topic.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {domains.map((d) => {
+                      const s = styleFor(d.color);
+                      const active = preferredDomains.includes(d.slug);
+                      return (
+                        <button
+                          key={d.slug}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() =>
+                            setPreferredDomains((prev) =>
+                              active ? prev.filter((x) => x !== d.slug) : [...prev, d.slug]
+                            )
+                          }
+                          className={cn(
+                            "focus-ring inline-flex min-h-[44px] items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none",
+                            active
+                              ? s.badgeBg
+                              : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-foreground"
+                          )}
+                        >
+                          {active && <Check className="h-4 w-4" aria-hidden />}
+                          {d.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              </Row>
+            )}
           </div>
         </SettingCard>
 
-        {/* ── Notifications (existing) ──────────────────────── */}
+        {/* ── Notifications ─────────────────────────────────── */}
         <SettingCard
           icon={Bell}
-          face="bg-xp-bright"
-          edge="hsl(var(--xp-shade))"
+          tone="bg-xp/10 text-xp ring-xp/20"
+          spot="var(--xp)"
           title="Notifications"
           hint="Email reminders and weekly summary."
+          footer={
+            <Button onClick={handleSaveNotifs} disabled={savingNotifs} className="w-full sm:w-auto">
+              {savingNotifs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
+              {savingNotifs ? "Saving…" : "Save notifications"}
+            </Button>
+          }
         >
-          <div className="mt-6 space-y-5">
-            <div className="max-w-xs">
-              <Label htmlFor="reminderTime" className="text-base font-black text-foreground">
-                Daily reminder time (UTC)
-              </Label>
+          <div className="divide-y divide-white/[0.06]">
+            <Row className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+              <div className="min-w-0">
+                <Label htmlFor="reminderTime" className="text-sm font-semibold">
+                  Daily reminder time (UTC)
+                </Label>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  {reminderTime
+                    ? `Reminder set for ${reminderTime} UTC if your streak is at risk.`
+                    : "Leave blank to opt out of streak reminders."}
+                </p>
+              </div>
               <Input
                 id="reminderTime"
                 type="time"
-                className="mt-2 h-12 rounded-2xl border-2 border-b-4 border-border bg-card px-4 text-base font-bold focus-visible:border-secondary-bright focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="w-full font-mono tabular-nums [color-scheme:dark] sm:w-40"
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
               />
-              <p className="mt-2 text-sm font-semibold text-muted-foreground">
-                {reminderTime
-                  ? `Reminder set for ${reminderTime} UTC if your streak is at risk.`
-                  : "Leave blank to opt out of streak reminders."}
-              </p>
-            </div>
+            </Row>
 
-            <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-border p-4">
-              <div>
-                <div id="digest-label" className="flex items-center gap-2 text-base font-black text-foreground">
-                  <Mail className="h-5 w-5 text-secondary" strokeWidth={2.6} aria-hidden />
+            <Row className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <div id="digest-label" className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Mail className="h-4 w-4 text-secondary" aria-hidden />
                   Weekly digest
                 </div>
-                <p className="mt-0.5 text-sm font-semibold text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Sunday email summarising your week.
                 </p>
               </div>
@@ -410,100 +431,118 @@ export default function SettingsPage() {
                 aria-checked={digestEnabled}
                 aria-labelledby="digest-label"
                 onClick={() => setDigestEnabled((v) => !v)}
-                className={cn(
-                  "focus-ring relative inline-flex h-9 w-16 shrink-0 items-center rounded-full border-2 transition-colors motion-reduce:transition-none",
-                  digestEnabled ? "border-primary-shade bg-primary-bright" : "border-border bg-muted"
-                )}
+                className="focus-ring group relative inline-flex h-11 w-14 shrink-0 items-center justify-center rounded-full"
               >
                 <span
+                  aria-hidden
                   className={cn(
-                    "inline-block h-7 w-7 rounded-full bg-white transition-transform motion-reduce:transition-none",
-                    digestEnabled ? "translate-x-[1.85rem]" : "translate-x-0.5"
+                    "relative inline-flex h-6 w-11 items-center rounded-full border transition-[background-color,border-color,box-shadow] duration-200 motion-reduce:transition-none",
+                    digestEnabled
+                      ? "border-primary/80 bg-primary shadow-[0_0_16px_-2px_hsl(var(--primary)/0.7)]"
+                      : "border-white/15 bg-white/[0.08] group-hover:border-white/25"
                   )}
-                  style={{ boxShadow: "0 2px 0 hsl(var(--border))" }}
-                />
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-[18px] w-[18px] rounded-full shadow-[0_1px_3px_rgb(0_0_0/0.5)] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                      digestEnabled ? "translate-x-[22px] bg-primary-foreground" : "translate-x-[2px] bg-foreground/80"
+                    )}
+                  />
+                </span>
               </button>
-            </div>
-          </div>
+            </Row>
 
-          <div className="mt-7 flex justify-end">
-            <Button onClick={handleSaveNotifs} disabled={savingNotifs} className="w-full uppercase sm:w-auto">
-              {savingNotifs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
-              {savingNotifs ? "Saving…" : "Save notifications"}
-            </Button>
+            <Row>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Email actually sends only if the backend has{" "}
+                <code className="rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-xs text-foreground">
+                  RESEND_API_KEY
+                </code>{" "}
+                set. Otherwise preferences are saved but emails are stubbed.
+              </p>
+            </Row>
           </div>
-
-          <p className="mt-4 text-sm font-semibold text-muted-foreground">
-            Email actually sends only if the backend has{" "}
-            <code className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold text-foreground">RESEND_API_KEY</code>{" "}
-            set. Otherwise preferences are saved but emails are stubbed.
-          </p>
         </SettingCard>
 
         {/* ── Danger zone ───────────────────────────────────── */}
         <SettingCard
           icon={LogOut}
-          face="bg-destructive-bright"
-          edge="hsl(var(--destructive-shade))"
+          tone="bg-destructive/10 text-destructive-text ring-destructive/25"
+          spot="var(--destructive)"
           title="Account actions"
           hint="Sign out of this browser."
-        >
-          <div className="mt-5 flex justify-end">
-            <Button variant="destructive" onClick={handleSignOut} className="w-full uppercase sm:w-auto">
-              <LogOut className="h-4 w-4" strokeWidth={2.6} />
+          aside={
+            <Button variant="destructive" onClick={handleSignOut} className="w-full sm:w-auto">
+              <LogOut className="h-4 w-4" />
               Sign out
             </Button>
-          </div>
-        </SettingCard>
+          }
+        />
       </section>
     </main>
   );
 }
 
+/** A settings panel: header row, hairline-divided body, optional footer bar. */
 function SettingCard({
   icon: Icon,
-  face,
-  edge,
+  tone,
+  spot,
   title,
   hint,
+  aside,
+  footer,
   children,
 }: {
   icon: LucideIcon;
-  face: string;
-  edge: string;
+  /** Role-tinted icon well classes. */
+  tone: string;
+  /** Spotlight colour channels. */
+  spot: string;
   title: string;
   hint: string;
-  children: React.ReactNode;
+  /** Inline action on the header row (used when the panel has no body). */
+  aside?: React.ReactNode;
+  footer?: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   return (
-    <div className="card-chunky p-5 sm:p-6">
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden
-          className={cn("flex h-11 w-11 shrink-0 -rotate-6 items-center justify-center rounded-2xl", face)}
-          style={{ boxShadow: `0 4px 0 ${edge}` }}
-        >
-          <Icon className="h-6 w-6 text-white" strokeWidth={2.6} />
-        </span>
-        <div>
-          <h2 className="text-xl font-black text-foreground">{title}</h2>
-          <p className="text-sm font-semibold text-muted-foreground">{hint}</p>
+    <div className="card-chunky spotlight overflow-hidden" style={{ "--spot": spot } as CSSProperties}>
+      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex items-center gap-3.5">
+          <span aria-hidden className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1", tone)}>
+            <Icon className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="font-display text-xl text-foreground">{title}</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">{hint}</p>
+          </div>
         </div>
+        {aside}
       </div>
-      {children}
+      {children && <div className="border-t border-white/[0.06] px-5 py-5 sm:px-6">{children}</div>}
+      {footer && (
+        <div className="flex justify-end border-t border-white/[0.06] bg-white/[0.02] px-5 py-4 sm:px-6">{footer}</div>
+      )}
     </div>
   );
+}
+
+/** One hairline-separated row inside a settings panel. */
+function Row({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <div className={cn("py-5 first:pt-0 last:pb-0", className)}>{children}</div>;
 }
 
 function Field({ label, value, className }: { label: string; value: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("min-w-0 rounded-2xl bg-muted px-4 py-3", className)}>
-      <dt className="text-xs font-extrabold text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 text-base font-black text-foreground">{value}</dd>
+    <div className={cn("min-w-0 bg-card px-4 py-3.5", className)}>
+      <dt className="label-mono text-muted-foreground">{label}</dt>
+      <dd className="mt-1.5 text-[15px] font-medium text-foreground">{value}</dd>
     </div>
   );
 }
 
+/** A segmented control: one track, the chosen segment lit in selection blue. */
 function RadioGroup<T extends string>({
   label,
   options,
@@ -517,8 +556,8 @@ function RadioGroup<T extends string>({
 }) {
   return (
     <fieldset>
-      <legend className="text-base font-black text-foreground">{label}</legend>
-      <div className="mt-2 grid gap-2.5 sm:grid-cols-3">
+      <legend className="text-sm font-semibold text-foreground">{label}</legend>
+      <div className="mt-3 grid gap-1 rounded-xl border border-white/[0.08] bg-white/[0.02] p-1 shadow-[inset_0_1px_2px_rgb(0_0_0/0.4)] sm:grid-cols-3">
         {options.map((opt) => {
           const active = value === opt.value;
           return (
@@ -528,14 +567,14 @@ function RadioGroup<T extends string>({
               aria-pressed={active}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "focus-ring rounded-2xl border-2 border-b-4 p-3.5 text-left transition-[transform,border-width,background-color] duration-100 active:translate-y-[2px] active:border-b-2 motion-reduce:transition-none",
+                "focus-ring min-h-[44px] rounded-lg px-3.5 py-2.5 text-left transition-[background-color,box-shadow,color] duration-200 motion-reduce:transition-none",
                 active
-                  ? "border-secondary-bright bg-secondary/10"
-                  : "border-border bg-card hover:bg-muted"
+                  ? "bg-secondary/[0.12] shadow-[inset_0_0_0_1px_hsl(var(--secondary)/0.5),0_0_20px_-8px_hsl(var(--secondary)/0.7)]"
+                  : "hover:bg-white/[0.04]"
               )}
             >
-              <div className={cn("text-base font-black", active ? "text-secondary-shade" : "text-foreground")}>{opt.label}</div>
-              <div className="mt-0.5 text-sm font-semibold text-muted-foreground">{opt.hint}</div>
+              <div className={cn("text-sm font-semibold", active ? "text-secondary" : "text-foreground")}>{opt.label}</div>
+              <div className="mt-0.5 text-[13px] text-muted-foreground">{opt.hint}</div>
             </button>
           );
         })}

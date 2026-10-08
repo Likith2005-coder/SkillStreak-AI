@@ -41,25 +41,28 @@ export function ShikiCodeBlock({ code, lang }: ShikiCodeBlockProps) {
     }
   }
 
-  // The block stays dark on every theme (syntax colours are tuned for it);
-  // only the frame joins the chunky look: rounded, 2px rim, heavier bottom edge.
+  // A deeper well than the panel it sits in: hairline rim, a faint top lip,
+  // a mono language tag with a volt dot, and a quiet copy control.
   return (
-    <div className="not-prose group relative my-4 overflow-hidden rounded-2xl border-2 border-b-[5px] border-[#1c2128] bg-[#22272e]">
-      <div className="flex items-center justify-between border-b-2 border-[#1c2128] bg-black/20 py-1 pl-4 pr-1.5">
-        <span className="text-xs font-extrabold uppercase tracking-wider text-slate-300">{lang || "code"}</span>
+    <div className="not-prose group relative my-6 overflow-hidden rounded-xl border border-white/10 bg-[#07090d] shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_12px_32px_-16px_rgb(0_0_0/0.8)]">
+      <div className="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] py-1 pl-4 pr-1.5">
+        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-slate-400">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.9)]" />
+          {lang || "code"}
+        </span>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={copied ? "Copied" : "Copy code"}
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={3} /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-primary" strokeWidth={2.6} /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
       {html ? (
         <div
-          className="shiki-block overflow-x-auto text-[13px] leading-relaxed [&>pre]:!bg-transparent [&>pre]:p-4"
+          className="shiki-block overflow-x-auto font-mono text-[13px] leading-relaxed [&>pre]:!bg-transparent [&>pre]:p-4"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       ) : (

@@ -112,8 +112,8 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Create your account</h1>
-      <p className="mt-1.5 text-base font-semibold text-muted-foreground">
+      <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">Create your account</h1>
+      <p className="mt-2 text-[15px] text-muted-foreground">
         Start your streak in under a minute.
       </p>
 
@@ -187,7 +187,7 @@ export default function RegisterPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="focus-ring absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-[calc(50%+1px)] items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="focus-ring absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -197,9 +197,9 @@ export default function RegisterPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-bold text-energy"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-energy"
             >
-              <ArrowUp className="h-4 w-4" strokeWidth={3} />
+              <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
               Caps Lock is on
             </motion.p>
           )}
@@ -209,23 +209,23 @@ export default function RegisterPage() {
           {/* Live password strength meter */}
           {(password?.length ?? 0) > 0 && (
             <div className="mt-3 space-y-2">
-              <div className="flex h-2.5 gap-1.5">
+              <div className="flex h-1.5 gap-1.5">
                 {[0, 1, 2, 3].map((i) => (
                   <span
                     key={i}
-                    className={`flex-1 rounded-full transition-colors ${
+                    className={`flex-1 rounded-full transition-[background-color,box-shadow] duration-300 ${
                       i < strength.score
                         ? strength.score === 1
-                          ? "bg-destructive-bright"
+                          ? "bg-destructive shadow-[0_0_10px_hsl(var(--destructive)/0.6)]"
                           : strength.score === 2
-                            ? "bg-energy-bright"
-                            : "bg-primary-bright"
-                        : "bg-muted"
+                            ? "bg-energy shadow-[0_0_10px_hsl(var(--energy)/0.6)]"
+                            : "bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.6)]"
+                        : "bg-white/[0.06]"
                     }`}
                   />
                 ))}
               </div>
-              <ul className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs font-bold text-muted-foreground">
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs font-medium text-muted-foreground">
                 <Rule ok={strength.checks.length}>8+ characters</Rule>
                 <Rule ok={strength.checks.mix}>Letters + numbers</Rule>
                 <Rule ok={strength.checks.case}>Upper + lower case</Rule>
@@ -239,17 +239,17 @@ export default function RegisterPage() {
           <motion.div
             initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2.5 rounded-2xl border-2 border-destructive-bright/50 bg-destructive/5 px-4 py-3 text-sm font-bold text-destructive-text"
+            className="flex items-start gap-2.5 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text"
             role="alert"
             aria-live="polite"
           >
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+            <AlertCircle className="mt-px h-4 w-4 shrink-0" />
             <p className="leading-tight">
               {formError}{" "}
               {errorField === "email" && (
                 <Link
                   href="/login"
-                  className="font-extrabold underline underline-offset-2"
+                  className="font-semibold underline underline-offset-2"
                 >
                   Sign in →
                 </Link>
@@ -262,7 +262,7 @@ export default function RegisterPage() {
           <Button
             type="submit"
             size="lg"
-            className="w-full uppercase tracking-wider"
+            className="h-12 w-full text-[15px]"
             // Disabled until every field passes Zod. With mode:"all" isValid is
             // live, so the button can only fire when the form is genuinely
             // submittable — no chance of "Creating account…" with a bad email.
@@ -273,16 +273,16 @@ export default function RegisterPage() {
           </Button>
           {/* Tell the user WHY the button is grey — top-site UX pattern */}
           {!isValid && !isSubmitting && (
-            <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">
+            <p className="mt-3 text-center text-sm text-muted-foreground">
               {nextHint(errors, password ?? "")}
             </p>
           )}
         </div>
       </form>
 
-      <p className="mt-7 text-center text-base font-semibold text-muted-foreground">
+      <p className="mt-7 border-t border-white/[0.06] pt-6 text-center text-[15px] text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="focus-ring rounded-md font-extrabold text-secondary hover:underline">
+        <Link href="/login" className="focus-ring rounded-md font-semibold text-secondary hover:underline">
           Sign in
         </Link>
       </p>
@@ -295,7 +295,7 @@ function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
     <li
       className={`inline-flex items-center gap-1 ${ok ? "text-primary" : "text-muted-foreground"}`}
     >
-      {ok ? <Check className="h-3.5 w-3.5" strokeWidth={3.5} /> : <X className="h-3.5 w-3.5 opacity-60" strokeWidth={3} />}
+      {ok ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : <X className="h-3.5 w-3.5 opacity-70" strokeWidth={2.5} />}
       {children}
     </li>
   );

@@ -117,8 +117,8 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-foreground">Welcome back</h1>
-      <p className="mt-1.5 text-base font-semibold text-muted-foreground">
+      <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">Welcome back</h1>
+      <p className="mt-2 text-[15px] text-muted-foreground">
         Pick up your streak where you left off.
       </p>
 
@@ -156,7 +156,7 @@ export default function LoginPage() {
             {failedAttempts > 0 && (
               <Link
                 href="#"
-                className="focus-ring rounded-md text-sm font-extrabold text-secondary hover:underline"
+                className="focus-ring rounded-md text-sm font-medium text-secondary hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   // Reset hook — to keep parity, no real reset flow is wired yet.
@@ -188,7 +188,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="focus-ring absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-[calc(50%+1px)] items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="focus-ring absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -200,9 +200,9 @@ export default function LoginPage() {
             <motion.p
               initial={{ opacity: 0, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-bold text-energy"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-energy"
             >
-              <ArrowUp className="h-4 w-4" strokeWidth={3} />
+              <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
               Caps Lock is on
             </motion.p>
           )}
@@ -214,19 +214,19 @@ export default function LoginPage() {
           <motion.div
             initial={reduce ? { opacity: 1 } : { opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2.5 rounded-2xl border-2 border-destructive-bright/50 bg-destructive/5 px-4 py-3 text-sm font-bold text-destructive-text"
+            className="flex items-start gap-2.5 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text"
             role="alert"
             aria-live="polite"
           >
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+            <AlertCircle className="mt-px h-4 w-4 shrink-0" />
             <div className="flex-1">
               <p className="leading-tight">{formError}</p>
               {failedAttempts >= 2 && (
-                <p className="mt-1 text-sm font-semibold text-destructive-text">
+                <p className="mt-1 text-sm text-destructive-text">
                   Trouble signing in? Try{" "}
                   <Link
                     href="/register"
-                    className="font-extrabold underline underline-offset-2"
+                    className="font-semibold underline underline-offset-2"
                   >
                     creating an account
                   </Link>{" "}
@@ -241,14 +241,14 @@ export default function LoginPage() {
           <Button
             type="submit"
             size="lg"
-            className="w-full uppercase tracking-wider"
+            className="h-12 w-full text-[15px]"
             disabled={isSubmitting || !isValid}
           >
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
           {!isValid && !isSubmitting && (
-            <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">
+            <p className="mt-3 text-center text-sm text-muted-foreground">
               {errors.email
                 ? "Enter a valid email address to continue"
                 : errors.password
@@ -259,9 +259,9 @@ export default function LoginPage() {
         </div>
       </form>
 
-      <p className="mt-7 text-center text-base font-semibold text-muted-foreground">
+      <p className="mt-7 border-t border-white/[0.06] pt-6 text-center text-[15px] text-muted-foreground">
         New to SkillStreak?{" "}
-        <Link href="/register" className="focus-ring rounded-md font-extrabold text-secondary hover:underline">
+        <Link href="/register" className="focus-ring rounded-md font-semibold text-secondary hover:underline">
           Create an account
         </Link>
       </p>
