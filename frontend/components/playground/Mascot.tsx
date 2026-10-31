@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * The SignalBot as a character: an idle bob over a soft glow, and a sleek
- * speech bubble that says something about where the learner actually is.
- * Built on the static SVG bot so it costs nothing to render anywhere.
+ * The SignalBot as a character: an idle bob over a soft glow, a live bot
+ * that watches the cursor and reacts (SignalBotLive), and a sleek speech
+ * bubble that says something about where the learner actually is.
  */
 
 import { motion } from "framer-motion";
-import { SignalBotStatic } from "@/components/3d/SignalBotStatic";
+import { SignalBotLive } from "@/components/3d/SignalBotLive";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
 
@@ -32,8 +32,8 @@ export function Mascot({
           aria-hidden
           className="absolute inset-x-[10%] bottom-0 h-1/3 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-3)/0.35),transparent)] blur-md"
         />
-        <div aria-hidden className="anim-bob-6 relative h-full w-full">
-          <SignalBotStatic className="h-full w-full" />
+        <div className="anim-bob-6 relative h-full w-full">
+          <SignalBotLive className="h-full w-full" />
         </div>
       </div>
       {message && (

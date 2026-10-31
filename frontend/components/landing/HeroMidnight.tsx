@@ -21,6 +21,7 @@ import { ArrowRight, Check, Flame, Gem, Sparkles, Star, Terminal } from "lucide-
 import { Button } from "@/components/ui/button";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { AuroraShader } from "./AuroraShader";
+import { SignalBotLive } from "@/components/3d/SignalBotLive";
 import { RotatingWord } from "./RotatingWord";
 import { useIntroDone } from "./introBus";
 
@@ -109,7 +110,20 @@ export function HeroMidnight() {
           initial={{ opacity: 0, y: 60 }}
           animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
           transition={{ duration: reduce ? 0 : 1.1, delay: reduce ? 0 : 0.45, ease: EASE }}
+          className="relative"
         >
+          {/* SignalBot hovers at the window's corner and watches the visitor:
+              follows the cursor, glances at the buttons, boings when clicked. */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 24, scale: 0.6 }}
+            animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
+            transition={{ type: "spring", duration: 0.7, bounce: 0.35, delay: reduce ? 0 : 1.1 }}
+            className="absolute -top-[5.5rem] right-4 z-20 h-28 w-28 sm:-top-[7.5rem] sm:right-12 sm:h-36 sm:w-36"
+          >
+            <div className="anim-bob-6 h-full w-full">
+              <SignalBotLive className="h-full w-full" label="SignalBot, your AI tutor. Click me!" />
+            </div>
+          </motion.div>
           <motion.div
             style={reduce ? undefined : { rotateX, scale, y: lift, transformOrigin: "50% 0%" }}
             className="will-change-transform"

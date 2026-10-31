@@ -265,6 +265,18 @@
     .anim-bob-4, .anim-bob-6, .anim-halo, .anim-flame { animation: none; }
   }
 
+  /* SignalBot: blink (on the lids group) and the dozing "z"s. */
+  @keyframes sb-blink { 0%, 100% { transform: scaleY(1); } 45%, 55% { transform: scaleY(0.08); } }
+  .sb-blink { animation: sb-blink 180ms cubic-bezier(0.45, 0, 0.55, 1); }
+  @keyframes sb-zzz {
+    0% { transform: translate(0, 6px); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translate(10px, -14px); opacity: 0; }
+  }
+  .sb-zzz text { animation: sb-zzz 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite; transform-box: fill-box; }
+  .sb-zzz text:nth-child(2) { animation-delay: 1.2s; }
+  @media (prefers-reduced-motion: reduce) { .sb-blink, .sb-zzz text { animation: none; } }
+
   /* The hero's CSS aurora (phones, no-WebGL): transform-only drift. */
   .aurora-css {
     will-change: transform;
