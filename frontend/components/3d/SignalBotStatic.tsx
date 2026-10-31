@@ -1,14 +1,10 @@
 "use client";
 
 /**
- * Zero-JS stand-in for the 3D SignalBot, shown wherever the WebGL scene isn't
- * worth its cost (phones, tablets, coarse pointers, reduced motion).
- *
- * Same character — screen face, glowing eyes, lime antenna, violet ear pods,
- * cyan/violet halo rings — drawn as one inline SVG. No three.js, no canvas,
- * no animation frame: it costs a few kilobytes of markup instead of seconds
- * of main-thread time, and the cursor-tracking the real bot exists for can't
- * happen on touch anyway.
+ * The SignalBot drawn as one still inline SVG: screen face, glowing eyes,
+ * antenna, ear pods and halo rings. Used where a live, cursor-tracking bot
+ * would be noise (chat avatars, loading states). For the reactive mascot,
+ * see SignalBotLive.
  */
 
 export function SignalBotStatic({ className }: { className?: string }) {

@@ -554,22 +554,6 @@
     .term-cursor::after { animation: none; }
   }
 
-  /* Loader shown while the 3D SignalBot chunk downloads. */
-  .loader {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    border-radius: 9999px;
-    border: 3px solid hsl(var(--border));
-    border-top-color: hsl(var(--primary));
-    animation: loader-spin 0.9s linear infinite;
-  }
-  @keyframes loader-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   /* ── Reduced motion: the catch-all ────────────────────────────
      Every animation in the system must have a still fallback (DESIGN.md
      invariant). The blocks above cover the effects defined next to them;
@@ -587,9 +571,6 @@
   .animate-bounce {
       animation: none !important;
     }
-
-    
-    .loader { animation-duration: 2.4s; }
   }
 
   /* ── Page transitions (View Transitions API) ──────────────────

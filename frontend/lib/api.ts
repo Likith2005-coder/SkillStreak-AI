@@ -86,30 +86,6 @@ api.interceptors.response.use(
   }
 );
 
-// ─── Health ─────────────────────────────────────────────
-
-export type HealthResponse = {
-  status: "ok" | "degraded";
-  service: string;
-  timestamp: string;
-  checks: {
-    database: "up" | "down";
-    redis: "up" | "down" | "in-memory";
-  };
-};
-
-export async function fetchHealth(): Promise<HealthResponse | null> {
-  try {
-    const { data } = await api.get<HealthResponse>("/health");
-    return data;
-  } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.data) {
-      return err.response.data as HealthResponse;
-    }
-    return null;
-  }
-}
-
 // ─── Auth ───────────────────────────────────────────────
 
 export type PublicUser = {

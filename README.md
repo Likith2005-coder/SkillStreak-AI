@@ -65,7 +65,7 @@ flowchart LR
 An npm-workspaces monorepo:
 
 ```
-frontend/   learner app — Tailwind, Framer Motion, GSAP, Lenis, react-three-fiber
+frontend/   learner app — Tailwind, Framer Motion, Lenis, WebGL, Mermaid
 backend/    API — Prisma, Zod, JWT, rate limiting, LLM + YouTube services
 admin/      admin console — metrics, topics, users, email digests
 docs/       architecture, API and database reference
@@ -73,9 +73,9 @@ docs/       architecture, API and database reference
 
 **AI you can trust.** Every LLM call runs through a circuit breaker. Generated learning resources are never allowed to invent URLs: they cite well-known stable pages or emit a search query the UI resolves, and videos are verified live before they're shown.
 
-**Built to be fast.** Production Lighthouse scores **99 / 100 / 100 / 100** on desktop and **90** on throttled mobile. The 3D mascot and WebGL wordmark only load on devices with a pointer that can drive them; phones get a static SVG instead of 667 kB of three.js. Scroll-path animations run on the compositor, and heavy charts are code-split.
+**Built to be fast.** Production Lighthouse scores **99** on desktop and **84** on throttled mobile, with **100** for accessibility and best practices. The hero's WebGL aurora runs only on desktop GPUs (phones get a CSS version), the SignalBot mascot is a lightweight SVG, API data is cached and de-duplicated in the browser so page-to-page navigation takes about 0.1–0.2s, and heavy charts and diagrams are code-split.
 
-**Designed as a system.** A dark-locked design language called **Signal** — deep ink, cyan as the live signal, violet for depth, lime reserved for streak energy. Every animation has a reduced-motion fallback and every text pair clears WCAG AA. See [`frontend/DESIGN.md`](frontend/DESIGN.md).
+**Designed as a system.** A premium-dark design language called **Midnight**: near-black panels that catch a cursor spotlight, one volt accent for progress, fixed colours for streak, XP and level, and big Bricolage Grotesque type with an Instrument Serif accent. Every animation has a reduced-motion fallback and every text pair clears WCAG AA. See [`frontend/DESIGN.md`](frontend/DESIGN.md).
 
 ## Getting started
 
