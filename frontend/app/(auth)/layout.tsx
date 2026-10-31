@@ -58,9 +58,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Wordmark />
 
             <h2 className="mt-14 max-w-md font-display text-5xl leading-[1.02] text-foreground [text-wrap:balance] xl:text-6xl">
-              Your{" "}
+              {onRegister ? "Your first " : "Your "}
               <span className="font-serif-accent text-energy [text-shadow:0_0_28px_hsl(var(--energy)/0.55)]">streak</span>{" "}
-              is waiting.
+              {onRegister ? "starts today." : "is waiting."}
             </h2>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-muted-foreground [text-wrap:pretty]">
               The crew watches you type. They look away for passwords — promise.

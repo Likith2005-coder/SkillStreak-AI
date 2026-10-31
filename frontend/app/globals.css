@@ -137,13 +137,15 @@
   .card-press {
     transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), border-color 220ms ease, box-shadow 220ms ease;
   }
-  .card-press:hover {
-    transform: translateY(-2px);
-    border-color: hsl(0 0% 100% / 0.16);
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.07),
-      0 1px 2px rgb(0 0 0 / 0.5),
-      0 24px 48px -20px rgb(0 0 0 / 0.85);
+  @media (hover: hover) and (pointer: fine) {
+    .card-press:hover {
+      transform: translateY(-2px);
+      border-color: hsl(0 0% 100% / 0.16);
+      box-shadow:
+        inset 0 1px 0 hsl(0 0% 100% / 0.07),
+        0 1px 2px rgb(0 0 0 / 0.5),
+        0 24px 48px -20px rgb(0 0 0 / 0.85);
+    }
   }
   .card-press:active { transform: translateY(0) scale(0.995); }
   @media (prefers-reduced-motion: reduce) {
@@ -242,6 +244,27 @@
     pointer-events: none;
     z-index: 0;
   }
+  /* Idle loops (bob, halo, flame) as CSS keyframes: transform/opacity only,
+     so they run on the compositor and never keep the main thread awake. */
+  @keyframes bob-4 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes bob-6 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes halo-ping {
+    from { transform: scale(1); opacity: var(--halo-from, 0.6); }
+    to { transform: scale(var(--halo-to, 1.8)); opacity: 0; }
+  }
+  @keyframes flame-flicker {
+    0%, 100% { transform: scale(1) rotate(0); }
+    33% { transform: scale(1.1) rotate(-3deg); }
+    66% { transform: scale(0.97) rotate(2deg); }
+  }
+  .anim-bob-4 { animation: bob-4 2s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+  .anim-bob-6 { animation: bob-6 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+  .anim-halo { animation: halo-ping 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+  .anim-flame { animation: flame-flicker 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite; transform-origin: 50% 80%; }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-bob-4, .anim-bob-6, .anim-halo, .anim-flame { animation: none; }
+  }
+
   /* The hero's CSS aurora (phones, no-WebGL): transform-only drift. */
   .aurora-css {
     will-change: transform;
@@ -565,21 +588,26 @@
 }
 
 @keyframes vt-out {
-  to { opacity: 0; transform: translateY(-8px) scale(0.992); }
+  to { opacity: 0; transform: translateY(-4px); }
 }
 @keyframes vt-in {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(8px); }
 }
 
 ::view-transition-old(root) {
-  animation: vt-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
+  animation: vt-out 140ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 ::view-transition-new(root) {
-  animation: vt-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+  animation: vt-in 260ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
 }
-/* Shared elements (domain card -> roadmap header) glide on the same curve. */
+/* Shared elements (domain card -> roadmap header) move ON screen, so they
+   ease in and out rather than braking from full speed. */
 ::view-transition-group(*) {
-  animation-duration: 520ms;
+  animation-duration: 440ms;
+  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+}
+::view-transition-group(root) {
+  animation-duration: 260ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 

@@ -1,23 +1,11 @@
 import { Link } from "next-view-transitions";
-import {
-  ArrowRight,
-  Bot,
-  Brain,
-  Cloud,
-  Code2,
-  Database,
-  ShieldCheck,
-  Sparkles as SparklesIcon,
-  Terminal,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, Bot, ShieldCheck, Terminal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingIntro } from "@/components/landing/LandingIntro";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { BurstSection } from "@/components/landing/BurstSection";
 import { StatsBanner } from "@/components/landing/StatsBanner";
 import { ScrollStory } from "@/components/landing/ScrollStory";
-import { FinalCTA } from "@/components/landing/FinalCTA";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { CursorFollower } from "@/components/landing/CursorFollower";
@@ -32,15 +20,17 @@ import { HeroMidnight } from "@/components/landing/HeroMidnight";
 // hydrate on top of this static shell.
 export const revalidate = 3600;
 
-// Each domain keeps its own hue (matching lib/domain-style) in a tinted well.
+// All nine domains, set as type. Each name takes its domain hue on hover.
 const DOMAIN_TICKER = [
-  { icon: ShieldCheck, name: "Cybersecurity", well: "bg-rose-500/15 text-rose-300 ring-rose-500/25" },
-  { icon: Code2, name: "Web Development", well: "bg-blue-500/15 text-blue-300 ring-blue-500/25" },
-  { icon: Brain, name: "Artificial Intelligence", well: "bg-violet-500/15 text-violet-300 ring-violet-500/25" },
-  { icon: TrendingUp, name: "Machine Learning", well: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/25" },
-  { icon: Database, name: "Data Science", well: "bg-cyan-500/15 text-cyan-300 ring-cyan-500/25" },
-  { icon: Cloud, name: "Cloud Computing", well: "bg-sky-500/15 text-sky-300 ring-sky-500/25" },
-  { icon: SparklesIcon, name: "+ 3 more via AI", well: "bg-primary/10 text-primary ring-primary/25" },
+  { name: "Cybersecurity", hover: "hover:text-rose-300" },
+  { name: "Web Development", hover: "hover:text-blue-300" },
+  { name: "Artificial Intelligence", hover: "hover:text-violet-300" },
+  { name: "Machine Learning", hover: "hover:text-emerald-300" },
+  { name: "Data Science", hover: "hover:text-cyan-300" },
+  { name: "Cloud Computing", hover: "hover:text-sky-300" },
+  { name: "DevOps", hover: "hover:text-orange-300" },
+  { name: "Blockchain", hover: "hover:text-amber-300" },
+  { name: "Internet of Things", hover: "hover:text-teal-300" },
 ];
 
 export default function LandingPage() {
@@ -58,10 +48,10 @@ export default function LandingPage() {
 
       {/* ── Section 2 — Domains: a quiet, endless rail of hairline chips.
           Transparent with no borders so it flows straight on from the hero. */}
-      <section className="relative py-12 sm:py-16" aria-label="Domains">
-        <p className="mb-6 px-4 text-center text-[15px] font-medium text-muted-foreground">
-          Nine domains to master. <span className="text-foreground">Pick one, or all of them.</span>
-        </p>
+      <section className="relative pb-16 pt-4 sm:pb-20" aria-labelledby="domains-h">
+        <h2 id="domains-h" className="mb-8 px-4 text-center font-display text-2xl text-foreground md:text-3xl">
+          Nine domains. <span className="font-serif-accent text-primary">Pick one, or all of them.</span>
+        </h2>
         <DomainMarquee />
       </section>
 
@@ -69,9 +59,6 @@ export default function LandingPage() {
       <div className="[content-visibility:auto] [contain-intrinsic-size:auto_640px]">
         <StatsBanner />
       </div>
-
-      {/* ── Section 4 — The light moment: aurora band + giant wordmark ── */}
-      <BurstSection />
 
       {/* ── Section 5 — How it works: a luminous path with live demos ── */}
       <div id="how-it-works" className="scroll-mt-16">
@@ -81,7 +68,7 @@ export default function LandingPage() {
       {/* ── Section 6 — Ethical Hacking Arsenal spotlight ────── */}
       <section
         id="arsenal"
-        className="relative scroll-mt-16 px-4 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12 lg:py-28"
+        className="relative scroll-mt-16 px-4 py-16 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12 lg:py-24"
       >
         <div className="mx-auto max-w-6xl">
           {/* The Arsenal keeps its own identity: a phosphor-green terminal
@@ -100,24 +87,16 @@ export default function LandingPage() {
 
             {/* Copy */}
             <Reveal>
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.08] px-3 py-1 font-mono text-[11px] text-emerald-300">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                </span>
-                new · hands-on hacking
-              </div>
-              <h2 className="mt-5 font-display text-4xl leading-[1.02] [text-wrap:balance] md:text-6xl">
+              <h2 className="font-display text-4xl leading-[1.02] [text-wrap:balance] md:text-6xl">
                 The Ethical Hacking{" "}
                 <span className="font-serif-accent text-emerald-300 [text-shadow:0_0_32px_hsl(152_76%_50%/0.55)]">
                   Arsenal
                 </span>
               </h2>
               <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground md:text-base">
-                Every phase of a real penetration test — reconnaissance, scanning, gaining access,
-                post-exploitation, reporting — with the actual tools used at each step and an
-                AI-generated, command-packed field guide for every one. Nmap, Metasploit, Burp,
-                sqlmap, Hydra, Hashcat and 30+ more, inside a full hacker terminal.
+                Every phase of a real pentest, from recon to reporting, with the actual tools and an
+                AI field guide for each. Nmap, Metasploit, Burp, sqlmap and 30+ more, in a real
+                terminal.
               </p>
               <ul className="mt-6 flex flex-wrap gap-2 text-sm text-emerald-100/90">
                 <Pill icon={<ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />}>
@@ -189,37 +168,42 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Section 7 — Closing CTA ──────────────────────────── */}
-      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_700px]">
-        <FinalCTA />
-      </div>
+      {/* ── Finale — aurora band, the giant wordmark, one call to action ── */}
+      <BurstSection />
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <footer className="relative border-t border-white/[0.06] px-4 py-8 text-sm text-muted-foreground lg:px-12">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
+      <footer className="relative border-t border-white/[0.06] px-4 py-10 text-sm text-muted-foreground lg:px-12">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04]">
-              <SparklesIcon className="h-3.5 w-3.5 text-primary" />
-            </span>
-            <span>
-              <span className="font-semibold text-foreground">SkillStreak</span> AI
-              <span className="ml-2 font-mono text-xs">v0.7.0</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Link
-              href="/login"
-              className="focus-ring inline-flex min-h-[44px] items-center rounded-lg px-3 transition-colors hover:text-foreground"
+            <span
+              aria-hidden
+              className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_0_18px_-2px_hsl(var(--primary)/0.7)]"
             >
-              Log in
-            </Link>
-            <Link
-              href="/register"
-              className="focus-ring inline-flex min-h-[44px] items-center rounded-lg px-3 transition-colors hover:text-foreground"
-            >
-              Sign up
-            </Link>
+              <Zap className="h-4 w-4" fill="currentColor" strokeWidth={1.5} />
+            </span>
+            <span className="font-display text-base text-foreground">
+              SkillStreak<span className="ml-1 text-muted-foreground">AI</span>
+            </span>
+            <span className="ml-2 text-xs">© {new Date().getFullYear()}</span>
           </div>
+          <nav aria-label="Footer" className="-mx-3 flex flex-wrap items-center">
+            {[
+              { href: "#how-it-works", label: "How it works", a: true },
+              { href: "#arsenal", label: "Arsenal", a: true },
+              { href: "/login", label: "Log in" },
+              { href: "/register", label: "Start free" },
+            ].map((l) =>
+              l.a ? (
+                <a key={l.href} href={l.href} className="focus-ring inline-flex min-h-[44px] items-center rounded-lg px-3 transition-colors hover:text-foreground">
+                  {l.label}
+                </a>
+              ) : (
+                <Link key={l.href} href={l.href} className="focus-ring inline-flex min-h-[44px] items-center rounded-lg px-3 transition-colors hover:text-foreground">
+                  {l.label}
+                </Link>
+              ),
+            )}
+          </nav>
         </div>
       </footer>
     </main>
@@ -239,24 +223,21 @@ function DomainMarquee() {
   // Duplicate the list so the loop is seamless.
   const items = [...DOMAIN_TICKER, ...DOMAIN_TICKER];
   return (
-    <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
-      <div className="flex w-max animate-marquee gap-3 px-1.5 motion-reduce:animate-none">
-        {items.map((d, i) => {
-          const Icon = d.icon;
-          return (
-            <div
-              key={`${d.name}-${i}`}
-              aria-hidden={i >= DOMAIN_TICKER.length || undefined}
-              className="flex shrink-0 items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] py-1.5 pl-1.5 pr-5 text-[15px] font-medium text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
-            >
-              <span className={`flex h-8 w-8 items-center justify-center rounded-full ring-1 ${d.well}`}>
-                <Icon className="h-4 w-4" strokeWidth={2} />
-              </span>
+    <div className="group/marquee relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
+      <ul className="flex w-max animate-marquee items-center group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
+        {items.map((d, i) => (
+          <li
+            key={`${d.name}-${i}`}
+            aria-hidden={i >= DOMAIN_TICKER.length || undefined}
+            className="flex shrink-0 items-center"
+          >
+            <span className={`whitespace-nowrap px-6 font-display text-4xl text-foreground/85 transition-colors duration-300 md:px-8 md:text-6xl ${d.hover}`}>
               {d.name}
-            </div>
-          );
-        })}
-      </div>
+            </span>
+            <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.8)]" />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

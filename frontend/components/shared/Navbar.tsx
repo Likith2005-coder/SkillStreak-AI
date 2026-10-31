@@ -152,7 +152,7 @@ export function Navbar() {
             size="sm"
             aria-label="Settings"
             title="Settings"
-            className="h-10 w-10 shrink-0 rounded-lg px-0 2xl:w-auto 2xl:px-3"
+            className="h-11 w-11 shrink-0 rounded-lg px-0 2xl:w-auto 2xl:px-3"
           >
             <Link href="/settings">
               <Settings className="h-[18px] w-[18px]" strokeWidth={2} />
@@ -165,7 +165,8 @@ export function Navbar() {
             onClick={handleLogout}
             aria-label="Log out"
             title="Log out"
-            className="h-10 w-10 shrink-0 rounded-lg px-0 2xl:w-auto 2xl:px-3"
+            // Phones sign out from Settings; keeps the bar from overflowing at 390px.
+            className="hidden h-11 w-11 shrink-0 rounded-lg px-0 md:inline-flex 2xl:w-auto 2xl:px-3"
           >
             <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
             <span className="hidden whitespace-nowrap text-sm 2xl:inline">Log out</span>
@@ -175,6 +176,9 @@ export function Navbar() {
     </header>
   );
 }
+
+// "1.2M" — used below `sm`, where the full number would overflow the bar.
+const compactXp = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
 
 /**
  * Streak, XP and level, live on every screen. The streak refreshes whenever
@@ -244,7 +248,8 @@ function StatChips({ xp }: { xp: number }) {
       </span>
       <span className={chip} title={`${xp.toLocaleString()} XP`} aria-hidden>
         <Gem className="h-4 w-4 text-xp" strokeWidth={2} />
-        {shownXp.toLocaleString()}
+        <span className="sm:hidden">{compactXp.format(shownXp)}</span>
+        <span className="hidden sm:inline">{shownXp.toLocaleString()}</span>
       </span>
       <span className={cn(chip, "relative")} title={`Level ${level}`} aria-hidden>
         <AnimatePresence mode="popLayout" initial={false}>

@@ -68,17 +68,13 @@ export function StreakCard({ streak }: { streak: Streak | null }) {
           {alive && (
             <span className="absolute inset-1 rounded-full bg-energy/30 blur-md" />
           )}
-          <motion.span
-            className="relative"
-            animate={alive && !reduce ? { scale: [1, 1.1, 0.97, 1], rotate: [0, -3, 2, 0] } : undefined}
-            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          >
+          <span className={cn("relative", alive && "anim-flame")}>
             <Flame
               className={cn("h-6 w-6", alive && "drop-shadow-[0_0_8px_hsl(var(--energy))]")}
               fill={alive ? "currentColor" : "none"}
               strokeWidth={1.75}
             />
-          </motion.span>
+          </span>
         </span>
         <div className="min-w-0">
           <h2 id="streak-h" className="flex items-baseline gap-2">
@@ -166,11 +162,13 @@ export function LevelCard({ xp }: { xp: number }) {
           transition={{ duration: reduce ? 0 : 0.9, ease: EASE }}
         />
       </div>
-      <p className="mt-2.5 flex items-center justify-between font-mono text-xs text-muted-foreground">
-        <span>
-          <span className="font-semibold text-foreground">{into.toLocaleString()}</span> / {span.toLocaleString()} XP
+      <p className="mt-2.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 font-mono text-xs">
+        <span className="text-foreground">
+          <span className="font-semibold tabular-nums">{Math.max(0, span - into).toLocaleString()} XP</span> to Level {level + 1}
         </span>
-        <span>{Math.max(0, span - into).toLocaleString()} to go</span>
+        <span className="tabular-nums text-muted-foreground">
+          {into.toLocaleString()} / {span.toLocaleString()} this level
+        </span>
       </p>
     </section>
   );
@@ -181,16 +179,23 @@ export function LevelCard({ xp }: { xp: number }) {
 export function LeagueCard() {
   const me = useUserStore((s) => s.user);
   const [rows, setRows] = useState<LeaderboardEntry[] | null>(null);
+  const [mine, setMine] = useState<LeaderboardEntry | null>(null);
   useEffect(() => {
     let cancelled = false;
     fetchLeaderboard()
-      .then((r) => !cancelled && setRows(r.slice(0, 3)))
+      .then((r) => {
+        if (cancelled) return;
+        setRows(r.entries.slice(0, 3));
+        setMine(r.me ?? null);
+      })
       .catch(() => !cancelled && setRows([]));
     return () => {
       cancelled = true;
     };
   }, []);
   const medal = ["text-xp", "text-foreground/70", "text-energy"];
+  // Only the top three show here; pin the viewer's own standing if they're below it.
+  const pinned = mine && rows && !rows.some((r) => r.userId === mine.userId) ? mine : null;
   return (
     <section className="card-chunky spotlight p-5 [--spot:var(--grape)]" aria-labelledby="league-h">
       <div className="flex items-center justify-between">
@@ -229,9 +234,23 @@ export function LeagueCard() {
               {r.name.charAt(0).toUpperCase()}
             </span>
             <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{r.name}</span>
-            <span className="font-mono text-xs font-semibold tabular-nums text-xp">{r.xpThisWeek} XP</span>
+            <span className="font-mono text-xs font-semibold tabular-nums text-xp">{r.xpThisWeek.toLocaleString()} XP</span>
           </li>
         ))}
+        {pinned && (
+          <li className="-mx-1 mt-1.5 flex items-center gap-3 rounded-lg border-transparent bg-secondary/10 px-2 py-2.5 ring-1 ring-secondary/25">
+            <span aria-hidden className="flex w-5 shrink-0 justify-center font-mono text-xs text-muted-foreground">
+              &hellip;
+            </span>
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-grape/10 text-sm font-semibold text-grape ring-1 ring-grape/25">
+              {pinned.name.charAt(0).toUpperCase()}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+              You · #{pinned.rank.toLocaleString()}
+            </span>
+            <span className="font-mono text-xs font-semibold tabular-nums text-xp">{pinned.xpThisWeek.toLocaleString()} XP</span>
+          </li>
+        )}
       </ol>
     </section>
   );

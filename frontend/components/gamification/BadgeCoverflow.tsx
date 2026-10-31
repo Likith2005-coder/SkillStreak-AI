@@ -36,7 +36,7 @@ const TILT_Y = 16; // rotateY per step
 const TILT_Z = 2.5; // subtle rotateZ per step
 const SCALE_STEP = 0.13;
 const MAX_VISIBLE = 2;
-const MOVE_DUR = 0.6;
+const MOVE_DUR = 0.45;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const AUTOPLAY_MS = 3200;
 
@@ -244,7 +244,7 @@ export function BadgeCoverflow({ badges }: { badges: Badge[] }) {
           >
             <span
               className={cn(
-                "block h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
+                "block h-1.5 rounded-full transition-[width,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
                 i === active ? "w-6 bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.8)]" : "w-1.5 bg-white/15 hover:bg-white/30"
               )}
             />

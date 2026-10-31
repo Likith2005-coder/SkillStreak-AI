@@ -23,17 +23,17 @@ const STATS: Stat[] = [
     icon: BookOpen,
     value: 9,
     label: "Tech domains",
-    hint: "Cybersecurity to Cloud",
+    hint: "Cybersecurity to IoT",
     text: "text-secondary",
     well: "bg-secondary/10 text-secondary ring-secondary/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--secondary)/0.55)]",
   },
   {
     icon: Layers,
-    value: 90,
+    value: 540,
     suffix: "+",
     label: "Curated topics",
-    hint: "Across 5 deep roadmaps",
+    hint: "Across nine full roadmaps",
     text: "text-grape",
     well: "bg-grape/10 text-grape ring-grape/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--grape)/0.55)]",
@@ -76,16 +76,24 @@ export function StatsBanner() {
       </div>
 
       <div className="relative mx-auto max-w-6xl">
-        <motion.h2
+        {/* Off-centre on purpose: the page's one left-aligned header, so the
+            section rhythm isn't a stack of centred blocks. */}
+        <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
-          className="mx-auto mb-12 max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl"
+          className="mb-12 grid gap-5 md:grid-cols-[1.3fr_1fr] md:items-end"
         >
-          Built end to end.{" "}
-          <span className="font-serif-accent text-primary text-glow">Live today.</span>
-        </motion.h2>
+          <h2 className="font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
+            What&apos;s inside, from{" "}
+            <span className="font-serif-accent text-primary text-glow">day one.</span>
+          </h2>
+          <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground md:justify-self-end md:pb-2 md:text-base">
+            Every domain is a full roadmap, every topic ends in a quiz, and every day you show up is
+            counted.
+          </p>
+        </motion.div>
 
         <div className="card-chunky spotlight grid grid-cols-2 overflow-hidden lg:grid-cols-4">
           {STATS.map((s, i) => (

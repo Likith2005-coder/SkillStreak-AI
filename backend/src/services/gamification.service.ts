@@ -620,6 +620,54 @@ export async function getLeaderboard() {
     .filter((x): x is NonNullable<typeof x> => x !== null);
 }
 
+export type LeaderboardMe = {
+  rank: number;
+  userId: string;
+  name: string;
+  level: number;
+  xpTotal: number;
+  xpThisWeek: number;
+};
+
+/**
+ * The requesting user's own standing this ISO week (same window as
+ * getLeaderboard), so a rank outside the top 10 can still be shown.
+ * Rank = 1 + number of users with strictly more XP this week.
+ * Returns null when the user has no XP this week.
+ */
+export async function getLeaderboardMe(userId: string): Promise<LeaderboardMe | null> {
+  const weekStart = startOfIsoWeekUtc(new Date());
+  const mine = await prisma.xpEvent.aggregate({
+    where: { userId, createdAt: { gte: weekStart } },
+    _sum: { amount: true },
+  });
+  const xpThisWeek = mine._sum.amount ?? 0;
+  if (xpThisWeek <= 0) return null;
+
+  const [ahead, user] = await Promise.all([
+    prisma.xpEvent.groupBy({
+      by: ["userId"],
+      where: { createdAt: { gte: weekStart } },
+      _sum: { amount: true },
+      having: { amount: { _sum: { gt: xpThisWeek } } },
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, level: true, xp: true },
+    }),
+  ]);
+  if (!user) return null;
+
+  return {
+    rank: ahead.length + 1,
+    userId: user.id,
+    name: user.name,
+    level: user.level,
+    xpTotal: user.xp,
+    xpThisWeek,
+  };
+}
+
 // ─── Composite hook used by topic + quiz services ────────────
 
 export type GamificationDelta = {

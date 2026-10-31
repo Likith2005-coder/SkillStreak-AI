@@ -35,10 +35,16 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // A quiz is a focused session: the floating key would sit on top of the
-  // quiz's full-width Continue key on phones. The tutor stays one tap away
-  // through the nav's Chat tab.
-  if (pathname?.startsWith("/quiz")) return null;
+  // Screens with their own primary action at the bottom don't get the floating
+  // key: on phones it would sit on top of the quiz's Continue, the roadmap's
+  // "Skip" link, and the lesson (which has its own "Ask about this topic").
+  // The tutor stays one tap away through the nav's Chat tab.
+  if (
+    pathname?.startsWith("/quiz") ||
+    pathname?.startsWith("/topic/") ||
+    /^\/domains\/[^/]+/.test(pathname ?? "")
+  )
+    return null;
 
   return (
     <>
@@ -48,7 +54,7 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
         initial={reduce ? false : { opacity: 0, scale: 0.6, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 360, damping: 16, delay: reduce ? 0 : 0.4 }}
-        className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6"
+        className="fixed bottom-24 right-4 z-40 hidden md:bottom-6 md:right-6 md:block"
       >
         <button
           type="button"
@@ -98,7 +104,7 @@ export function ChatWidget({ topicId = null, topicTitle = null }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={reduce ? undefined : { opacity: 0, y: 16, scale: 0.96 }}
           transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="card-chunky fixed bottom-44 right-4 z-40 flex h-[60vh] max-h-[640px] w-[calc(100vw-2rem)] max-w-md origin-bottom-right flex-col overflow-hidden md:bottom-24 md:right-6 md:h-[70vh]"
+          className="card-chunky !fixed bottom-44 right-4 z-40 flex h-[60dvh] max-h-[640px] w-[calc(100vw-2rem)] max-w-md origin-bottom-right flex-col overflow-hidden md:bottom-24 md:right-6 md:h-[70dvh]"
         >
           <header className="flex items-center justify-between gap-2 border-b border-white/[0.07] px-3 py-2">
             <div className="flex min-w-0 items-center gap-2.5">

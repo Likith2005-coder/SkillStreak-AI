@@ -851,7 +851,7 @@ function PracticeMode({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 20, opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="card-chunky flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden"
+        className="card-chunky flex h-[90dvh] w-full max-w-3xl flex-col overflow-hidden"
       >
         {/* Top bar: close + thin glowing lesson progress */}
         <div className="flex items-center gap-3 px-4 py-3 sm:px-5">

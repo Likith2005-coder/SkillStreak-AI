@@ -69,8 +69,8 @@ export default function DomainsPage() {
             <span className="font-serif-accent text-glow text-primary">modern tech</span>
           </h1>
           <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-muted-foreground">
-            Five domains have full curated roadmaps. The other four are served
-            on-demand by the AI tutor — same depth, generated as you go.
+            Every domain is a full roadmap, from your first concept to job-ready. The AI
+            tutor fills in anything else you&apos;re curious about along the way.
           </p>
         </div>
         <Mascot

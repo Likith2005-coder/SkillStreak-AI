@@ -2,7 +2,7 @@
 
 /**
  * The shared "Get started" + "I have an account" pair for the closing
- * moments of the landing page (BurstSection, FinalCTA): the lit volt primary
+ * moment of the landing page (BurstSection): the lit volt primary
  * and a hairline outline, both from the Midnight Button.
  */
 

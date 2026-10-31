@@ -69,14 +69,20 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
 
   const startLoop = () => {
     if (loopRef.current) return;
-    const step = () => {
+    // Time-based easing (75ms time constant = the old 0.2/frame at 60Hz), so
+    // the magnify feels the same on 120/144Hz screens instead of twice as fast.
+    let last = performance.now();
+    const step = (now: number) => {
+      const dt = Math.min(64, now - last);
+      last = now;
+      const k = 1 - Math.exp(-dt / 75);
       const tgt = targetRef.current;
       const cur = curRef.current;
       let moving = false;
       for (let i = 0; i < cur.length; i++) {
         const d = (tgt[i] ?? 0) - cur[i];
         if (Math.abs(d) > 0.001) {
-          cur[i] += d * 0.2;
+          cur[i] += d * k;
           moving = true;
         } else {
           cur[i] = tgt[i] ?? 0;
@@ -174,7 +180,6 @@ export function MagneticDomainDock({ tiles }: { tiles: DomainProgressTile[] }) {
           width,
           height,
           transition: barTransition,
-          willChange: "width, height",
           zIndex: isOpen ? 3 : 2,
           filter: blurred ? `blur(${BLUR}px)` : "none",
           opacity: blurred ? 0.55 : 1,

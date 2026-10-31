@@ -8,6 +8,7 @@ function fireConfetti() {
       origin: { y: 0.7 },
       spread: 70,
       startVelocity: 30,
+      disableForReducedMotion: true,
       particleCount: Math.floor(140 * particleRatio),
       ...opts,
     });

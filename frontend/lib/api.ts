@@ -133,6 +133,11 @@ export async function logoutUser(): Promise<void> {
 // Pulls a user-friendly message out of an axios error.
 export function apiErrorMessage(err: unknown, fallback = "Something went wrong"): string {
   if (axios.isAxiosError(err)) {
+    // Server faults are ours, not the reader's: never show "Internal Server
+    // Error" (or anything from inside the server) in the UI.
+    if ((err.response?.status ?? 0) >= 500) {
+      return "Something went wrong on our side. Try again in a minute.";
+    }
     const data = err.response?.data as { error?: string; details?: unknown } | undefined;
     if (data?.error) return data.error;
     // Transport failures carry developer-facing text ("timeout of 15000ms
@@ -723,9 +728,15 @@ export async function fetchBadges(): Promise<Badge[]> {
   return data.badges;
 }
 
-export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
-  const { data } = await api.get<{ entries: LeaderboardEntry[] }>("/leaderboard");
-  return data.entries;
+export type LeaderboardResponse = {
+  entries: LeaderboardEntry[];
+  /** The requesting user's own standing this week (null/absent with 0 XP this week). */
+  me?: LeaderboardEntry | null;
+};
+
+export async function fetchLeaderboard(): Promise<LeaderboardResponse> {
+  const { data } = await api.get<LeaderboardResponse>("/leaderboard");
+  return { entries: data.entries, me: data.me ?? null };
 }
 
 // ─── Progress / Analytics (Phase 5) ─────────────────────

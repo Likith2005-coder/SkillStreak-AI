@@ -47,7 +47,7 @@ type Step = {
 const STEPS: Step[] = [
   {
     title: "Pick your path",
-    copy: "9 tech domains, 5 deeply-curated roadmaps. Choose a goal and get a clear trail from foundations to mastery.",
+    copy: "Nine tech domains, each a full roadmap. Choose a goal and get a clear trail from foundations to mastery.",
     icon: BookOpen,
     tone: "secondary",
     text: "text-secondary",
@@ -102,7 +102,9 @@ export function ScrollStory() {
   const trackRef = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start 70%", "end 60%"] });
   const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
-  const headTop = useTransform(fill, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
+  // The glowing head rides the fill edge by transform (a full-height mover
+  // translated by its own height), never by `top`, so scrolling never relayouts.
+  const headY = useTransform(fill, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
 
   return (
     <MotionConfig reducedMotion={reduce ? "always" : "never"}>
@@ -112,7 +114,7 @@ export function ScrollStory() {
             From curious to <span className="font-serif-accent text-primary text-glow">capable</span>, step by step.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-muted-foreground [text-wrap:pretty] md:text-lg">
-            Five systems working as one loop, so you don&apos;t just read it. You actually learn it.
+            Pick a path, learn it with the tutor, prove it in a quiz, and keep the streak alive.
           </p>
 
           <ol ref={trackRef} className="relative mt-14 space-y-12 md:mt-20 md:space-y-20">
@@ -127,10 +129,9 @@ export function ScrollStory() {
                 style={{ scaleY: reduce ? 1 : fill }}
               />
               {!reduce && (
-                <motion.span
-                  className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-bright shadow-[0_0_0_4px_hsl(var(--primary)/0.18),0_0_24px_4px_hsl(var(--primary)/0.8)]"
-                  style={{ top: headTop }}
-                />
+                <motion.span aria-hidden className="absolute inset-0" style={{ y: headY }}>
+                  <span className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-bright shadow-[0_0_0_4px_hsl(var(--primary)/0.18),0_0_24px_4px_hsl(var(--primary)/0.8)]" />
+                </motion.span>
               )}
             </span>
 
@@ -178,12 +179,6 @@ function StepRow({ step, index }: { step: Step; index: number }) {
           }}
         >
           <Icon className={cn("h-6 w-6 md:h-7 md:w-7", step.text)} strokeWidth={2} aria-hidden />
-          <span
-            aria-hidden
-            className="absolute -bottom-8 left-1/2 z-20 hidden -translate-x-1/2 rounded-md bg-background px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground md:block"
-          >
-            0{index + 1}
-          </span>
         </motion.span>
       </div>
 
@@ -198,9 +193,6 @@ function StepRow({ step, index }: { step: Step; index: number }) {
           left ? "md:col-start-1 md:text-right" : "md:col-start-3",
         )}
       >
-        <p className={cn("font-mono text-xs md:hidden", step.text)} aria-hidden>
-          0{index + 1}
-        </p>
         <h3 className="mt-1 font-display text-2xl leading-tight text-foreground md:mt-0 md:text-4xl">
           <span className="sr-only">Step {index + 1}: </span>
           {step.title}

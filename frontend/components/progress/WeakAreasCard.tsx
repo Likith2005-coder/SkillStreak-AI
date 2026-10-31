@@ -1,15 +1,19 @@
 "use client";
 
 import { Link } from "next-view-transitions";
-import { ChevronRight, PartyPopper, Target } from "lucide-react";
+import { ChevronRight, ListChecks, PartyPopper, Target } from "lucide-react";
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { styleFor } from "@/lib/domain-style";
 import type { WeakArea } from "@/lib/api";
 
-type Props = { items: WeakArea[] };
+type Props = {
+  items: WeakArea[];
+  /** Total quiz attempts. With none, an empty list isn't an achievement. */
+  attempts: number;
+};
 
-export function WeakAreasCard({ items }: Props) {
+export function WeakAreasCard({ items, attempts }: Props) {
   return (
     <div className="card-chunky spotlight h-full p-5 sm:p-6" style={{ "--spot": "var(--destructive)" } as CSSProperties}>
       <div className="flex items-center gap-3">
@@ -32,7 +36,19 @@ export function WeakAreasCard({ items }: Props) {
         )}
       </div>
 
-      {items.length === 0 ? (
+      {items.length === 0 && attempts === 0 ? (
+        <div className="mt-5 flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4">
+          <span
+            aria-hidden
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-muted-foreground ring-1 ring-white/10"
+          >
+            <ListChecks className="h-5 w-5" />
+          </span>
+          <p className="text-sm text-muted-foreground">
+            Take a quiz — anything you score under 60% on shows up here.
+          </p>
+        </div>
+      ) : items.length === 0 ? (
         <div className="mt-5 flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-4">
           <span
             aria-hidden

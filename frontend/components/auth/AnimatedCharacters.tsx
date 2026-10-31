@@ -14,7 +14,8 @@
  * aurora light. Behaviour is unchanged.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { useAuthForm } from "@/app/(auth)/auth-form-context";
 
 // Each character's role colour, as an HSL triplet reference.
@@ -65,6 +66,21 @@ type PupilProps = {
   forceLookY?: number;
 };
 
+// One pointer for every eye: the parent owns a single rAF-throttled listener
+// and shares the position here. null = don't track (reduced motion, or no
+// pointer yet), so pupils rest centred.
+const PointerContext = createContext<{ x: number; y: number } | null>(null);
+
+function lookOffset(el: HTMLDivElement | null, pointer: { x: number; y: number } | null, maxDistance: number) {
+  if (!el || !pointer) return { x: 0, y: 0 };
+  const r = el.getBoundingClientRect();
+  const dx = pointer.x - (r.left + r.width / 2);
+  const dy = pointer.y - (r.top + r.height / 2);
+  const d = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
+  const a = Math.atan2(dy, dx);
+  return { x: Math.cos(a) * d, y: Math.sin(a) * d };
+}
+
 function Pupil({
   size = 12,
   maxDistance = 5,
@@ -73,35 +89,12 @@ function Pupil({
   forceLookX,
   forceLookY,
 }: PupilProps) {
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
+  const pointer = useContext(PointerContext);
   const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function onMove(e: MouseEvent) {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
-    }
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  let x = 0;
-  let y = 0;
-  if (forceLookX !== undefined && forceLookY !== undefined) {
-    x = forceLookX;
-    y = forceLookY;
-  } else if (ref.current) {
-    const r = ref.current.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const dx = mouseX - cx;
-    const dy = mouseY - cy;
-    const d = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
-    const a = Math.atan2(dy, dx);
-    x = Math.cos(a) * d;
-    y = Math.sin(a) * d;
-  }
+  const { x, y } =
+    forceLookX !== undefined && forceLookY !== undefined
+      ? { x: forceLookX, y: forceLookY }
+      : lookOffset(ref.current, pointer, maxDistance);
 
   return (
     <div
@@ -142,40 +135,17 @@ function EyeBall({
   forceLookX,
   forceLookY,
 }: EyeBallProps) {
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
+  const pointer = useContext(PointerContext);
   const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function onMove(e: MouseEvent) {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
-    }
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  let x = 0;
-  let y = 0;
-  if (forceLookX !== undefined && forceLookY !== undefined) {
-    x = forceLookX;
-    y = forceLookY;
-  } else if (ref.current) {
-    const r = ref.current.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const dx = mouseX - cx;
-    const dy = mouseY - cy;
-    const d = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
-    const a = Math.atan2(dy, dx);
-    x = Math.cos(a) * d;
-    y = Math.sin(a) * d;
-  }
+  const { x, y } =
+    forceLookX !== undefined && forceLookY !== undefined
+      ? { x: forceLookX, y: forceLookY }
+      : lookOffset(ref.current, pointer, maxDistance);
 
   return (
     <div
       ref={ref}
-      className="flex items-center justify-center rounded-full transition-all duration-150"
+      className="flex items-center justify-center rounded-full transition-[height] duration-150 ease-out motion-reduce:transition-none"
       style={{
         width: size,
         height: isBlinking ? 2 : size,
@@ -207,8 +177,10 @@ function EyeBall({
 export function AnimatedCharacters() {
   const { isTyping, passwordLength, passwordVisible } = useAuthForm();
 
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
+  const reduce = useReducedMotionSafe();
+  const [pointer, setPointer] = useState<{ x: number; y: number } | null>(null);
+  const mouseX = pointer?.x ?? 0;
+  const mouseY = pointer?.y ?? 0;
   const [isVioletBlinking, setVioletBlinking] = useState(false);
   const [isSlateBlinking, setSlateBlinking] = useState(false);
   const [lookingAtEachOther, setLookingAtEachOther] = useState(false);
@@ -219,18 +191,34 @@ export function AnimatedCharacters() {
   const fuchsiaRef = useRef<HTMLDivElement | null>(null);
   const cyanRef = useRef<HTMLDivElement | null>(null);
 
-  // Mouse tracking
+  // Pointer tracking: one listener, at most one state update per frame.
+  // Reduced motion: no tracking at all, the crew looks straight ahead.
   useEffect(() => {
-    function onMove(e: MouseEvent) {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
+    if (reduce) {
+      setPointer(null);
+      return;
     }
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
+    let raf = 0;
+    let last = { x: 0, y: 0 };
+    function onMove(e: MouseEvent) {
+      last = { x: e.clientX, y: e.clientY };
+      if (!raf) {
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          setPointer(last);
+        });
+      }
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, [reduce]);
 
-  // Random blinks for the two big characters
+  // Random blinks for the two big characters (none under reduced motion)
   useEffect(() => {
+    if (reduce) return;
     let t: ReturnType<typeof setTimeout>;
     const schedule = () => {
       t = setTimeout(
@@ -246,9 +234,10 @@ export function AnimatedCharacters() {
     };
     schedule();
     return () => clearTimeout(t);
-  }, []);
+  }, [reduce]);
 
   useEffect(() => {
+    if (reduce) return;
     let t: ReturnType<typeof setTimeout>;
     const schedule = () => {
       t = setTimeout(
@@ -264,7 +253,7 @@ export function AnimatedCharacters() {
     };
     schedule();
     return () => clearTimeout(t);
-  }, []);
+  }, [reduce]);
 
   // Look at each other when typing starts
   useEffect(() => {
@@ -279,7 +268,7 @@ export function AnimatedCharacters() {
 
   // Violet sneaky peek when password is visible
   useEffect(() => {
-    if (!(passwordLength > 0 && passwordVisible)) {
+    if (reduce || !(passwordLength > 0 && passwordVisible)) {
       setVioletPeeking(false);
       return;
     }
@@ -296,7 +285,7 @@ export function AnimatedCharacters() {
     };
     schedule();
     return () => clearTimeout(t);
-  }, [passwordLength, passwordVisible]);
+  }, [passwordLength, passwordVisible, reduce]);
 
   function calcPosition(ref: React.RefObject<HTMLDivElement | null>) {
     if (!ref.current) return { faceX: 0, faceY: 0, bodySkew: 0 };
@@ -320,6 +309,7 @@ export function AnimatedCharacters() {
   const passwordRevealed = passwordLength > 0 && passwordVisible;
 
   return (
+    <PointerContext.Provider value={pointer}>
     <div className="relative" style={{ width: 550, height: 400 }}>
       {/* The pool of aurora light the crew stands in */}
       <div
@@ -339,7 +329,7 @@ export function AnimatedCharacters() {
       {/* Back: tall violet block */}
       <div
         ref={violetRef}
-        className="absolute bottom-0 transition-all duration-700 ease-in-out"
+        className="absolute bottom-0 transition-[height,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{
           left: 70,
           width: 180,
@@ -357,7 +347,7 @@ export function AnimatedCharacters() {
       >
         <Sheen />
         <div
-          className="absolute flex gap-8 transition-all duration-700 ease-in-out"
+          className="absolute flex gap-8 transition-[left,top] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
           style={{
             left: passwordRevealed
               ? 20
@@ -397,7 +387,7 @@ export function AnimatedCharacters() {
       {/* Middle: slate block */}
       <div
         ref={slateRef}
-        className="absolute bottom-0 transition-all duration-700 ease-in-out"
+        className="absolute bottom-0 transition-[height,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{
           left: 240,
           width: 120,
@@ -417,7 +407,7 @@ export function AnimatedCharacters() {
       >
         <Sheen />
         <div
-          className="absolute flex gap-6 transition-all duration-700 ease-in-out"
+          className="absolute flex gap-6 transition-[left,top] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
           style={{
             left: passwordRevealed
               ? 10
@@ -455,7 +445,7 @@ export function AnimatedCharacters() {
       {/* Front-left: fuchsia semi-circle */}
       <div
         ref={fuchsiaRef}
-        className="absolute bottom-0 transition-all duration-700 ease-in-out"
+        className="absolute bottom-0 transition-[height,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{
           left: 0,
           width: 240,
@@ -471,7 +461,7 @@ export function AnimatedCharacters() {
       >
         <Sheen />
         <div
-          className="absolute flex gap-8 transition-all duration-200 ease-out"
+          className="absolute flex gap-8 transition-[left,top,width,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
           style={{
             left: passwordRevealed ? 50 : 82 + fuchsiaPos.faceX,
             top: passwordRevealed ? 85 : 90 + fuchsiaPos.faceY,
@@ -495,7 +485,7 @@ export function AnimatedCharacters() {
       {/* Front-right: cyan rectangle with mouth */}
       <div
         ref={cyanRef}
-        className="absolute bottom-0 transition-all duration-700 ease-in-out"
+        className="absolute bottom-0 transition-[height,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{
           left: 310,
           width: 140,
@@ -511,7 +501,7 @@ export function AnimatedCharacters() {
       >
         <Sheen />
         <div
-          className="absolute flex gap-6 transition-all duration-200 ease-out"
+          className="absolute flex gap-6 transition-[left,top,width,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
           style={{
             left: passwordRevealed ? 20 : 52 + cyanPos.faceX,
             top: passwordRevealed ? 35 : 40 + cyanPos.faceY,
@@ -531,7 +521,7 @@ export function AnimatedCharacters() {
           />
         </div>
         <div
-          className="absolute h-[4px] w-20 rounded-full transition-all duration-200 ease-out"
+          className="absolute h-[4px] w-20 rounded-full transition-[left,top,width,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
           style={{
             backgroundColor: `hsl(${TONE_CYAN})`,
             boxShadow: `0 0 10px hsl(${TONE_CYAN} / 0.8)`,
@@ -541,5 +531,6 @@ export function AnimatedCharacters() {
         />
       </div>
     </div>
+    </PointerContext.Provider>
   );
 }

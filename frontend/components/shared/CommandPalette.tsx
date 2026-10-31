@@ -10,10 +10,9 @@
  * edge glow, and mono key hints.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { motion } from "framer-motion";
 import {
   BookOpen,
   Bot,
@@ -28,22 +27,29 @@ import {
   Trophy,
 } from "lucide-react";
 import { fetchDomains, type Domain } from "@/lib/api";
-import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 const GROUP =
   "[&_[cmdk-group-heading]]:label-mono [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-muted-foreground";
 
 export function CommandPalette() {
   const router = useRouter();
-  const reduce = useReducedMotionSafe();
   const [open, setOpen] = useState(false);
   const [domains, setDomains] = useState<Domain[]>([]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  // Whatever had focus before the palette opened; focus goes back there on close.
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   // Cmd+K / Ctrl+K toggles the palette. Esc closes (handled by cmdk itself).
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
+        // Remember the opener now: by the time an effect runs, the input's
+        // autoFocus has already moved focus into the palette.
+        const active = document.activeElement;
+        if (active instanceof HTMLElement && !dialogRef.current?.contains(active)) {
+          returnFocusRef.current = active;
+        }
         setOpen((v) => !v);
       }
       if (e.key === "Escape") setOpen(false);
@@ -62,6 +68,44 @@ export function CommandPalette() {
       });
   }, [open, domains.length]);
 
+  // While open: lock page scroll; on close: restore scroll and focus.
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    const prevOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = prevOverflow;
+      const el = returnFocusRef.current;
+      returnFocusRef.current = null;
+      if (el && el.isConnected) el.focus({ preventScroll: true });
+    };
+  }, [open]);
+
+  // Keep Tab inside the dialog.
+  function trapTab(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key !== "Tab" || !dialogRef.current) return;
+    const focusable = Array.from(
+      dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (focusable.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && (active === first || !dialogRef.current.contains(active))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (active === last || !dialogRef.current.contains(active))) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
   function go(href: string) {
     setOpen(false);
     router.push(href);
@@ -76,10 +120,14 @@ export function CommandPalette() {
         if (e.target === e.currentTarget) setOpen(false);
       }}
     >
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: -8, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      {/* No entrance: a keyboard shortcut used constantly should be instant
+          both ways, like Raycast. */}
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        onKeyDown={trapTab}
         className="relative w-full max-w-xl"
       >
         {/* Aurora light leaking from behind the panel. */}
@@ -161,7 +209,7 @@ export function CommandPalette() {
             <span className="font-mono text-[11px]">Ctrl / ⌘ K</span>
           </div>
         </Command>
-      </motion.div>
+      </div>
     </div>
   );
 }

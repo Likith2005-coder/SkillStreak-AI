@@ -17,19 +17,24 @@ type Props = {
   topics: RoadmapTopic[];
   progressMap: Map<string, "not_started" | "in_progress" | "completed">;
   color: string;
+  /** The single "you are here" topic across the whole domain (all phases),
+   *  or null when every topic is done. Only a matching node is "current". */
+  currentTopicId: string | null;
 };
 
 // Layout constants — tuned so the winding path looks natural on most screens.
 const NODE_SIZE = 68; // px diameter of each topic orb
 const ROW_HEIGHT = 150; // vertical distance between adjacent nodes
-const LABEL_HALF = 92; // half the 176px label + breathing room
+// Half the label width + breathing room: w-56 (224px) below sm, w-64 (256px) from sm.
+const LABEL_HALF = 116;
+const LABEL_HALF_SM = 132;
 const MAX_AMPLITUDE = 110; // peak horizontal sway on roomy screens
 const MIN_AMPLITUDE = 30;
 const WAVELENGTH = 4; // topics per full sine wave cycle
 const TOP_PADDING = 60;
 const BOTTOM_PADDING = 80;
 
-export function WindingRoadmap({ topics, progressMap, color }: Props) {
+export function WindingRoadmap({ topics, progressMap, color, currentTopicId }: Props) {
   const reduce = useReducedMotion();
   const s = styleFor(color);
   const pal = domainPalette(color);
@@ -39,33 +44,42 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
   // off a phone screen; the full wind returns wherever there is room.
   const wrap = useRef<HTMLDivElement>(null);
   const [amplitude, setAmplitude] = useState(MAX_AMPLITUDE);
+  const [labelHalf, setLabelHalf] = useState(LABEL_HALF_SM);
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
-    const fit = () =>
+    const fit = () => {
+      // Matches the label's Tailwind `sm:` breakpoint (viewport based).
+      const half = window.innerWidth >= 640 ? LABEL_HALF_SM : LABEL_HALF;
+      setLabelHalf(half);
       setAmplitude(
         Math.max(
           MIN_AMPLITUDE,
-          Math.min(MAX_AMPLITUDE, el.clientWidth / 2 - LABEL_HALF),
+          Math.min(MAX_AMPLITUDE, el.clientWidth / 2 - half),
         ),
       );
+    };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // Identify the "current" node: the first non-completed topic. Everything
-  // before it is unlocked (available / completed); we don't actually lock
-  // later topics in the data model, but we visually communicate "this is
-  // where you are" by emphasising the current node.
-  const currentIndex = useMemo(() => {
-    for (let i = 0; i < topics.length; i++) {
-      const status = progressMap.get(topics[i].id) ?? "not_started";
-      if (status !== "completed") return i;
-    }
-    return -1; // all done
-  }, [topics, progressMap]);
+  // The "current" node is decided once for the whole domain by the parent,
+  // so only one phase shows it. -1 = not in this phase.
+  const currentIndex = useMemo(
+    () => (currentTopicId ? topics.findIndex((t) => t.id === currentTopicId) : -1),
+    [topics, currentTopicId],
+  );
+
+  // How far the lit trail runs in this phase, in nodes: up to the current
+  // node if it's here, the whole phase if every topic is done, else nothing.
+  const litUpTo = useMemo(() => {
+    if (currentIndex >= 0) return currentIndex;
+    const allDone =
+      topics.length > 0 && topics.every((t) => progressMap.get(t.id) === "completed");
+    return allDone ? Math.max(topics.length - 1, 0) : 0;
+  }, [currentIndex, topics, progressMap]);
 
   // Compute (x, y) for each node along a sine wave.
   const points = useMemo(() => {
@@ -78,7 +92,7 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
 
   const totalHeight =
     TOP_PADDING + (topics.length - 1) * ROW_HEIGHT + BOTTOM_PADDING;
-  const halfWidth = amplitude + LABEL_HALF;
+  const halfWidth = amplitude + labelHalf;
 
   // Build a smooth SVG path connecting all node centres.
   const pathD = useMemo(() => {
@@ -131,10 +145,10 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
             strokeDasharray="2 8"
           />
           {/* lit up to current progress */}
-          {currentIndex !== 0 && (
+          {litUpTo > 0 && (
             <ProgressPath
               d={pathD}
-              currentIndex={currentIndex < 0 ? topics.length : currentIndex}
+              currentIndex={litUpTo}
               total={topics.length}
               uid={uid}
               bloom={pal.bright}
@@ -168,6 +182,7 @@ export function WindingRoadmap({ topics, progressMap, color }: Props) {
               }}
               index={i}
               reduce={!!reduce}
+              tipSide={x > 0 ? "left" : "right"}
             />
           );
         })}
@@ -236,6 +251,7 @@ function RoadmapNode({
   position,
   index,
   reduce,
+  tipSide,
 }: {
   topic: RoadmapTopic;
   status: Status;
@@ -244,6 +260,8 @@ function RoadmapNode({
   position: { x: number; y: number };
   index: number;
   reduce: boolean;
+  /** Which side of the node the "Start" bubble sits on: toward the trail's centre. */
+  tipSide: "left" | "right";
 }) {
   const isCurrent = status === "current";
   const pal = domainPalette(color);
@@ -298,12 +316,16 @@ function RoadmapNode({
       className="group"
     >
       {isCurrent && (
-        // Static wrapper owns the centring; the motion child owns the float.
-        <span aria-hidden className="pointer-events-none absolute -top-14 left-1/2 z-10 -translate-x-1/2">
-          <motion.span
-            animate={reduce ? undefined : { y: [0, -5, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="relative block whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold"
+        // Beside the node, never above it: above, it collided with the label of
+        // the topic before. The static wrapper owns placement; the child bobs.
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute top-1/2 z-10 -translate-y-1/2 ${
+            tipSide === "left" ? "right-[calc(100%+18px)]" : "left-[calc(100%+18px)]"
+          }`}
+        >
+          <span
+            className="anim-bob-4 relative block whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold"
             style={{
               background: pal.bright,
               color: ink,
@@ -312,26 +334,39 @@ function RoadmapNode({
           >
             Start
             <span
-              className="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 rounded-[2px]"
+              className={`absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-[2px] ${
+                tipSide === "left" ? "-right-1" : "-left-1"
+              }`}
               style={{ background: pal.bright }}
             />
-          </motion.span>
+          </span>
         </span>
       )}
       {isCurrent && (
         <>
           {/* pulsing halo: two rings breathing out of the orb */}
-          {[0, 1].map((k) => (
-            <motion.span
-              key={k}
+          {reduce ? (
+            <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-full"
+              className="pointer-events-none absolute inset-0 scale-125 rounded-full opacity-35"
               style={{ boxShadow: `0 0 0 2px ${withAlpha(pal.bright, 0.7)}` }}
-              initial={{ scale: 1, opacity: reduce ? 0.35 : 0 }}
-              animate={reduce ? { scale: 1.25, opacity: 0.35 } : { scale: [1, 1.7], opacity: [0.7, 0] }}
-              transition={reduce ? { duration: 0 } : { duration: 2.4, repeat: Infinity, ease: "easeOut", delay: k * 1.2 }}
             />
-          ))}
+          ) : (
+            [0, 1].map((k) => (
+              <span
+                key={k}
+                aria-hidden
+                className="anim-halo pointer-events-none absolute inset-0 rounded-full"
+                style={{
+                  boxShadow: `0 0 0 2px ${withAlpha(pal.bright, 0.7)}`,
+                  animationDuration: "2.4s",
+                  animationDelay: `${k * 1.2}s`,
+                  ["--halo-from" as string]: 0.7,
+                  ["--halo-to" as string]: 1.7,
+                }}
+              />
+            ))
+          )}
         </>
       )}
 
@@ -355,10 +390,10 @@ function RoadmapNode({
         )}
       </Link>
 
-      <div className="pointer-events-none absolute left-1/2 top-full mt-4 w-44 -translate-x-1/2 text-center">
+      <div className="pointer-events-none absolute left-1/2 top-full mt-4 w-56 -translate-x-1/2 text-center sm:w-64">
         <span
           className={cn(
-            "inline-flex max-w-full items-center gap-1.5 rounded-full border bg-card/90 px-3 py-1 text-xs font-medium backdrop-blur-sm",
+            "inline-flex max-w-full items-center gap-1.5 rounded-2xl border bg-card/90 px-3 py-1 text-xs font-medium backdrop-blur-sm",
             isCurrent ? "text-foreground" : status === "available" ? "border-white/[0.08] text-muted-foreground" : "border-white/10 text-foreground",
           )}
           style={isCurrent ? { borderColor: withAlpha(pal.bright, 0.45) } : undefined}
@@ -369,7 +404,7 @@ function RoadmapNode({
           >
             {String(topic.orderIndex).padStart(2, "0")}
           </span>
-          <span className="truncate">{topic.title}</span>
+          <span className="line-clamp-2 whitespace-normal text-left" title={topic.title}>{topic.title}</span>
         </span>
       </div>
     </motion.div>

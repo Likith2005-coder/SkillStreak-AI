@@ -10,7 +10,7 @@
  * Layout (top → bottom, inside a min-h-[100svh] section):
  *   wordmark (WebGL mesh on desktop, real type below) · tagline
  *   horizon line
- *   "Start learning, the smart way." · copy · CTAs · reassurance row
+ *   "Your first streak is one click away." · copy · CTAs · reassurance row
  *
  * Choreography (triggered once by `useInView`, amount 0.55):
  *   0.00 → 0.80s  Aurora bloom scales 0 → 1 from the measured "a" position.
@@ -146,9 +146,6 @@ export function BurstSection() {
               </span>
             )}
           </span>
-          <p className="mt-4 text-[15px] text-muted-foreground sm:text-base">
-            Free forever · Built for students · Pick up where you left off
-          </p>
         </motion.div>
 
         {/* Horizon of light under the wordmark */}
@@ -167,11 +164,11 @@ export function BurstSection() {
           className="flex w-full max-w-2xl flex-col items-center"
         >
           <h3 className="font-display text-3xl leading-tight [text-wrap:balance] sm:text-4xl lg:text-5xl">
-            Start learning, the <span className="font-serif-accent text-primary text-glow">smart</span> way.
+            Your first <span className="font-serif-accent text-primary text-glow">streak</span> is one click away.
           </h3>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            Join the platform that adapts to your level, recommends your next move, and keeps you
-            accountable.
+            Sign up in a minute. Start with the topic your AI tutor picks for you, and come back
+            tomorrow to keep it alive.
           </p>
 
           <div className="mt-8 w-full">

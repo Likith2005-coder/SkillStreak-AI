@@ -72,7 +72,7 @@ export function ChatInput({
           }}
           rows={1}
           placeholder={placeholder}
-          className="relative min-h-[44px] w-full resize-none border-0 bg-transparent px-1 py-2.5 text-[0.95rem] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
+          className="relative min-h-[44px] w-full resize-none border-0 bg-transparent px-1 py-2.5 text-base leading-relaxed md:text-[0.95rem] text-foreground placeholder:text-muted-foreground focus:outline-none"
           disabled={disabled}
         />
 

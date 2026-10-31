@@ -51,10 +51,11 @@ export function RouteProgress() {
     }
   }, [pathname]);
 
-  if (reduce) return null;
-
-  const target =
-    phase === "loading" ? { scaleX: 0.85, opacity: 1 }
+  // Reduced motion keeps the loading signal without the movement: a full,
+  // still bar that only fades in and out.
+  const target = reduce
+    ? { scaleX: 1, opacity: phase === "idle" ? 0 : 1 }
+    : phase === "loading" ? { scaleX: 0.85, opacity: 1 }
       : phase === "finishing" ? { scaleX: 1, opacity: 1 }
       : { scaleX: 0, opacity: 0 };
 
@@ -65,13 +66,14 @@ export function RouteProgress() {
       initial={false}
       animate={target}
       transition={{
-        scaleX:
-          phase === "loading"
+        scaleX: reduce
+          ? { duration: 0 }
+          : phase === "loading"
             ? { duration: 1.6, ease: [0.16, 1, 0.3, 1] }
             : phase === "finishing"
             ? { duration: 0.18, ease: "easeOut" }
             : { duration: 0.2, ease: "easeOut" },
-        opacity: { duration: 0.2 },
+        opacity: { duration: reduce ? 0.15 : 0.2 },
       }}
     >
       <span className="absolute -top-px right-0 h-1 w-24 rounded-full bg-primary/70 blur-[3px]" />

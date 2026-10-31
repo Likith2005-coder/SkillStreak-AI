@@ -26,6 +26,7 @@ function daysUntilReset(now = new Date()): number {
 export default function LeaderboardPage() {
   const me = useUserStore((s) => s.user);
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null);
+  const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [resetIn, setResetIn] = useState<number | null>(null);
 
@@ -33,7 +34,11 @@ export default function LeaderboardPage() {
     setResetIn(daysUntilReset());
     let cancelled = false;
     fetchLeaderboard()
-      .then((d) => !cancelled && setEntries(d))
+      .then((d) => {
+        if (cancelled) return;
+        setEntries(d.entries);
+        setMyEntry(d.me ?? null);
+      })
       .catch((err) => !cancelled && setError(apiErrorMessage(err, "Could not load leaderboard")));
     return () => {
       cancelled = true;
@@ -42,6 +47,10 @@ export default function LeaderboardPage() {
 
   const podium = entries?.slice(0, 3) ?? [];
   const rest = entries?.slice(3) ?? [];
+  // The API only returns the top 10; pin the viewer's own standing beneath
+  // the list when they rank outside it.
+  const pinnedMe =
+    myEntry && entries && !entries.some((e) => e.userId === myEntry.userId) ? myEntry : null;
 
   return (
     <main className="container max-w-3xl px-4 py-8">
@@ -137,6 +146,11 @@ export default function LeaderboardPage() {
                 ))}
               </ol>
             )}
+            {pinnedMe && (
+              <ol className="card-chunky mt-3 overflow-hidden p-1.5" aria-label="Your rank">
+                <Row entry={pinnedMe} index={rest.length} isMe pinned />
+              </ol>
+            )}
           </>
         )}
       </section>
@@ -206,7 +220,7 @@ function Podium({ entries, meId }: { entries: LeaderboardEntry[]; meId?: string 
                 </span>
                 <span className="mt-0.5 flex items-center gap-1 font-mono text-[13px] font-semibold tabular-nums text-xp">
                   <Gem className="h-3.5 w-3.5" aria-hidden />
-                  {e.xpThisWeek} XP
+                  {e.xpThisWeek.toLocaleString()} XP
                 </span>
                 {isMe && (
                   <span className="mt-1.5 rounded-full border border-secondary/30 bg-secondary/10 px-2.5 py-0.5 text-xs font-medium text-secondary">
@@ -249,7 +263,18 @@ function Podium({ entries, meId }: { entries: LeaderboardEntry[]; meId?: string 
 
 /* ── Rows: rank 4 and below ───────────────────────────────── */
 
-function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; isMe: boolean }) {
+function Row({
+  entry,
+  index,
+  isMe,
+  pinned = false,
+}: {
+  entry: LeaderboardEntry;
+  index: number;
+  isMe: boolean;
+  /** Viewer's own entry pinned below the top 10. */
+  pinned?: boolean;
+}) {
   const reduce = useReducedMotionSafe();
   return (
     <motion.li
@@ -290,7 +315,7 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
             <span className="truncate text-[15px] font-semibold text-foreground">{entry.name}</span>
             {isMe && (
               <span className="shrink-0 rounded-full border border-secondary/30 bg-secondary/15 px-2 py-0.5 text-[11px] font-medium text-secondary">
-                You
+                {pinned ? `You · #${entry.rank.toLocaleString()}` : "You"}
               </span>
             )}
           </div>
@@ -300,7 +325,7 @@ function Row({ entry, index, isMe }: { entry: LeaderboardEntry; index: number; i
         </div>
         <span className="flex shrink-0 items-center gap-1 font-mono text-sm font-semibold tabular-nums text-xp">
           <Gem className="h-3.5 w-3.5" aria-hidden />
-          {entry.xpThisWeek} XP
+          {entry.xpThisWeek.toLocaleString()} XP
         </span>
       </div>
     </motion.li>

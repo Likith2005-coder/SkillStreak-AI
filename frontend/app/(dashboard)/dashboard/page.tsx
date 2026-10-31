@@ -73,15 +73,16 @@ export default function DashboardPage() {
         ? `${totals.topicsCompleted} down. Ready for the next one?`
         : "Every expert started at node one. Let's go!";
 
-  // Staggered entrance for the stacked sections; content is visible from the
-  // first frame under reduced motion.
+  // A short, tight entrance: this is the most-visited screen, so it settles
+  // in about half a second. Content is visible from the first frame under
+  // reduced motion.
   const rise = (i: number) =>
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 16 },
+          initial: { opacity: 0, y: 10 },
           animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.6, delay: 0.08 * i, ease: EASE },
+          transition: { duration: 0.35, delay: 0.04 * i, ease: EASE },
         };
 
   const today = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
@@ -125,7 +126,7 @@ export default function DashboardPage() {
         )}
       </motion.header>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* ── Centre column ─────────────────────────────────── */}
         <div className="min-w-0 space-y-6">
           {/* THE hero: the continue unit, with the luminous path beside it. */}
@@ -139,7 +140,7 @@ export default function DashboardPage() {
                 <div className="grid-faint absolute inset-0 opacity-60" />
               </div>
 
-              <div className="relative grid gap-2 xl:grid-cols-[minmax(0,1fr)_400px]">
+              <div className="relative grid grid-cols-[minmax(0,1fr)] gap-2 xl:grid-cols-[minmax(0,1fr)_400px]">
                 <div className="flex flex-col p-6 sm:p-8">
                   {overview?.recommended ? (
                     <>
@@ -249,11 +250,11 @@ export default function DashboardPage() {
           {...(reduce
             ? {}
             : {
-                initial: { opacity: 0, x: 16 },
+                initial: { opacity: 0, x: 10 },
                 animate: { opacity: 1, x: 0 },
-                transition: { duration: 0.6, delay: 0.2, ease: EASE },
+                transition: { duration: 0.35, delay: 0.08, ease: EASE },
               })}
-          className="space-y-4 lg:sticky lg:top-20 lg:self-start"
+          className="min-w-0 space-y-4 lg:sticky lg:top-20 lg:self-start"
           aria-label="Your stats"
         >
           <StreakCard streak={streak} />
@@ -278,7 +279,7 @@ export default function DashboardPage() {
         </SectionHead>
         {overview ? (
           reduce ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {overview.perDomain.map((tile, i) => (
                 <DomainProgressRing key={tile.slug} tile={tile} index={i} />
               ))}
@@ -291,7 +292,7 @@ export default function DashboardPage() {
               <div className="hidden lg:block">
                 <MagneticDomainDock tiles={overview.perDomain} />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
+              <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:hidden">
                 {overview.perDomain.map((tile, i) => (
                   <DomainProgressRing key={tile.slug} tile={tile} index={i} />
                 ))}
@@ -304,7 +305,7 @@ export default function DashboardPage() {
       </motion.section>
 
       {/* Recent + weak areas: a wide list beside a narrower card. */}
-      <motion.section {...rise(4)} className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+      <motion.section {...rise(4)} className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
         <div className="min-w-0">
           <SectionHead title="Recent quizzes" />
           {overview ? (
@@ -314,7 +315,7 @@ export default function DashboardPage() {
           )}
         </div>
         <div className="min-w-0 lg:pt-[60px]">
-          {overview && <WeakAreasCard items={overview.weakAreas} />}
+          {overview && <WeakAreasCard items={overview.weakAreas} attempts={overview.totals.attempts} />}
         </div>
       </motion.section>
 
@@ -375,7 +376,7 @@ function HeroStats({ pct, done, quizzes }: { pct: number; done: number; quizzes:
 
 function SkeletonGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="card-chunky h-[136px] animate-pulse motion-reduce:animate-none" />
       ))}

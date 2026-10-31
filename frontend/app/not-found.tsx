@@ -1,7 +1,6 @@
 import { Link } from "next-view-transitions";
 import { Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Mascot } from "@/components/playground/Mascot";
 
 export const metadata = {
   title: "Lost? · SkillStreak AI",
@@ -18,8 +17,6 @@ export default function NotFound() {
       </div>
 
       <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-        <Mascot size={96} message="Hmm, this trail doesn't go anywhere." className="mb-8" />
-
         <h1 className="flex items-center gap-[0.12em] font-display text-[clamp(5.5rem,24vw,10rem)] leading-none text-foreground [text-shadow:0_0_60px_hsl(var(--aurora-2)/0.35)]">
           <span aria-hidden>4</span>
           <span
@@ -36,7 +33,8 @@ export default function NotFound() {
           You wandered off the <span className="font-serif-accent text-primary text-glow">path</span>.
         </h2>
         <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground [text-wrap:pretty]">
-          Maybe a topic got renamed, or the link was typed wrong. No streak lost. Let&apos;s get you back.
+          This trail doesn&apos;t go anywhere. Maybe a topic got renamed, or the link was typed wrong.
+          No streak lost.
         </p>
 
         <div className="mt-9 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">

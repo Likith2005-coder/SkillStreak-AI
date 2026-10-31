@@ -29,7 +29,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: `${LIT.primary} text-primary-foreground`,
+        // Disabled primary stays faintly volt: the next step still reads as the
+        // next step, just not lit yet.
+        default: `${LIT.primary} text-primary-foreground disabled:border disabled:border-primary/25 disabled:bg-primary/[0.12] disabled:text-primary/80`,
         secondary: `${LIT.secondary} text-secondary-foreground`,
         energy: `${LIT.energy} text-primary-foreground`,
         grape: `${LIT.grape} text-primary-foreground`,

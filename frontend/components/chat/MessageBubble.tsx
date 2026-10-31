@@ -24,7 +24,7 @@ const INTENT_LABEL: Record<Intent, string> = {
 // Markdown on dark, tuned for long reading: calm body colour, display-face
 // headings, volt list markers, hairline rules and tables.
 const PROSE = cn(
-  "prose prose-sm prose-invert max-w-none text-[0.95rem] leading-relaxed",
+  "prose prose-sm prose-invert max-w-none text-[0.95rem] leading-relaxed [overflow-wrap:anywhere] prose-code:break-words",
   "prose-p:my-3 prose-p:leading-[1.7] prose-p:text-foreground/90",
   "prose-headings:mb-2 prose-headings:mt-6 prose-headings:font-display prose-headings:tracking-[-0.02em] prose-headings:text-foreground",
   "prose-h1:text-xl prose-h2:text-lg prose-h3:text-base",

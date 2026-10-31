@@ -29,10 +29,22 @@ export function QuestionCard({ index, question, options, selected, revealed, cor
       key={index}
       initial={reduce ? { opacity: 0 } : { opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={reduce ? { opacity: 0 } : { opacity: 0, x: -24 }}
+      exit={
+        reduce
+          ? { opacity: 0, transition: { duration: 0.1 } }
+          : { opacity: 0, x: -24, transition: { duration: 0.15, ease: [0.22, 1, 0.36, 1] } }
+      }
       transition={{ duration: reduce ? 0.12 : 0.25, ease: [0.22, 1, 0.36, 1] }}
     >
-      <h2 className="font-display text-[1.5rem] leading-[1.15] text-foreground sm:text-4xl sm:leading-[1.1] [text-wrap:balance]">{question}</h2>
+      <h2
+        className={cn(
+          "font-display leading-[1.15] text-foreground sm:leading-[1.1] [text-wrap:balance]",
+          // Long questions step down so the answers stay on screen.
+          question.length > 120 ? "text-[1.35rem] sm:text-[1.75rem]" : "text-[1.5rem] sm:text-4xl",
+        )}
+      >
+        {question}
+      </h2>
 
       <div className="mt-8 grid gap-2.5" role="radiogroup" aria-label="Answers">
         {options.map((opt, i) => {
@@ -56,7 +68,10 @@ export function QuestionCard({ index, question, options, selected, revealed, cor
                     ? { scale: [1, 1.02, 1] }
                     : { x: 0, scale: 1 }
               }
-              transition={{ duration: 0.4 }}
+              // A small press on the control people hit most; the shake and the
+              // correct-answer pulse keep their longer timing.
+              whileTap={revealed || reduce ? undefined : { scale: 0.98 }}
+              transition={isCorrect || isWrongPick ? { duration: 0.4 } : { duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
                 "focus-ring group flex min-h-[60px] w-full items-center gap-4 rounded-xl border px-4 py-3.5 text-left transition-[background-color,border-color,box-shadow,opacity] duration-200",
                 !revealed && !isSelected && "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]",

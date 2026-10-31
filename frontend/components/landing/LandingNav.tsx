@@ -85,7 +85,7 @@ export function LandingNav() {
             Log in
           </Link>
           <Button asChild size="sm" className="h-10 px-4">
-            <Link href="/register">Get started</Link>
+            <Link href="/register">Start free</Link>
           </Button>
         </div>
       </div>

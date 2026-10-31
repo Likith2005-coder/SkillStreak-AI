@@ -138,23 +138,20 @@ export function PathPreview({
                 {current && (
                   <>
                     {!reduce && (
-                      <motion.span
+                      <span
                         aria-hidden
-                        className="absolute inset-0 rounded-full bg-primary/40"
-                        animate={{ scale: [1, 1.9], opacity: [0.55, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                        className="anim-halo absolute inset-0 rounded-full bg-primary/40"
+                        style={{ ["--halo-from" as string]: 0.55, ["--halo-to" as string]: 1.9 }}
                       />
                     )}
                     <span aria-hidden className="absolute -inset-2 rounded-full border border-primary/30" />
-                    <motion.span
+                    <span
                       aria-hidden
-                      animate={reduce ? undefined : { y: [0, -4, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute -top-11 left-1/2 z-10 -ml-[30px] w-[60px] rounded-md bg-primary py-1 text-center text-xs font-semibold text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.8)]"
+                      className="anim-bob-4 absolute -top-11 left-1/2 z-10 -ml-[30px] w-[60px] rounded-md bg-primary py-1 text-center text-xs font-semibold text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.8)]"
                     >
                       Start
                       <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-primary" />
-                    </motion.span>
+                    </span>
                   </>
                 )}
                 <Link

@@ -32,14 +32,9 @@ export function Mascot({
           aria-hidden
           className="absolute inset-x-[10%] bottom-0 h-1/3 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-3)/0.35),transparent)] blur-md"
         />
-        <motion.div
-          aria-hidden
-          animate={reduce ? undefined : { y: [0, -6, 0] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-          className="relative h-full w-full"
-        >
+        <div aria-hidden className="anim-bob-6 relative h-full w-full">
           <SignalBotStatic className="h-full w-full" />
-        </motion.div>
+        </div>
       </div>
       {message && (
         <motion.div

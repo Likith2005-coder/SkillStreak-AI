@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Serif, Martian_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ViewTransitions } from "next-view-transitions";
@@ -33,6 +33,13 @@ const martianMono = Martian_Mono({
   display: "swap",
   axes: ["wdth"],
 });
+
+// Phone chrome matches the near-black ground, and the layout may extend under
+// the notch / home indicator so env(safe-area-inset-*) works on the tab bar.
+export const viewport: Viewport = {
+  themeColor: "#07080b",
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "SkillStreak AI",

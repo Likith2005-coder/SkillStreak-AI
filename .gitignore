@@ -56,3 +56,6 @@ backend/prisma/migrations/dev.db*
 # Local AI design tooling (kept on disk, not part of the project)
 .claude/
 .impeccable/
+
+# Playwright MCP session artifacts
+.playwright-mcp/

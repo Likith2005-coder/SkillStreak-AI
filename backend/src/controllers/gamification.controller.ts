@@ -20,7 +20,11 @@ export const badges: RequestHandler = async (req, res) => {
   res.json({ badges: data });
 };
 
-export const leaderboard: RequestHandler = async (_req, res) => {
-  const data = await g.getLeaderboard();
-  res.json({ entries: data });
+export const leaderboard: RequestHandler = async (req, res) => {
+  if (!req.user) throw new ApiError(401, "Unauthenticated");
+  const [entries, me] = await Promise.all([
+    g.getLeaderboard(),
+    g.getLeaderboardMe(req.user.sub),
+  ]);
+  res.json({ entries, me });
 };

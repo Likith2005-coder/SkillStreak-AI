@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  // hover: utilities only apply on devices that can hover, so a tap on a
+  // phone never leaves a card stuck in its lifted/scaled hover state.
+  future: { hoverOnlyWhenSupported: true },
   darkMode: ["class"],
   content: [
     "./app/**/*.{ts,tsx}",

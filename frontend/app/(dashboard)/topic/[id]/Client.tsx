@@ -358,7 +358,9 @@ function SidebarCard({ children, className }: { children: React.ReactNode; class
 // off-white, display-face headings with a glowing volt marker, blue links,
 // volt list markers, quotes as a tinted well, inline code in a hairline chip.
 const LESSON_PROSE = [
-  "prose prose-invert max-w-[72ch] text-[1.0625rem]",
+  // Long words, URLs and inline code wrap instead of pushing the column wide;
+  // code blocks opt back out so they keep scrolling horizontally.
+  "prose prose-invert max-w-[72ch] text-[1.0625rem] [overflow-wrap:anywhere] [&_pre]:[overflow-wrap:normal]",
   "prose-p:leading-[1.75] prose-p:text-foreground/[0.82] prose-li:text-foreground/[0.82] prose-li:my-1.5",
   "prose-headings:font-display prose-headings:font-bold prose-headings:tracking-[-0.025em] prose-headings:text-foreground",
   "prose-h2:mb-4 prose-h2:mt-12 prose-h2:flex prose-h2:items-center prose-h2:gap-3 prose-h2:text-[1.6rem]",
@@ -369,7 +371,7 @@ const LESSON_PROSE = [
   "prose-li:marker:text-primary",
   "prose-blockquote:rounded-r-lg prose-blockquote:border-l-secondary/60 prose-blockquote:bg-secondary/[0.06] prose-blockquote:py-1 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-foreground/90",
   "prose-pre:!m-0 prose-pre:!border-0 prose-pre:!bg-transparent prose-pre:!p-0",
-  "prose-code:rounded-md prose-code:border prose-code:border-white/10 prose-code:bg-white/[0.05] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.88em] prose-code:font-medium prose-code:text-primary prose-code:before:content-none prose-code:after:content-none",
+  "prose-code:rounded-md prose-code:border prose-code:border-white/10 prose-code:bg-white/[0.05] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.88em] prose-code:font-medium prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:break-words prose-code:[overflow-wrap:anywhere]",
   "prose-hr:border-white/[0.08] prose-th:text-foreground prose-td:text-foreground/[0.82] prose-thead:border-white/15 prose-tr:border-white/[0.06]",
 ].join(" ");
 

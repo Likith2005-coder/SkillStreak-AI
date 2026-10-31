@@ -138,7 +138,7 @@ export default function ProgressPage() {
       </section>
 
       <section className="mt-4">
-        <WeakAreasCard items={overview.weakAreas} />
+        <WeakAreasCard items={overview.weakAreas} attempts={overview.totals.attempts} />
       </section>
 
       <section className="mt-12">

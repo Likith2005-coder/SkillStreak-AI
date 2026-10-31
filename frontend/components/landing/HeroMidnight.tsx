@@ -59,23 +59,11 @@ export function HeroMidnight() {
         variants={container}
         initial="hidden"
         animate={show ? "show" : "hidden"}
-        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-4 pt-36 text-center sm:pt-44"
+        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-4 pt-40 text-center sm:pt-48"
       >
-        <motion.div variants={rise}>
-          <Link
-            href="/register"
-            className="focus-ring group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 text-[13px] text-muted-foreground backdrop-blur-md transition-colors hover:border-white/20 hover:text-foreground"
-          >
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">New</span>
-            <span className="sm:hidden">An AI tutor that knows your level</span>
-            <span className="hidden sm:inline">An AI tutor that knows exactly where you are</span>
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-          </Link>
-        </motion.div>
-
         <motion.h1
           variants={rise}
-          className="font-display mt-8 text-[clamp(2.9rem,8vw,6rem)] leading-[0.95] text-foreground [text-wrap:balance]"
+          className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-[0.95] text-foreground [text-wrap:balance]"
         >
           Master{" "}
           <RotatingWord
@@ -83,15 +71,18 @@ export function HeroMidnight() {
             words={["tech", "Cyber", "Web Dev", "AI", "ML", "Data", "Cloud", "DevOps", "Web3", "IoT"]}
           />
           <br />
-          one <span className="font-serif-accent text-glow pr-1 text-primary">streak</span> at a time.
+          {/* Phones break after "streak" so the line never ends on a lone "time." */}
+          one <span className="font-serif-accent text-glow pr-1 text-primary">streak</span>{" "}
+          <br className="sm:hidden" />
+          at a time.
         </motion.h1>
 
         <motion.p
           variants={rise}
-          className="mt-7 max-w-xl text-[17px] leading-relaxed text-foreground/80 [text-wrap:pretty]"
+          className="mt-7 max-w-[34rem] text-[17px] leading-relaxed text-foreground/80 [text-wrap:pretty]"
         >
-          Curated roadmaps for nine tech domains, an AI tutor that teaches at your level, and quizzes
-          that prove you know it. The streak makes tomorrow the easy part.
+          Roadmaps for nine tech domains, an AI tutor that teaches at your level, and quizzes that
+          prove it. The streak makes tomorrow easy.
         </motion.p>
 
         <motion.div variants={rise} className="mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
@@ -105,7 +96,7 @@ export function HeroMidnight() {
           </Button>
         </motion.div>
 
-        <motion.p variants={rise} className="label-mono mt-8 text-muted-foreground">
+        <motion.p variants={rise} className="mt-8 text-sm text-muted-foreground [text-wrap:balance]">
           9 domains · 540+ topics · AI-checked quizzes · free forever
         </motion.p>
       </motion.div>
@@ -195,7 +186,7 @@ function ProductPreview() {
               <Flame className="h-4 w-4 text-energy drop-shadow-[0_0_8px_hsl(var(--energy))]" fill="currentColor" />
             </div>
             <div className="mt-4 grid grid-cols-7 gap-1.5">
-              {[1, 1, 1, 0, 1, 1, 1].map((on, i) => (
+              {[1, 1, 1, 1, 1, 1, 1].map((on, i) => (
                 <span
                   key={i}
                   className={

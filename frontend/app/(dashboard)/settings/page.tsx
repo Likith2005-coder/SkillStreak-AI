@@ -36,6 +36,7 @@ import {
   type UserProfile,
 } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
+import { levelForXp } from "@/lib/level";
 import { cn } from "@/lib/utils";
 import { styleFor } from "@/lib/domain-style";
 
@@ -228,7 +229,7 @@ export default function SettingsPage() {
               value={
                 <span className="inline-flex items-center gap-1.5 text-grape">
                   <Star className="h-4 w-4" aria-hidden />
-                  Level {user.level}
+                  Level {levelForXp(user.xp).level}
                 </span>
               }
             />
@@ -452,15 +453,18 @@ export default function SettingsPage() {
               </button>
             </Row>
 
-            <Row>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Email actually sends only if the backend has{" "}
-                <code className="rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-xs text-foreground">
-                  RESEND_API_KEY
-                </code>{" "}
-                set. Otherwise preferences are saved but emails are stubbed.
-              </p>
-            </Row>
+            {/* Developer note: only admins can act on missing server config. */}
+            {user.role === "admin" && (
+              <Row>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Email actually sends only if the backend has{" "}
+                  <code className="rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-xs text-foreground">
+                    RESEND_API_KEY
+                  </code>{" "}
+                  set. Otherwise preferences are saved but emails are stubbed.
+                </p>
+              </Row>
+            )}
           </div>
         </SettingCard>
 
@@ -472,7 +476,7 @@ export default function SettingsPage() {
           title="Account actions"
           hint="Sign out of this browser."
           aside={
-            <Button variant="destructive" onClick={handleSignOut} className="w-full sm:w-auto">
+            <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto">
               <LogOut className="h-4 w-4" />
               Sign out
             </Button>

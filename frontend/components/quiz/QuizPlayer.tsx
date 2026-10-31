@@ -177,8 +177,8 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
           aria-label={`Question ${current + 1} of ${total}`}
         >
           <div
-            className="h-full rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-[width] duration-500 ease-out motion-reduce:transition-none"
-            style={{ width: `${Math.max(progressPct, 3)}%` }}
+            className="h-full w-full origin-left rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            style={{ transform: `scaleX(${Math.max(progressPct, 3) / 100})` }}
           />
         </div>
         {timerOn && (
@@ -255,9 +255,9 @@ export function QuizPlayer({ topicId, topicTitle }: Props) {
               role="status"
             >
               <motion.span
-                initial={reduce ? false : { scale: 0, rotate: -30 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 420, damping: 14 }}
+                initial={reduce ? false : { scale: 0.6, rotate: -20, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
                 className={cn(
                   "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
                   gotIt

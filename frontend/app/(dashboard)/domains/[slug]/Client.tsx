@@ -64,14 +64,41 @@ export default function RoadmapPage() {
   const [skippedAssessment, setSkippedAssessment] = useState(false);
   const [assessStage, setAssessStage] = useState<"intro" | "chat">("intro");
   const [questions, setQuestions] = useState<AssessmentQuestion[] | null>(null);
+  // ?assess=1 (retake from the plan page) forces the wizard even with a plan,
+  // and overrides the remembered / progress-based skip below.
+  const [forceAssess, setForceAssess] = useState(false);
+
+  // An explicit "skip" is remembered per domain. Read after mount so the
+  // server render and first client render agree.
+  const [rememberedSkip, setRememberedSkip] = useState(false);
+  useEffect(() => {
+    if (!slug) return;
+    let remembered = false;
+    try {
+      remembered = window.localStorage.getItem(skipKey(slug)) === "1";
+    } catch {
+      // storage blocked (private mode etc.) — just ask again
+    }
+    setRememberedSkip(remembered);
+  }, [slug]);
+
+  const skipAssessment = () => {
+    setSkippedAssessment(true);
+    if (!slug) return;
+    try {
+      window.localStorage.setItem(skipKey(slug), "1");
+    } catch {
+      // storage blocked — the skip still holds for this visit
+    }
+  };
 
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
-    // ?assess=1 (retake from the plan page) forces the wizard even with a plan.
     const forceAssess =
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("assess") === "1";
+    setForceAssess(forceAssess);
 
     fetchRoadmap(slug)
       .then((d) => {
@@ -139,7 +166,11 @@ export default function RoadmapPage() {
   // ── Personalized-onboarding gate ─────────────────────────────────────
   // First visit to a domain: no roadmap yet — a short AI-mentor chat first,
   // then a personalized plan. The learner can always skip to the trail.
-  if (hasPlan === null && !skippedAssessment) {
+  // Returning learners (any progress here) and remembered skips go straight
+  // to the trail — unless the assessment was explicitly requested (?assess=1).
+  const hasProgress = data.progress.some((p) => p.status !== "not_started");
+  const skipGate = skippedAssessment || (!forceAssess && (rememberedSkip || hasProgress));
+  if (hasPlan === null && !skipGate) {
     return (
       <main className="container px-4 py-8">
         <BackToDomains />
@@ -148,7 +179,7 @@ export default function RoadmapPage() {
       </main>
     );
   }
-  if (hasPlan === false && !skippedAssessment) {
+  if (hasPlan === false && !skipGate) {
     return (
       <main className="container px-4 py-8">
         <BackToDomains />
@@ -158,7 +189,7 @@ export default function RoadmapPage() {
             <AssessmentIntro
               domainName={data.name}
               onStart={startAssessmentChat}
-              onSkip={() => setSkippedAssessment(true)}
+              onSkip={skipAssessment}
             />
           ) : questions ? (
             <AssessmentWizard
@@ -168,7 +199,7 @@ export default function RoadmapPage() {
               onDone={() => {
                 window.location.href = `/domains/${data.slug}/plan`;
               }}
-              onSkip={() => setSkippedAssessment(true)}
+              onSkip={skipAssessment}
             />
           ) : (
             <div className="flex items-center justify-center gap-3 py-16 text-base font-medium text-muted-foreground">
@@ -211,6 +242,12 @@ export default function RoadmapPage() {
 
   const grouped = groupTopics(data.roadmap.topics);
   const phases = (["foundations", "core", "advanced"] as const).filter((p) => grouped[p].length > 0);
+  // One "you are here" for the whole domain: the first unfinished topic in
+  // roadmap order. Every phase's trail keys off this, so only one node glows.
+  const currentTopicId =
+    [...data.roadmap.topics]
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+      .find((t) => progressByTopic.get(t.id) !== "completed")?.id ?? null;
 
   return (
     <main className="container px-4 py-8">
@@ -253,7 +290,12 @@ export default function RoadmapPage() {
             <PhaseHeader phase={phase} index={i} count={grouped[phase].length} colorStyle={s} />
             {/* room for the current node's floating Start tooltip */}
             <div className="mt-14">
-              <WindingRoadmap topics={grouped[phase]} progressMap={progressByTopic} color={data.color} />
+              <WindingRoadmap
+                topics={grouped[phase]}
+                progressMap={progressByTopic}
+                color={data.color}
+                currentTopicId={currentTopicId}
+              />
             </div>
           </section>
         ))}
@@ -438,6 +480,10 @@ function PhaseHeader({
       </p>
     </div>
   );
+}
+
+function skipKey(slug: string) {
+  return `ss-skip-assessment:${slug}`;
 }
 
 function groupTopics(topics: RoadmapTopic[]): Record<RoadmapTopic["phase"], RoadmapTopic[]> {
