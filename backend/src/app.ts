@@ -26,6 +26,10 @@ export function createApp() {
       // Main learner app + the standalone admin app run on separate origins.
       origin: [env.FRONTEND_ORIGIN, env.ADMIN_ORIGIN],
       credentials: true,
+      // Let the browser reuse a CORS preflight answer (Chrome caps this at
+      // 2h) instead of re-asking before every API call; that extra round
+      // trip was doubling the latency of each request.
+      maxAge: 7200,
     })
   );
   app.use(express.json({ limit: "1mb" }));

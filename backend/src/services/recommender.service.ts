@@ -61,6 +61,23 @@ async function backfillMissing(): Promise<number> {
   return done;
 }
 
+// At most one backfill at a time, and no more than once a minute.
+let backfilling = false;
+let lastBackfill = 0;
+function scheduleBackfill() {
+  if (backfilling || Date.now() - lastBackfill < 60_000) return;
+  backfilling = true;
+  lastBackfill = Date.now();
+  backfillMissing()
+    .then((filled) => {
+      if (filled > 0) log.info("topic embeddings backfilled", { count: filled });
+    })
+    .catch((err) => log.warn("topic embedding backfill failed", { error: err instanceof Error ? err.message : String(err) }))
+    .finally(() => {
+      backfilling = false;
+    });
+}
+
 type RecommendedTopic = {
   topicId: string;
   title: string;
@@ -75,9 +92,10 @@ export async function getRecommendations(
   userId: string,
   limit = RECOMMEND_LIMIT_DEFAULT
 ): Promise<RecommendedTopic[]> {
-  // Lazy backfill: cheap when up-to-date.
-  const filled = await backfillMissing();
-  if (filled > 0) log.info("topic embeddings backfilled", { count: filled });
+  // Embed topics that don't have one yet in the background: it can mean
+  // several AI calls (e.g. after new curriculum topics), and the learner
+  // shouldn't wait for it. Recommendations use whatever is embedded now.
+  scheduleBackfill();
 
   // Get user's completed topics with embeddings.
   const completed = await prisma.$queryRawUnsafe<Array<{ id: string }>>(

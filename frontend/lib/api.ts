@@ -17,8 +17,61 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// ─── Navigation-speed cache for GET requests ─────────────
+// Every database round trip costs ~100ms+ (the database is in another region)
+// and a dashboard visit makes ~9 requests, several of them twice (navbar,
+// page and rail each ask for the same data). So GETs are:
+//   - de-duplicated while in flight (simultaneous callers share one request)
+//   - served from memory for FRESH_MS, so moving between pages is instant
+//   - served stale for up to STALE_MS while a fresh copy loads in the
+//     background (the next visit shows it)
+// Any successful write (POST/PUT/PATCH/DELETE) clears the cache, so finishing
+// a topic, a quiz or a review is reflected immediately. Keys include the
+// token, so another account never sees this one's data. Chat is never cached
+// (its messages are written over a streaming fetch, not this client).
+const FRESH_MS = 60_000;
+const STALE_MS = 10 * 60_000;
+const NEVER_CACHE = /\/(chat|health)(\/|$|\?)/;
+type CacheEntry = { at: number; res: unknown };
+const getCache = new Map<string, CacheEntry>();
+const inFlight = new Map<string, Promise<unknown>>();
+
+export function clearApiCache() {
+  getCache.clear();
+}
+
+const rawGet = api.get.bind(api);
+api.get = function cachedGet(url: string, config?: Parameters<typeof rawGet>[1]) {
+  if (typeof window === "undefined" || NEVER_CACHE.test(url) || config?.signal) return rawGet(url, config);
+  const key = `${getToken() ?? ""}|${url}|${JSON.stringify(config?.params ?? null)}`;
+  const fetchFresh = () => {
+    const pending = inFlight.get(key);
+    if (pending) return pending;
+    const p = rawGet(url, config)
+      .then((res) => {
+        getCache.set(key, { at: Date.now(), res });
+        return res;
+      })
+      .finally(() => inFlight.delete(key));
+    inFlight.set(key, p);
+    return p;
+  };
+  const hit = getCache.get(key);
+  const age = hit ? Date.now() - hit.at : Infinity;
+  if (hit && age < FRESH_MS) return Promise.resolve(hit.res);
+  if (hit && age < STALE_MS) {
+    fetchFresh().catch(() => {}); // refresh quietly for the next visit
+    return Promise.resolve(hit.res);
+  }
+  return fetchFresh();
+} as typeof api.get;
+
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const method = res.config.method?.toLowerCase();
+    if (method && method !== "get") clearApiCache();
+    return res;
+  },
   (err: AxiosError) => {
     const url = err.config?.url ?? "";
     const isLoginAttempt = /\/auth\/login\b/.test(url);

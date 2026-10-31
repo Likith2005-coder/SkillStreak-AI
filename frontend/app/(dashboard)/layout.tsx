@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/shared/CommandPalette";
 import { PageLoader } from "@/components/shared/PageLoader";
 import { useAuthStatus, useBootstrapUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/userStore";
+import { fetchDomains, fetchLeaderboard, fetchOverview, fetchToday } from "@/lib/api";
 
 export default function DashboardLayout({
   children,
@@ -31,6 +32,20 @@ export default function DashboardLayout({
       return;
     }
   }, [status, user, router]);
+
+  // Once signed in and the browser is idle, warm the data behind the most
+  // visited pages so the first click on them is instant too (lib/api.ts
+  // caches GETs and shares in-flight requests).
+  const signedIn = status === "ready" && !!user;
+  useEffect(() => {
+    if (!signedIn) return;
+    const warm = () => {
+      for (const f of [fetchOverview, fetchToday, fetchDomains, fetchLeaderboard]) f().catch(() => {});
+    };
+    const hasIdle = "requestIdleCallback" in window;
+    const id = hasIdle ? window.requestIdleCallback(warm, { timeout: 3000 }) : window.setTimeout(warm, 1500);
+    return () => (hasIdle ? window.cancelIdleCallback(id) : window.clearTimeout(id));
+  }, [signedIn]);
 
   if (status !== "ready" || !user) {
     return (

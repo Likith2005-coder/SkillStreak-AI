@@ -1,5 +1,6 @@
 import { prisma } from "../config/db";
 import { ApiError } from "../middleware/error.middleware";
+import { remember } from "./cache.service";
 
 const HEATMAP_DAYS = 90;
 
@@ -23,7 +24,7 @@ function isoDate(d: Date): string {
  *   else first not-started in any curated domain
  */
 export async function getOverview(userId: string) {
-  const [user, domains, progressRows, recentAttempts, profile] = await Promise.all([
+  const [user, domains, progressRows, recentAttempts, profile, weakRows] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, name: true, level: true, xp: true, createdAt: true },
@@ -72,6 +73,23 @@ export async function getOverview(userId: string) {
       where: { userId },
       select: { preferredDomains: true },
     }),
+    // Weak areas: progress rows with bestScore < 3 (i.e. < 60%)
+    prisma.userProgress.findMany({
+      where: { userId, bestScore: { lt: 3 } },
+      orderBy: { updatedAt: "desc" },
+      take: 8,
+      select: {
+        topicId: true,
+        bestScore: true,
+        topic: {
+          select: {
+            id: true,
+            title: true,
+            roadmap: { select: { domain: { select: { slug: true, name: true, color: true } } } },
+          },
+        },
+      },
+    }),
   ]);
 
   if (!user) throw new ApiError(404, "User not found");
@@ -106,23 +124,7 @@ export async function getOverview(userId: string) {
 
   const totalCompleted = completedTopicIds.size;
 
-  // Weak areas: progress rows with bestScore < 3 (i.e. < 60%)
-  const weakRows = await prisma.userProgress.findMany({
-    where: { userId, bestScore: { lt: 3 } },
-    orderBy: { updatedAt: "desc" },
-    take: 8,
-    select: {
-      topicId: true,
-      bestScore: true,
-      topic: {
-        select: {
-          id: true,
-          title: true,
-          roadmap: { select: { domain: { select: { slug: true, name: true, color: true } } } },
-        },
-      },
-    },
-  });
+  // Weak areas were loaded alongside the other queries above.
   const weakAreas = weakRows.map((w) => ({
     topicId: w.topicId,
     title: w.topic.title,
@@ -183,26 +185,30 @@ export async function getOverview(userId: string) {
  * Per-domain detail: same shape as the roadmap view + an aggregated quiz stats block.
  */
 export async function getDomainProgress(slug: string, userId: string) {
-  const domain = await prisma.domain.findUnique({
-    where: { slug },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      color: true,
-      icon: true,
-      isCurated: true,
-      roadmap: {
-        select: {
-          totalTopics: true,
-          topics: {
-            orderBy: { orderIndex: "asc" },
-            select: { id: true, orderIndex: true, title: true, phase: true },
+  // The domain and its topic list only change when the curriculum does, so
+  // skip that round trip on repeat visits (5 min).
+  const { value: domain } = await remember(`domain-progress-shape:${slug}`, 300, () =>
+      prisma.domain.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        color: true,
+        icon: true,
+        isCurated: true,
+        roadmap: {
+          select: {
+            totalTopics: true,
+            topics: {
+              orderBy: { orderIndex: "asc" },
+              select: { id: true, orderIndex: true, title: true, phase: true },
+            },
           },
         },
       },
-    },
-  });
+    }),
+  );
   if (!domain) throw new ApiError(404, "Domain not found");
   const topics = domain.roadmap?.topics ?? [];
 
