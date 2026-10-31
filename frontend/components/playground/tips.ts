@@ -1,19 +1,8 @@
-"use client";
-
 /**
- * "Did you know?" — a small rotating fact for the learner's current domain.
- * Static, hand-picked list (no LLM call per page load). Auto-advances every
- * 10s while visible and not hovered; under reduced motion it stays put and
- * the "Next" button swaps instantly.
+ * "Did you know?" facts, per domain. A static, hand-picked list (no LLM call
+ * per page load). The dashboard mascot rotates through them in its speech
+ * bubble.
  */
-
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Lightbulb, RefreshCw } from "lucide-react";
-import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
-import { cn } from "@/lib/utils";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 const TIPS: Record<string, string[]> = {
   "web-development": [
@@ -79,72 +68,7 @@ const GENERIC = [
   "Mistakes you correct stick better than answers you got right the first time.",
 ];
 
-export function TipCard({ domainSlug, domainName, className }: { domainSlug?: string; domainName?: string; className?: string }) {
-  const reduce = useReducedMotionSafe();
-  const tips = useMemo(() => (domainSlug && TIPS[domainSlug]) || GENERIC, [domainSlug]);
-  // Start on a day-dependent tip so each visit isn't the same first line.
-  const [i, setI] = useState(() => new Date().getDate() % tips.length);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (reduce || paused) return;
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") setI((n) => (n + 1) % tips.length);
-    }, 10000);
-    return () => window.clearInterval(id);
-  }, [reduce, paused, tips.length]);
-
-  return (
-    <section
-      className={cn("card-chunky spotlight flex flex-col p-5 [--spot:var(--grape)]", className)}
-      aria-labelledby="tip-h"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span aria-hidden className="grid h-10 w-10 place-items-center rounded-lg bg-grape/10 text-grape ring-1 ring-grape/25">
-          <Lightbulb className="h-5 w-5" />
-        </span>
-        <button
-          type="button"
-          onClick={() => setI((n) => (n + 1) % tips.length)}
-          className="focus-ring group inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <RefreshCw
-            className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90 motion-reduce:transition-none"
-            aria-hidden
-          />
-          Next
-        </button>
-      </div>
-      <p id="tip-h" className="label-mono mt-4 truncate text-grape">{domainName ? `${domainName} · ` : ""}Did you know?</p>
-      <div className="relative mt-2 min-h-[6.5rem] flex-1" aria-live="polite">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={`${domainSlug}-${i}`}
-            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6, filter: "blur(4px)" }}
-            transition={{ duration: reduce ? 0.1 : 0.35, ease: EASE }}
-            className="font-display text-lg leading-snug text-foreground [text-wrap:pretty]"
-          >
-            {tips[i % tips.length]}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-      <div className="mt-4 flex gap-1.5" aria-hidden>
-        {tips.map((_, k) => (
-          <span
-            key={k}
-            className={cn(
-              "h-1 flex-1 rounded-full transition-colors duration-300",
-              k === i % tips.length ? "bg-grape shadow-[0_0_8px_hsl(var(--grape)/0.8)]" : "bg-white/10",
-            )}
-          />
-        ))}
-      </div>
-    </section>
-  );
+/** The facts for a domain, or general learning-science facts without one. */
+export function tipsFor(domainSlug?: string): string[] {
+  return (domainSlug && TIPS[domainSlug]) || GENERIC;
 }

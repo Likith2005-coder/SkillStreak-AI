@@ -6,6 +6,7 @@
  * bubble that says something about where the learner actually is.
  */
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { SignalBotLive } from "@/components/3d/SignalBotLive";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
@@ -13,11 +14,16 @@ import { cn } from "@/lib/utils";
 
 export function Mascot({
   message,
+  bubble,
+  bubbleClassName,
   size = 120,
   side = "right",
   className,
 }: {
   message?: string;
+  /** Custom bubble content (e.g. a rotating tip); replaces `message`. */
+  bubble?: ReactNode;
+  bubbleClassName?: string;
   size?: number;
   /** Which side of the bot the speech bubble sits on. */
   side?: "left" | "right";
@@ -36,18 +42,19 @@ export function Mascot({
           <SignalBotLive className="h-full w-full" />
         </div>
       </div>
-      {message && (
+      {(bubble || message) && (
         <motion.div
-          key={message}
+          key={bubble ? "bubble" : message}
           initial={reduce ? false : { opacity: 0, scale: 0.9, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "relative mb-6 max-w-[15rem] rounded-xl border border-white/10 bg-card/90 px-4 py-3 text-sm leading-snug text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_16px_40px_-16px_rgb(0_0_0/0.8)] backdrop-blur-sm",
             side === "right" ? "origin-bottom-left" : "origin-bottom-right",
+            bubbleClassName,
           )}
         >
-          {message}
+          {bubble ?? message}
           {/* bubble tail */}
           <span
             aria-hidden

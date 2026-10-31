@@ -25,7 +25,7 @@ import { Mascot } from "./Mascot";
 // Horizontal offsets (px) that give the path its wind.
 const WIND = [0, 44, 64, 44, 0, -44, -64, -44];
 const STEP = 92; // vertical distance between node centres
-const TOP = 52; // room above the first node for the Start tooltip
+const TOP = 20; // room above the first node for its glow ring
 const NODE = 56;
 
 type Node = DomainProgressDetail["topics"][number];
@@ -145,12 +145,24 @@ export function PathPreview({
                       />
                     )}
                     <span aria-hidden className="absolute -inset-2 rounded-full border border-primary/30" />
+                    {/* Beside the node, on the side away from its label: above it,
+                        the bubble collided with the topic before. */}
                     <span
                       aria-hidden
-                      className="anim-bob-4 absolute -top-11 left-1/2 z-10 -ml-[30px] w-[60px] rounded-md bg-primary py-1 text-center text-xs font-semibold text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.8)]"
+                      className={cn(
+                        "pointer-events-none absolute top-1/2 z-10 -translate-y-1/2",
+                        labelLeft ? "left-[calc(100%+14px)]" : "right-[calc(100%+14px)]",
+                      )}
                     >
-                      Start
-                      <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-primary" />
+                      <span className="anim-bob-4 relative block rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.8)]">
+                        Start
+                        <span
+                          className={cn(
+                            "absolute top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 bg-primary",
+                            labelLeft ? "-left-1" : "-right-1",
+                          )}
+                        />
+                      </span>
                     </span>
                   </>
                 )}
@@ -176,12 +188,12 @@ export function PathPreview({
                 </Link>
                 <span
                   className={cn(
-                    "pointer-events-none absolute top-1/2 w-28 -translate-y-1/2 text-[13px] leading-snug sm:w-36",
+                    "pointer-events-none absolute top-1/2 w-28 -translate-y-1/2 text-[13px] leading-snug sm:w-40",
                     labelLeft ? "right-[calc(100%+14px)] text-right" : "left-[calc(100%+14px)]",
                     current ? "font-semibold text-foreground" : done ? "text-muted-foreground" : "text-muted-foreground",
                   )}
                 >
-                  <span className="line-clamp-2">{t.title}</span>
+                  <span className={current ? "line-clamp-3" : "line-clamp-2"}>{t.title}</span>
                 </span>
               </motion.div>
             </li>

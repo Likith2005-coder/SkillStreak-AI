@@ -1,17 +1,15 @@
 "use client";
 
 /**
- * Today's pulse: a glowing volt ring that fills toward the daily XP goal, and
- * a seven-bar strip of the week's XP underneath. The ring draws in on mount;
- * under reduced motion it is simply drawn. Celebration (confetti) is owned by
- * the page so it fires once even though this card renders in two places
- * (centre column on phones, top of the rail on desktop).
+ * Daily-goal parts: a glowing volt ring that fills toward the daily XP goal,
+ * and a seven-bar strip of the week's XP. The ring draws in on mount; under
+ * reduced motion it is simply drawn. The dashboard's Today panel composes
+ * them; celebration (confetti) is owned by the page so it fires once.
  */
 
-import { useId } from "react";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
-import { Target, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 import type { TodayProgress } from "@/lib/api";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
@@ -53,7 +51,7 @@ export function fireGoalConfetti() {
   shot(0.35, { spread: 110, decay: 0.92, scalar: 0.85 });
 }
 
-function GoalRing({ xp, goal, size }: { xp: number; goal: number; size: number }) {
+export function GoalRing({ xp, goal, size }: { xp: number; goal: number; size: number }) {
   const reduce = useReducedMotionSafe();
   const shown = useCountUp(xp, 1000);
   const stroke = size >= 110 ? 10 : 8;
@@ -117,7 +115,7 @@ function utcLong(date: string) {
   return new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "long", timeZone: "UTC" });
 }
 
-function WeekBars({ week, goal }: { week: TodayProgress["week"]; goal: number }) {
+export function WeekBars({ week, goal }: { week: TodayProgress["week"]; goal: number }) {
   const reduce = useReducedMotionSafe();
   const max = Math.max(goal, ...week.map((d) => d.xp), 1);
   const goalPct = (goal / max) * 100;
@@ -125,7 +123,7 @@ function WeekBars({ week, goal }: { week: TodayProgress["week"]; goal: number })
   const daysMet = week.filter((d) => d.xp >= goal).length;
 
   return (
-    <div className="mt-5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 pb-2.5 pt-3">
+    <div>
       <div className="flex items-baseline justify-between gap-2">
         <span className="label-mono text-muted-foreground">This week</span>
         <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
@@ -185,43 +183,5 @@ function WeekBars({ week, goal }: { week: TodayProgress["week"]; goal: number })
         ))}
       </div>
     </div>
-  );
-}
-
-export function DailyGoalCard({ today, className }: { today: TodayProgress | null; className?: string }) {
-  const headingId = useId();
-  if (!today) {
-    return <div className={cn("card-chunky h-[268px] animate-pulse motion-reduce:animate-none", className)} aria-hidden />;
-  }
-  const met = today.xpToday >= today.goalXp;
-  const did = [
-    today.topicsToday > 0 && `${today.topicsToday} topic${today.topicsToday === 1 ? "" : "s"}`,
-    today.quizzesToday > 0 && `${today.quizzesToday} quiz${today.quizzesToday === 1 ? "" : "zes"}`,
-  ].filter(Boolean);
-
-  return (
-    <section
-      className={cn("card-chunky spotlight p-5 [--spot:var(--primary)]", met && "glow-primary", className)}
-      aria-labelledby={headingId}
-    >
-      <div className="flex items-center gap-4">
-        <GoalRing xp={today.xpToday} goal={today.goalXp} size={112} />
-        <div className="min-w-0">
-          <p className="label-mono flex items-center gap-1.5 text-primary">
-            <Target className="h-3.5 w-3.5" aria-hidden /> Daily goal
-          </p>
-          <h2 id={headingId} className="mt-1.5 font-display text-xl leading-tight text-foreground [text-wrap:balance]">
-            <span className="sr-only">
-              {today.xpToday} of {today.goalXp} XP today.{" "}
-            </span>
-            {goalMessage(today.xpToday, today.goalXp)}
-          </h2>
-          <p className="mt-1.5 text-[13px] leading-snug text-muted-foreground">
-            {did.length > 0 ? `Today: ${did.join(" · ")}` : "Nothing logged yet today."}
-          </p>
-        </div>
-      </div>
-      <WeekBars week={today.week} goal={today.goalXp} />
-    </section>
   );
 }

@@ -23,7 +23,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
  * topic, up to 25 for a perfect quiz). The rest queue up beside it as
  * pressable rows.
  */
-export function RecommendedNext() {
+export function RecommendedNext({ showHeading = true }: { showHeading?: boolean } = {}) {
   const [items, setItems] = useState<RecommendedTopic[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,22 +45,33 @@ export function RecommendedNext() {
 
   return (
     <div>
-      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-display text-2xl text-foreground">
-          Up next <span className="font-serif-accent text-[1.15em] text-primary">for you</span>
-        </h2>
-        {personalized && (
+      {showHeading && (
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-2xl text-foreground">
+            Up next <span className="font-serif-accent text-[1.15em] text-primary">for you</span>
+          </h2>
+          {personalized && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-grape shadow-[0_0_6px_hsl(var(--grape))]" />
+              Personalized
+            </span>
+          )}
+        </div>
+      )}
+      {/* Without the heading, the note and the chip share one line. */}
+      <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <p className="text-sm text-muted-foreground">
+          {personalized
+            ? "Closest topics to what you've already learned."
+            : "Foundations to start with."}
+        </p>
+        {!showHeading && personalized && (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">
             <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-grape shadow-[0_0_6px_hsl(var(--grape))]" />
             Personalized
           </span>
         )}
       </div>
-      <p className="mb-4 text-sm text-muted-foreground">
-        {personalized
-          ? "Closest topics to what you've already learned."
-          : "Foundations to start with."}
-      </p>
 
       {!items ? (
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
