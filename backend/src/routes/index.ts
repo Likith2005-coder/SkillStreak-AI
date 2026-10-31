@@ -11,6 +11,7 @@ import resourceRoutes from "./resource.routes";
 import toolkitRoutes from "./toolkit.routes";
 import careerRoutes from "./career.routes";
 import adminRoutes from "./admin.routes";
+import reviewRoutes from "./review.routes";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use("/resources", resourceRoutes);
 router.use("/toolkit", toolkitRoutes);
 router.use("/career", careerRoutes);
 router.use("/admin", adminRoutes);
+router.use("/review", reviewRoutes);
 router.use("/", gamificationRoutes);
 
 router.get("/", (_req, res) => {

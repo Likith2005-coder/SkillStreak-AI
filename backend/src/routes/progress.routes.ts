@@ -14,5 +14,6 @@ router.get(
   asyncHandler(ctl.domain)
 );
 router.get("/heatmap", requireAuth, asyncHandler(ctl.heatmap));
+router.get("/today", requireAuth, asyncHandler(ctl.today));
 
 export default router;

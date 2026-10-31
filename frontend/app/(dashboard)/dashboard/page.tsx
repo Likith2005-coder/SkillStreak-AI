@@ -7,6 +7,9 @@ import { ArrowRight, BarChart3, BookOpen, Check, Compass, Gem, ListChecks, Map a
 import { PathPreview } from "@/components/playground/PathPreview";
 import { Mascot } from "@/components/playground/Mascot";
 import { ArsenalCard, LeagueCard, LevelCard, StreakCard } from "@/components/playground/Rail";
+import { DailyGoalCard, fireGoalConfetti } from "@/components/playground/DailyGoal";
+import { ReviewCard } from "@/components/playground/ReviewCard";
+import { TipCard } from "@/components/playground/TipCard";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useUserStore } from "@/store/userStore";
@@ -14,11 +17,15 @@ import {
   apiErrorMessage,
   fetchBadges,
   fetchOverview,
+  fetchReview,
   fetchStreak,
+  fetchToday,
   type Badge,
   type ProgressOverview,
   type RecentAttempt,
+  type ReviewList,
   type Streak,
+  type TodayProgress,
 } from "@/lib/api";
 import { DomainProgressRing } from "@/components/progress/DomainProgressRing";
 import { MagneticDomainDock } from "@/components/progress/MagneticDomainDock";
@@ -54,6 +61,37 @@ export default function DashboardPage() {
     };
   }, []);
 
+  // Today's goal + mistake count load on their own so a slow one never holds
+  // up the hero. Failures just leave the panels in their quiet state.
+  const [today, setToday] = useState<TodayProgress | null>(null);
+  const [review, setReview] = useState<ReviewList | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetchToday()
+      .then((t) => !cancelled && setToday(t))
+      .catch(() => undefined);
+    fetchReview()
+      .then((r) => !cancelled && setReview(r))
+      .catch(() => !cancelled && setReview({ items: [], total: 0 }));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Celebrate the daily goal once per browser session per (UTC) day.
+  useEffect(() => {
+    if (!today || today.goalXp <= 0 || today.xpToday < today.goalXp) return;
+    const KEY = "skillstreak.goalCelebrated";
+    try {
+      if (window.sessionStorage.getItem(KEY) === today.date) return;
+      window.sessionStorage.setItem(KEY, today.date);
+    } catch {
+      // storage blocked: still celebrate, just maybe more than once
+    }
+    const t = window.setTimeout(fireGoalConfetti, 700);
+    return () => window.clearTimeout(t);
+  }, [today]);
+
   if (!user) return null;
 
   const totals = overview?.totals;
@@ -85,7 +123,7 @@ export default function DashboardPage() {
           transition: { duration: 0.35, delay: 0.04 * i, ease: EASE },
         };
 
-  const today = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  const todayLabel = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
   return (
     <main className="container px-4 pb-16 pt-8 lg:pt-12">
@@ -103,7 +141,7 @@ export default function DashboardPage() {
               )}
               <span className="relative h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
             </span>
-            {today}
+            {todayLabel}
             {days > 0 && <span className="text-energy">· Day {days}</span>}
           </p>
           <h1 className="mt-4 font-display text-[clamp(2.6rem,7vw,5.25rem)] leading-[0.95] text-foreground [text-wrap:balance]">
@@ -238,8 +276,23 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Phones: today's goal right under the hero (desktop shows it
+              at the top of the rail instead). */}
+          <motion.div {...rise(2)} className="lg:hidden">
+            <DailyGoalCard today={today} />
+          </motion.div>
+
+          {/* Second shot at missed questions + a rotating domain fact. */}
+          <motion.div {...rise(2)} className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
+            <ReviewCard review={review} />
+            <TipCard
+              domainSlug={overview?.recommended?.domain.slug}
+              domainName={overview?.recommended?.domain.name}
+            />
+          </motion.div>
+
           {/* Recommended next */}
-          <motion.section {...rise(2)}>
+          <motion.section {...rise(3)}>
             <RecommendedNext />
           </motion.section>
 
@@ -254,9 +307,10 @@ export default function DashboardPage() {
                 animate: { opacity: 1, x: 0 },
                 transition: { duration: 0.35, delay: 0.08, ease: EASE },
               })}
-          className="min-w-0 space-y-4 lg:sticky lg:top-20 lg:self-start"
+          className="min-w-0 space-y-4 lg:self-start"
           aria-label="Your stats"
         >
+          <DailyGoalCard today={today} className="hidden lg:block" />
           <StreakCard streak={streak} />
           <LevelCard xp={user.xp} />
           <LeagueCard />

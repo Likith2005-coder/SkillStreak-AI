@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "next-view-transitions";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown, { type Components } from "react-markdown";
@@ -8,6 +8,10 @@ import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { ShikiCodeBlock } from "@/components/shared/ShikiCodeBlock";
+import { MermaidDiagram } from "@/components/lesson/MermaidDiagram";
+import { LessonFigure } from "@/components/lesson/LessonFigure";
+import { AnswerReveal } from "@/components/lesson/AnswerReveal";
+import { prepareLessonMarkdown } from "@/components/lesson/prepareLessonMarkdown";
 import {
   ArrowLeft,
   ArrowRight,
@@ -29,6 +33,7 @@ import {
   explainTopic,
   fetchTopic,
   type ExplainResponse,
+  type LessonImage,
   type TopicView,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -76,11 +81,11 @@ export default function TopicPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic?.id]);
 
-  async function requestExplanation(_isRetry: boolean) {
+  async function requestExplanation(_isRetry: boolean, fresh = false) {
     if (!id) return;
     setExplainState({ kind: "loading" });
     try {
-      const data = await explainTopic(id);
+      const data = await explainTopic(id, fresh);
       setExplainState({ kind: "ok", data });
     } catch (err) {
       setExplainState({
@@ -203,7 +208,7 @@ export default function TopicPage() {
                 </div>
               </div>
               {explainState.kind === "ok" && (
-                <Button variant="ghost" size="sm" onClick={() => requestExplanation(true)} className="text-muted-foreground">
+                <Button variant="ghost" size="sm" onClick={() => requestExplanation(true, true)} className="text-muted-foreground">
                   <RefreshCw className="h-3.5 w-3.5" strokeWidth={2.4} />
                   <span className="sr-only sm:not-sr-only">Regenerate</span>
                 </Button>
@@ -224,7 +229,13 @@ export default function TopicPage() {
                 </div>
               )}
 
-              {explainState.kind === "ok" && <ExplanationContent markdown={explainState.data.explanation} />}
+              {explainState.kind === "ok" && (
+                <ExplanationContent
+                  markdown={explainState.data.explanation}
+                  image={explainState.data.image ?? null}
+                  topicTitle={topic.title}
+                />
+              )}
             </div>
           </div>
 
@@ -375,8 +386,20 @@ const LESSON_PROSE = [
   "prose-hr:border-white/[0.08] prose-th:text-foreground prose-td:text-foreground/[0.82] prose-thead:border-white/15 prose-tr:border-white/[0.06]",
 ].join(" ");
 
-function ExplanationContent({ markdown }: { markdown: string }) {
+function ExplanationContent({
+  markdown,
+  image,
+  topicTitle,
+}: {
+  markdown: string;
+  image: LessonImage | null;
+  topicTitle: string;
+}) {
   const reduce = useReducedMotion();
+  // The related picture sits right after "The big idea" (or at the top when
+  // the lesson has no such section).
+  const { intro, rest } = useMemo(() => prepareLessonMarkdown(markdown), [markdown]);
+  const components = useMemo(() => lessonMdComponents(topicTitle), [topicTitle]);
   return (
     <motion.article
       initial={{ opacity: 0, y: reduce ? 0 : 8 }}
@@ -384,25 +407,35 @@ function ExplanationContent({ markdown }: { markdown: string }) {
       transition={{ duration: reduce ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={LESSON_PROSE}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={topicMdComponents}>
-        {markdown}
+      {intro && (
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+          {intro}
+        </ReactMarkdown>
+      )}
+      {image && <LessonFigure key={image.url} image={image} />}
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        {rest}
       </ReactMarkdown>
     </motion.article>
   );
 }
 
-const topicMdComponents: Components = {
-  pre({ children }) {
-    const codeNode = Array.isArray(children) ? children[0] : children;
-    const props =
-      codeNode && typeof codeNode === "object" && "props" in codeNode
-        ? (codeNode as { props: { className?: string; children?: React.ReactNode } }).props
-        : { className: "", children: "" };
-    const lang = (props.className?.match(/language-([\w-]+)/)?.[1] ?? "").toLowerCase();
-    const text = extractText(props.children);
-    return <ShikiCodeBlock code={text} lang={lang} />;
-  },
-};
+function lessonMdComponents(topicTitle: string): Components {
+  return {
+    pre({ children }) {
+      const codeNode = Array.isArray(children) ? children[0] : children;
+      const props =
+        codeNode && typeof codeNode === "object" && "props" in codeNode
+          ? (codeNode as { props: { className?: string; children?: React.ReactNode } }).props
+          : { className: "", children: "" };
+      const lang = (props.className?.match(/language-([\w-]+)/)?.[1] ?? "").toLowerCase();
+      const text = extractText(props.children).replace(/\n$/, "");
+      if (lang === "mermaid") return <MermaidDiagram code={text} caption={`${topicTitle}, at a glance`} />;
+      if (lang === "answer") return <AnswerReveal markdown={text} />;
+      return <ShikiCodeBlock code={text} lang={lang} />;
+    },
+  };
+}
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === "string") return node;

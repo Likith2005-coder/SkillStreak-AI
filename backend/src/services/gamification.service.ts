@@ -25,7 +25,10 @@ export type XpReason =
   | "quiz_pass"
   | "quiz_perfect"
   | "streak_day"
-  | "comeback";
+  | "comeback"
+  // Mistake Review: a previously-missed quiz question answered correctly.
+  // meta = { key, topicId }; one event per key marks that mistake "fixed".
+  | "review";
 
 const XP_AMOUNTS: Record<XpReason, number> = {
   topic_complete: 10,
@@ -34,7 +37,10 @@ const XP_AMOUNTS: Record<XpReason, number> = {
   quiz_perfect: 25,
   streak_day: 5,
   comeback: 50,
+  review: 5,
 };
+
+export const REVIEW_XP = XP_AMOUNTS.review;
 
 // Per planning doc §17.2: Level N requires 100 * N * log2(N+1) XP cumulative.
 function xpRequiredForLevel(level: number): number {
@@ -713,6 +719,30 @@ export async function recordQuizSubmit(
     if (ctx.score === ctx.total) awards.push({ amount: XP_AMOUNTS.quiz_perfect, reason: "quiz_perfect", meta: ctx });
     else awards.push({ amount: XP_AMOUNTS.quiz_pass, reason: "quiz_pass", meta: ctx });
   }
+  if (streak.changedToday && !streak.comebackBonus) {
+    awards.push({ amount: XP_AMOUNTS.streak_day, reason: "streak_day" });
+  }
+  if (streak.comebackBonus) {
+    awards.push({ amount: XP_AMOUNTS.comeback, reason: "comeback" });
+  }
+
+  const xp = await awardXp(userId, awards);
+  const badges = await evaluateBadges(userId);
+
+  return { xp, streak, badges };
+}
+
+/**
+ * Mistake Review: a missed question was answered correctly on review. Counts
+ * as a learning action for the streak (same bonuses as a quiz submit) and pays
+ * a small fixed amount. The caller guarantees this runs once per key.
+ */
+export async function recordReviewFix(
+  userId: string,
+  ctx: { key: string; topicId: string }
+): Promise<GamificationDelta> {
+  const streak = await recordActivity(userId);
+  const awards: XpAward[] = [{ amount: XP_AMOUNTS.review, reason: "review", meta: ctx }];
   if (streak.changedToday && !streak.comebackBonus) {
     awards.push({ amount: XP_AMOUNTS.streak_day, reason: "streak_day" });
   }

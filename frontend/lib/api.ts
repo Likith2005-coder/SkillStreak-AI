@@ -207,10 +207,25 @@ export type TopicView = RoadmapTopic & {
   } | null;
 };
 
+/** A real, related picture for a lesson (from Wikipedia / Wikimedia Commons). */
+export type LessonImage = {
+  url: string;
+  width?: number;
+  height?: number;
+  /** What the picture shows, shown as the caption and used as alt text. */
+  caption: string;
+  /** Source page, for attribution. */
+  sourceUrl: string;
+  /** e.g. "Wikipedia" / "Wikimedia Commons", plus licence where known. */
+  credit: string;
+};
+
 export type ExplainResponse = {
   explanation: string;
   level: "beginner" | "intermediate" | "advanced";
   cached: boolean;
+  /** Optional related image; null when nothing relevant was found. */
+  image?: LessonImage | null;
 };
 
 export async function fetchDomains(): Promise<Domain[]> {
@@ -468,10 +483,12 @@ export async function fetchTopic(id: string): Promise<TopicView> {
   return data.topic;
 }
 
-export async function explainTopic(id: string): Promise<ExplainResponse> {
-  // Cold-cache topic explainers can be ~2200 tokens — bump timeout per call.
+export async function explainTopic(id: string, fresh = false): Promise<ExplainResponse> {
+  // Cold-cache topic explainers can be ~3000 tokens — bump timeout per call.
+  // `fresh` (Regenerate) skips the saved copy and writes a new lesson.
   const { data } = await api.post<ExplainResponse>(`/topics/${id}/explain`, undefined, {
     timeout: 60_000,
+    params: fresh ? { fresh: 1 } : undefined,
   });
   return data;
 }
@@ -696,7 +713,7 @@ export type LeaderboardEntry = {
 
 export type XpEventDelta = {
   amount: number;
-  reason: "topic_complete" | "first_topic_of_day" | "quiz_pass" | "quiz_perfect" | "streak_day" | "comeback";
+  reason: "topic_complete" | "first_topic_of_day" | "quiz_pass" | "quiz_perfect" | "streak_day" | "comeback" | "review";
   meta?: Record<string, unknown>;
 };
 
@@ -971,4 +988,57 @@ export async function streamChatMessage(
       }
     }
   }
+}
+
+// ─── Daily goal + this week (dashboard) ─────────────────
+
+export type TodayProgress = {
+  /** UTC day, YYYY-MM-DD (same day boundary as the streak). */
+  date: string;
+  xpToday: number;
+  goalXp: number;
+  topicsToday: number;
+  quizzesToday: number;
+  /** Last 7 UTC days, oldest → newest; the last entry is today. */
+  week: Array<{ date: string; xp: number }>;
+};
+
+export async function fetchToday(): Promise<TodayProgress> {
+  const { data } = await api.get<TodayProgress>("/progress/today");
+  return data;
+}
+
+// ─── Mistake Review ─────────────────────────────────────
+
+export type ReviewItem = {
+  key: string;
+  topicId: string;
+  topicTitle: string;
+  domain: { slug: string; name: string; color: string; icon: string };
+  question: string;
+  options: string[];
+  /** What the learner picked last time (-1 if unknown). */
+  lastAnswer: number;
+  attemptedAt: string;
+};
+
+export type ReviewList = { items: ReviewItem[]; total: number };
+
+export type ReviewAnswerResponse = {
+  correct: boolean;
+  correctIndex: number;
+  explanation: string;
+  /** XP from the review itself (0 when wrong or already fixed). */
+  xpAwarded: number;
+  gamification: GamificationDelta | null;
+};
+
+export async function fetchReview(): Promise<ReviewList> {
+  const { data } = await api.get<ReviewList>("/review");
+  return data;
+}
+
+export async function answerReview(key: string, selectedIndex: number): Promise<ReviewAnswerResponse> {
+  const { data } = await api.post<ReviewAnswerResponse>("/review/answer", { key, selectedIndex });
+  return data;
 }

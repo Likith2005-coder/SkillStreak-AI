@@ -18,7 +18,8 @@ export const getOne: RequestHandler = async (req, res) => {
 
 export const explain: RequestHandler = async (req, res) => {
   if (!req.user) throw new ApiError(401, "Unauthenticated");
-  const result = await topicService.explainTopic(id(req), req.user.sub);
+  const fresh = req.query.fresh === "1" || req.query.fresh === "true";
+  const result = await topicService.explainTopic(id(req), req.user.sub, { fresh });
   res.json(result);
 };
 

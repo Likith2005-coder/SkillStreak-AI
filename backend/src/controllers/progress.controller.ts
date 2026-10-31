@@ -21,6 +21,12 @@ export const domain: RequestHandler = async (req, res) => {
   res.json(data);
 };
 
+export const today: RequestHandler = async (req, res) => {
+  if (!req.user) throw new ApiError(401, "Unauthenticated");
+  const data = await progressService.getToday(req.user.sub);
+  res.json(data);
+};
+
 export const heatmap: RequestHandler = async (req, res) => {
   if (!req.user) throw new ApiError(401, "Unauthenticated");
   const data = await progressService.getHeatmap(req.user.sub);

@@ -251,6 +251,55 @@ export async function getDomainProgress(slug: string, userId: string) {
   };
 }
 
+const GOAL_XP_BY_PACE: Record<string, number> = { relaxed: 20, standard: 40, intense: 80 };
+const DEFAULT_GOAL_XP = 40;
+
+/**
+ * Today's pulse for the dashboard goal ring + a 7-day XP strip.
+ * Days are UTC, matching how the streak is ticked (gamification.utcDateOnly).
+ * `week` is oldest → newest; the last entry is today.
+ */
+export async function getToday(userId: string) {
+  const today = startOfDayUTC(new Date());
+  const weekStart = new Date(today);
+  weekStart.setUTCDate(weekStart.getUTCDate() - 6);
+
+  const [events, topicsToday, quizzesToday, profile] = await Promise.all([
+    prisma.xpEvent.findMany({
+      where: { userId, createdAt: { gte: weekStart } },
+      select: { amount: true, createdAt: true },
+    }),
+    prisma.userProgress.count({
+      where: { userId, status: "completed", completedAt: { gte: today } },
+    }),
+    prisma.quizAttempt.count({ where: { userId, attemptedAt: { gte: today } } }),
+    prisma.userProfile.findUnique({ where: { userId }, select: { pace: true } }),
+  ]);
+
+  const byDay = new Map<string, number>();
+  for (const e of events) {
+    const key = isoDate(startOfDayUTC(e.createdAt));
+    byDay.set(key, (byDay.get(key) ?? 0) + e.amount);
+  }
+
+  const week: Array<{ date: string; xp: number }> = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setUTCDate(weekStart.getUTCDate() + i);
+    const key = isoDate(d);
+    week.push({ date: key, xp: byDay.get(key) ?? 0 });
+  }
+
+  return {
+    date: isoDate(today),
+    xpToday: week[6].xp,
+    goalXp: (profile?.pace && GOAL_XP_BY_PACE[profile.pace]) || DEFAULT_GOAL_XP,
+    topicsToday,
+    quizzesToday,
+    week,
+  };
+}
+
 /**
  * 90-day heatmap. Counts qualifying activity per day:
  *   - A topic completion (UserProgress.completedAt)

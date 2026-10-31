@@ -26,6 +26,7 @@ const REASON_LABEL: Record<string, string> = {
   quiz_perfect: "Perfect quiz",
   streak_day: "Streak +1",
   comeback: "Welcome back!",
+  review: "Mistake fixed",
 };
 
 export function surfaceGamification(delta: GamificationDelta | null) {

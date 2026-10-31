@@ -21,6 +21,7 @@ import {
   Flame,
   LayoutDashboard,
   ListChecks,
+  RotateCcw,
   Search,
   Settings,
   Sparkles,
@@ -162,6 +163,7 @@ export function CommandPalette() {
               <Item icon={<BookOpen className="h-4 w-4" />} label="Domains" onSelect={() => go("/domains")} />
               <Item icon={<Bot className="h-4 w-4" />} label="Chatbot" onSelect={() => go("/chatbot")} />
               <Item icon={<ListChecks className="h-4 w-4" />} label="Quiz history" onSelect={() => go("/progress")} />
+              <Item icon={<RotateCcw className="h-4 w-4" />} label="Mistake review" onSelect={() => go("/review")} />
               <Item icon={<ChartLine className="h-4 w-4" />} label="Progress" onSelect={() => go("/progress")} />
               <Item icon={<Trophy className="h-4 w-4" />} label="Leaderboard" onSelect={() => go("/leaderboard")} />
               <Item icon={<Settings className="h-4 w-4" />} label="Settings" onSelect={() => go("/settings")} />
