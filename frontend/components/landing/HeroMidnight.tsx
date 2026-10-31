@@ -98,7 +98,7 @@ export function HeroMidnight() {
         </motion.div>
 
         <motion.p variants={rise} className="mt-8 text-sm text-muted-foreground [text-wrap:balance]">
-          9 domains · 540+ topics · AI-checked quizzes · free forever
+          9 domains · 580+ topics · AI-checked quizzes · free forever
         </motion.p>
       </motion.div>
 

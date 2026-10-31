@@ -43,14 +43,21 @@ type ProgressStatus = "not_started" | "in_progress" | "completed";
 
 const PHASE_LABEL: Record<RoadmapTopic["phase"], string> = {
   foundations: "Foundations",
-  core: "Core Concepts",
+  core: "Core Skills",
   advanced: "Advanced",
 };
 
+// The trail is one beginner -> advanced path; each phase names its level.
+const PHASE_LEVEL: Record<RoadmapTopic["phase"], string> = {
+  foundations: "Level 1 · Beginner",
+  core: "Level 2 · Intermediate",
+  advanced: "Level 3 · Advanced",
+};
+
 const PHASE_DESCRIPTION: Record<RoadmapTopic["phase"], string> = {
-  foundations: "Vocabulary and mental models. Start here.",
-  core: "The main subject matter. Where most of the work happens.",
-  advanced: "Deeper theory and current trends. Polishes everything before.",
+  foundations: "No experience needed. The ideas and tools everything else builds on.",
+  core: "The job-ready skills, in the order you'll use them.",
+  advanced: "Specialist depth and the frontier of the field.",
 };
 
 export default function RoadmapPage() {
@@ -466,8 +473,8 @@ function PhaseHeader({
     <div className="mx-auto max-w-3xl text-center">
       <div className="flex items-center gap-4">
         <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-transparent to-white/15" />
-        <span className={cn("rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-medium", colorStyle.badgeBg)}>
-          {String(index + 1).padStart(2, "0")}
+        <span className={cn("whitespace-nowrap rounded-full border px-3 py-0.5 font-mono text-[11px] font-medium", colorStyle.badgeBg)}>
+          {PHASE_LEVEL[phase]}
         </span>
         <span aria-hidden className="h-px flex-1 bg-gradient-to-l from-transparent to-white/15" />
       </div>

@@ -1,0 +1,395 @@
+{
+  "slug": "cloud-computing",
+  "topics": [
+    {
+      "title": "What Is Cloud Computing?",
+      "phase": "foundations",
+      "summary": "On-demand compute, storage, and services over the internet — and the historical shift from owning servers.",
+      "from": "What Is Cloud Computing?"
+    },
+    {
+      "title": "IaaS vs PaaS vs SaaS",
+      "phase": "foundations",
+      "summary": "The three abstraction levels — what each gives up vs gets, with concrete examples.",
+      "from": "IaaS vs PaaS vs SaaS"
+    },
+    {
+      "title": "Public, Private, Hybrid, Multi-Cloud",
+      "phase": "foundations",
+      "summary": "The four deployment models and the business reasons each gets picked.",
+      "from": "Public, Private, Hybrid, Multi-Cloud"
+    },
+    {
+      "title": "Capex vs Opex Cloud Pricing",
+      "phase": "foundations",
+      "summary": "Why finance treats cloud spend differently — and how that reshapes engineering decisions.",
+      "from": "Capex vs Opex Cloud Pricing"
+    },
+    {
+      "title": "AWS vs Azure vs GCP",
+      "phase": "foundations",
+      "summary": "The big three providers compared on services, pricing, market position, and cultural fit.",
+      "from": "AWS vs Azure vs GCP"
+    },
+    {
+      "title": "Regions, AZs, and Edge Locations",
+      "phase": "foundations",
+      "summary": "The physical hierarchy — geographic regions, isolated AZs, and CDN PoPs at the edge.",
+      "from": "Regions, AZs, and Edge Locations"
+    },
+    {
+      "title": "The Shared Responsibility Model",
+      "phase": "foundations",
+      "summary": "What the cloud provider secures vs what you secure — the diagram every architect memorises.",
+      "from": "The Shared Responsibility Model"
+    },
+    {
+      "title": "Your First Cloud Account",
+      "phase": "foundations",
+      "summary": "Creating a free-tier account, securing the root user, setting billing alerts, and finding your way around the console and CLI.",
+      "from": null
+    },
+    {
+      "title": "Identity and Access Management Basics",
+      "phase": "foundations",
+      "summary": "Users, groups, roles, policies — the access-control vocabulary that's the same across providers.",
+      "from": "Identity and Access Management Basics"
+    },
+    {
+      "title": "Linux Command Line Basics",
+      "phase": "foundations",
+      "summary": "Files, permissions, packages, processes, and SSH: the skills you need to log in to and manage a cloud server.",
+      "from": null
+    },
+    {
+      "title": "Networking Basics: IP, Ports, DNS, HTTP",
+      "phase": "foundations",
+      "summary": "IP addresses, ports, DNS lookups, and HTTP requests: how traffic finds a server before any cloud networking is added.",
+      "from": null
+    },
+    {
+      "title": "Virtualization and Hypervisors",
+      "phase": "foundations",
+      "summary": "Type-1 vs type-2 hypervisors and the abstraction that makes a single physical server look like many.",
+      "from": "Virtualization and Hypervisors"
+    },
+    {
+      "title": "Containers vs VMs",
+      "phase": "foundations",
+      "summary": "Different isolation, different overhead — when to reach for each.",
+      "from": "Containers vs VMs"
+    },
+    {
+      "title": "Cloud Networking Fundamentals",
+      "phase": "foundations",
+      "summary": "Virtual networks, subnets, routing tables, NAT — the cloud's recreation of the data centre LAN.",
+      "from": "Cloud Networking Fundamentals"
+    },
+    {
+      "title": "Storage Tiers and Object Storage",
+      "phase": "foundations",
+      "summary": "Hot/warm/cold/archive tiers and S3-style object storage vs block storage vs file storage.",
+      "from": "Storage Tiers and Object Storage"
+    },
+    {
+      "title": "AWS Core Services Overview",
+      "phase": "foundations",
+      "summary": "EC2, S3, RDS, Lambda, IAM — the small set of services every AWS workload uses.",
+      "from": "AWS Core Services Overview"
+    },
+    {
+      "title": "Azure Core Services Overview",
+      "phase": "foundations",
+      "summary": "VMs, Blob Storage, Azure SQL, Functions, Entra ID — Microsoft's equivalent of the AWS core.",
+      "from": "Azure Core Services Overview"
+    },
+    {
+      "title": "GCP Core Services Overview",
+      "phase": "foundations",
+      "summary": "Compute Engine, Cloud Storage, BigQuery, Cloud Functions — Google's data-first cloud.",
+      "from": "GCP Core Services Overview"
+    },
+    {
+      "title": "Virtual Machines and Instance Types (EC2)",
+      "phase": "core",
+      "summary": "General/compute/memory/storage-optimized families and how to pick without overpaying.",
+      "from": "Elastic Compute (EC2 Instance Types)"
+    },
+    {
+      "title": "Block Storage Performance (EBS)",
+      "phase": "core",
+      "summary": "gp3, io2, throughput vs IOPS, snapshots — tuning storage for the workload.",
+      "from": "Block Storage Performance (EBS)"
+    },
+    {
+      "title": "Object Storage in Depth (S3)",
+      "phase": "core",
+      "summary": "Buckets, prefixes, lifecycle policies, versioning, replication — the workhorse of cloud storage.",
+      "from": "Object Storage in Depth (S3)"
+    },
+    {
+      "title": "VPC Networking and Subnetting",
+      "phase": "core",
+      "summary": "Designing an isolated network — public vs private subnets, CIDR ranges, route tables.",
+      "from": "VPC Networking and Subnetting"
+    },
+    {
+      "title": "Security Groups and Network ACLs",
+      "phase": "core",
+      "summary": "Stateful vs stateless firewalls in the cloud — and how rules compose.",
+      "from": "Security Groups and Network ACLs"
+    },
+    {
+      "title": "Load Balancers",
+      "phase": "core",
+      "summary": "ALB vs NLB vs classic — layer 7 routing, layer 4 TCP, and the health-check model.",
+      "from": "Load Balancers"
+    },
+    {
+      "title": "Auto Scaling Groups",
+      "phase": "core",
+      "summary": "Reactive vs predictive scaling, target tracking, and the cost vs latency tradeoff.",
+      "from": "Auto Scaling Groups"
+    },
+    {
+      "title": "DNS as a Service (Route 53)",
+      "phase": "core",
+      "summary": "Hosted zones, routing policies (latency/geo/failover), and health checks.",
+      "from": "DNS as a Service (Route 53)"
+    },
+    {
+      "title": "CDN and Edge Caching",
+      "phase": "core",
+      "summary": "CloudFront, Cloud CDN, Front Door — pushing content close to users for latency wins.",
+      "from": "CDN and Edge Caching"
+    },
+    {
+      "title": "IAM Policies and Roles in Depth",
+      "phase": "core",
+      "summary": "Resource policies vs identity policies, least privilege, and the trust-relationship model.",
+      "from": "IAM Policies and Roles in Depth"
+    },
+    {
+      "title": "Encryption at Rest and in Transit",
+      "phase": "core",
+      "summary": "Provider-managed keys, customer-managed keys, and where TLS is enforced by default.",
+      "from": "Encryption at Rest and in Transit"
+    },
+    {
+      "title": "Key Management Services (KMS)",
+      "phase": "core",
+      "summary": "Envelope encryption, key rotation, and the audit trails that compliance demands.",
+      "from": "Key Management Services (KMS)"
+    },
+    {
+      "title": "Secrets Management",
+      "phase": "core",
+      "summary": "Secrets Manager, Key Vault, Secret Manager — keeping API keys and DB passwords out of code.",
+      "from": "Secrets Management"
+    },
+    {
+      "title": "Relational Databases as a Service",
+      "phase": "core",
+      "summary": "RDS, Aurora, Cloud SQL — managed Postgres/MySQL with backups, failover, and patching done for you.",
+      "from": "Relational Databases as a Service"
+    },
+    {
+      "title": "NoSQL Databases as a Service",
+      "phase": "core",
+      "summary": "DynamoDB, Cosmos DB, Bigtable — when to reach for them and the consistency model differences.",
+      "from": "NoSQL Databases as a Service"
+    },
+    {
+      "title": "Docker Hands-On: Build and Run Containers",
+      "phase": "core",
+      "summary": "Writing a Dockerfile, building an image, and running, debugging, and connecting containers on your own machine.",
+      "from": null
+    },
+    {
+      "title": "Container Registries",
+      "phase": "core",
+      "summary": "ECR, ACR, Artifact Registry — image storage, scanning, and access control.",
+      "from": "Container Registries"
+    },
+    {
+      "title": "Container Orchestration",
+      "phase": "core",
+      "summary": "ECS, EKS, AKS, GKE — managed Kubernetes and the platform-specific equivalents.",
+      "from": "Container Orchestration"
+    },
+    {
+      "title": "Serverless Functions",
+      "phase": "core",
+      "summary": "Lambda, Azure Functions, Cloud Run — pricing per invocation, cold starts, and what fits the model.",
+      "from": "Serverless Functions"
+    },
+    {
+      "title": "API Gateway Patterns",
+      "phase": "core",
+      "summary": "Routing, throttling, auth integration — the entry point for serverless APIs.",
+      "from": "API Gateway Patterns"
+    },
+    {
+      "title": "Message Queues (SQS, Service Bus)",
+      "phase": "core",
+      "summary": "Decoupling producers from consumers — at-least-once delivery and visibility timeouts.",
+      "from": "Message Queues (SQS, Service Bus)"
+    },
+    {
+      "title": "Pub/Sub Messaging",
+      "phase": "core",
+      "summary": "SNS, EventBridge, Pub/Sub — fan-out, filtering, and event-driven plumbing.",
+      "from": "Pub/Sub Messaging"
+    },
+    {
+      "title": "Infrastructure as Code: Terraform",
+      "phase": "core",
+      "summary": "HCL, providers, state files, modules — declarative cloud infra that's actually reviewable.",
+      "from": "Infrastructure as Code: Terraform"
+    },
+    {
+      "title": "CloudFormation and ARM Templates",
+      "phase": "core",
+      "summary": "Provider-native IaC tools — when to use them vs Terraform.",
+      "from": "CloudFormation and ARM Templates"
+    },
+    {
+      "title": "Monitoring and Logging Services",
+      "phase": "core",
+      "summary": "CloudWatch, Stackdriver, Monitor — metrics, logs, alarms, and the cost of cardinality.",
+      "from": "Monitoring and Logging Services"
+    },
+    {
+      "title": "Cost Optimization Strategies",
+      "phase": "core",
+      "summary": "Reserved instances, spot/preemptible, rightsizing, and the cost-allocation tags that make it possible.",
+      "from": "Cost Optimization Strategies"
+    },
+    {
+      "title": "Cloud-Native Application Design",
+      "phase": "advanced",
+      "summary": "12-factor app, statelessness, externalized config — building for the cloud, not lifting from on-prem.",
+      "from": "Cloud-Native Application Design"
+    },
+    {
+      "title": "Event-Driven Architecture",
+      "phase": "advanced",
+      "summary": "Sources, buses, targets — the cloud-native pattern that ties serverless services together.",
+      "from": "Event-Driven Architecture"
+    },
+    {
+      "title": "Serverless End-to-End Architectures",
+      "phase": "advanced",
+      "summary": "Building entire apps with Lambda + API Gateway + DynamoDB — wins, gotchas, and cold-start strategies.",
+      "from": "Serverless End-to-End Architectures"
+    },
+    {
+      "title": "Microservices on the Cloud",
+      "phase": "advanced",
+      "summary": "Service decomposition, communication patterns, and where the cloud fits each piece.",
+      "from": "Microservices on the Cloud"
+    },
+    {
+      "title": "Kubernetes on the Cloud",
+      "phase": "advanced",
+      "summary": "Managed control planes, cluster autoscaling, and the operational reality vs the marketing.",
+      "from": "Kubernetes on the Cloud"
+    },
+    {
+      "title": "Service Mesh: Istio and App Mesh",
+      "phase": "advanced",
+      "summary": "Sidecar proxies, mTLS, traffic shifting — networking concerns lifted out of app code.",
+      "from": "Service Mesh: Istio and App Mesh"
+    },
+    {
+      "title": "DevOps on the Cloud",
+      "phase": "advanced",
+      "summary": "CodePipeline, Azure DevOps, Cloud Build — provider-native CI/CD vs third-party.",
+      "from": "DevOps on the Cloud"
+    },
+    {
+      "title": "Observability at Scale",
+      "phase": "advanced",
+      "summary": "Centralized logging, distributed tracing, the OpenTelemetry standard, and the cardinality cost.",
+      "from": "Observability at Scale"
+    },
+    {
+      "title": "High Availability Patterns",
+      "phase": "advanced",
+      "summary": "Multi-AZ deployments, leader election, the redundancy patterns that hit 99.99% uptime.",
+      "from": "High Availability Patterns"
+    },
+    {
+      "title": "Disaster Recovery and Backup",
+      "phase": "advanced",
+      "summary": "RPO/RTO, backup strategies, and pilot-light vs warm-standby vs hot-standby tradeoffs.",
+      "from": "Disaster Recovery and Backup"
+    },
+    {
+      "title": "Multi-Region Architectures",
+      "phase": "advanced",
+      "summary": "Active-active vs active-passive, replication latency, and the global routing layer.",
+      "from": "Multi-Region Architectures"
+    },
+    {
+      "title": "Security Posture Management",
+      "phase": "advanced",
+      "summary": "AWS Config, Azure Policy, Security Hub — continuous compliance scanning at scale.",
+      "from": "Security Posture Management"
+    },
+    {
+      "title": "Compliance in the Cloud",
+      "phase": "advanced",
+      "summary": "HIPAA, GDPR, SOC 2, FedRAMP — what the provider gives you vs what you still owe.",
+      "from": "Compliance in the Cloud"
+    },
+    {
+      "title": "FinOps: Cloud Cost Management",
+      "phase": "advanced",
+      "summary": "The discipline that pairs engineers with finance — budgets, anomalies, and showback/chargeback.",
+      "from": "FinOps: Cloud Cost Management"
+    },
+    {
+      "title": "Data Lakes and Data Warehouses",
+      "phase": "advanced",
+      "summary": "S3 + Glue + Athena vs Redshift/BigQuery/Snowflake — picking the right analytics architecture.",
+      "from": "Data Lakes and Data Warehouses"
+    },
+    {
+      "title": "Big Data on the Cloud",
+      "phase": "advanced",
+      "summary": "EMR, Dataproc, HDInsight — managed Spark/Hadoop and when serverless analytics replaces them.",
+      "from": "Big Data on the Cloud"
+    },
+    {
+      "title": "Machine Learning Services",
+      "phase": "advanced",
+      "summary": "SageMaker, Vertex AI, Azure ML — managed training, hosting, and pipelines for ML workloads.",
+      "from": "Machine Learning Services"
+    },
+    {
+      "title": "Edge Computing and IoT Hubs",
+      "phase": "advanced",
+      "summary": "Greengrass, IoT Hub, IoT Core — running compute close to devices and the data-flow patterns.",
+      "from": "Edge Computing and IoT Hubs"
+    },
+    {
+      "title": "Hybrid and Multi-Cloud Strategies",
+      "phase": "advanced",
+      "summary": "When multi-cloud is genuine resilience vs vendor-lock-in fear — and the operational tax.",
+      "from": "Hybrid and Multi-Cloud Strategies"
+    },
+    {
+      "title": "Cloud Migration Patterns (6 R's)",
+      "phase": "advanced",
+      "summary": "Rehost, replatform, refactor, repurchase, retire, retain — picking the strategy per workload.",
+      "from": "Cloud Migration Patterns (6 R's)"
+    },
+    {
+      "title": "Becoming Cloud Certified",
+      "phase": "advanced",
+      "summary": "AWS SAA, Azure AZ-104, GCP ACE — what each cert covers and the study path.",
+      "from": "Becoming Cloud Certified"
+    }
+  ]
+}

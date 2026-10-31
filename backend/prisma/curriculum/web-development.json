@@ -1,0 +1,383 @@
+{
+  "slug": "web-development",
+  "topics": [
+    {
+      "title": "How the Web Works",
+      "phase": "foundations",
+      "summary": "HTTP requests, DNS, browsers, and servers — the round-trip that powers every page.",
+      "from": "How the Web Works"
+    },
+    {
+      "title": "HTML Basics: Your First Web Page",
+      "phase": "foundations",
+      "summary": "Tags, elements, attributes, headings, links, and images: writing a real page from an empty file and opening it in a browser.",
+      "from": null
+    },
+    {
+      "title": "HTML Semantics and Accessibility",
+      "phase": "foundations",
+      "summary": "Using the right elements so the page is meaningful to humans, screen readers, and search engines.",
+      "from": "HTML Semantics and Accessibility"
+    },
+    {
+      "title": "HTML Forms in Depth",
+      "phase": "foundations",
+      "summary": "Input types, labels, validation attributes, and the form submission lifecycle.",
+      "from": "HTML Forms in Depth"
+    },
+    {
+      "title": "CSS Basics: Selectors, Cascade, Specificity",
+      "phase": "foundations",
+      "summary": "Styling pages with selectors, colors, and fonts, and understanding why one rule wins over another.",
+      "from": null
+    },
+    {
+      "title": "CSS Box Model and Positioning",
+      "phase": "foundations",
+      "summary": "Margins, padding, borders, and the static/relative/absolute/fixed/sticky positioning that confuses everyone.",
+      "from": "CSS Box Model and Positioning"
+    },
+    {
+      "title": "CSS Layout: Flexbox and Grid",
+      "phase": "foundations",
+      "summary": "Two layout systems that replaced floats — when to use each and how they compose.",
+      "from": "CSS Layout: Flexbox and Grid"
+    },
+    {
+      "title": "Responsive Design and Media Queries",
+      "phase": "foundations",
+      "summary": "Mobile-first methodology, breakpoints, and fluid typography for any screen.",
+      "from": "Responsive Design and Media Queries"
+    },
+    {
+      "title": "JavaScript Fundamentals",
+      "phase": "foundations",
+      "summary": "Types, scope, functions, closures — the language features behind every interactive page.",
+      "from": "JavaScript Fundamentals"
+    },
+    {
+      "title": "The DOM and Event Handling",
+      "phase": "foundations",
+      "summary": "How HTML becomes a tree of objects you can read, change, and listen to.",
+      "from": "The DOM and Event Handling"
+    },
+    {
+      "title": "Browser DevTools",
+      "phase": "foundations",
+      "summary": "Elements, console, network, performance, application — the daily debugging environment.",
+      "from": "Browser DevTools Mastery"
+    },
+    {
+      "title": "Modern JavaScript (ES6+)",
+      "phase": "foundations",
+      "summary": "Arrow functions, modules, destructuring, spread, and classes: the modern syntax you will read in every codebase.",
+      "from": "Modern JavaScript (ES6+)"
+    },
+    {
+      "title": "Asynchronous JavaScript and Promises",
+      "phase": "foundations",
+      "summary": "Callbacks, promises, async/await, and the event loop: how JavaScript waits for timers and network calls without freezing.",
+      "from": null
+    },
+    {
+      "title": "JSON, APIs, and fetch",
+      "phase": "foundations",
+      "summary": "Talking to a backend from the browser and handling the responses sanely.",
+      "from": "JSON, APIs, and fetch"
+    },
+    {
+      "title": "Command Line and Developer Setup",
+      "phase": "foundations",
+      "summary": "Using the terminal, a code editor, Node.js, and npm to create, install, and run real projects on your machine.",
+      "from": null
+    },
+    {
+      "title": "Git and GitHub for Developers",
+      "phase": "foundations",
+      "summary": "Branches, merges, rebases, PRs — the version-control workflow every team uses.",
+      "from": "Git and GitHub for Developers"
+    },
+    {
+      "title": "TypeScript Basics",
+      "phase": "core",
+      "summary": "Types, interfaces, generics, and the structural type system that catches bugs at compile time.",
+      "from": "TypeScript Basics"
+    },
+    {
+      "title": "Tailwind CSS and Utility-First Design",
+      "phase": "core",
+      "summary": "Why Tailwind feels weird at first and great after — composition, theming, and design systems.",
+      "from": "Tailwind CSS and Utility-First Design"
+    },
+    {
+      "title": "React Component Model",
+      "phase": "core",
+      "summary": "Composition, rendering, and the unidirectional data flow that makes React UIs reasonable.",
+      "from": "React Component Model"
+    },
+    {
+      "title": "State and Props in React",
+      "phase": "core",
+      "summary": "Where data lives, how it flows, and why lifting state up is usually the right move.",
+      "from": "State and Props in React"
+    },
+    {
+      "title": "React Hooks Deep Dive",
+      "phase": "core",
+      "summary": "useState, useEffect, useRef, useMemo — when each is the right tool and the closure pitfalls.",
+      "from": "React Hooks Deep Dive"
+    },
+    {
+      "title": "Controlled Inputs and Forms in React",
+      "phase": "core",
+      "summary": "Wiring inputs to React state, handling change and submit events, and showing clear error messages by hand.",
+      "from": "Forms, Validation, and Controlled Inputs"
+    },
+    {
+      "title": "useReducer and Complex State",
+      "phase": "core",
+      "summary": "When useState gets unwieldy — actions, reducers, and the dispatched-update pattern.",
+      "from": "useReducer and Complex State"
+    },
+    {
+      "title": "Custom Hooks",
+      "phase": "core",
+      "summary": "Extracting reusable stateful logic — composition over inheritance for the React era.",
+      "from": "Custom Hooks"
+    },
+    {
+      "title": "Context API and Prop Drilling",
+      "phase": "core",
+      "summary": "When passing props 5 levels deep gets ugly — and the cost of context updates.",
+      "from": "Context API and Prop Drilling"
+    },
+    {
+      "title": "Zustand, Redux, and State Management",
+      "phase": "core",
+      "summary": "Picking a state library — from simple stores to time-travel debugging.",
+      "from": "Zustand, Redux, and State Management"
+    },
+    {
+      "title": "React Router and Client-Side Routing",
+      "phase": "core",
+      "summary": "Routes, params, nested layouts, and the SPA navigation that keeps the URL meaningful.",
+      "from": "React Router and Client-Side Routing"
+    },
+    {
+      "title": "Form Libraries: React Hook Form and More",
+      "phase": "core",
+      "summary": "React Hook Form, Formik, native form actions — picking based on complexity and DX.",
+      "from": "Form Libraries"
+    },
+    {
+      "title": "Validation with Zod and Yup",
+      "phase": "core",
+      "summary": "Schema-driven validation — one source of truth for client + server + types.",
+      "from": "Validation with Zod and Yup"
+    },
+    {
+      "title": "Node.js Fundamentals",
+      "phase": "core",
+      "summary": "Event loop, modules, streams — the runtime that powers most JavaScript backends.",
+      "from": "Node.js Fundamentals"
+    },
+    {
+      "title": "HTTP Methods and REST Principles",
+      "phase": "core",
+      "summary": "GET, POST, PUT, DELETE — and the resource-oriented design that keeps APIs predictable.",
+      "from": "HTTP Methods and REST Principles"
+    },
+    {
+      "title": "Express.js Routing and Middleware",
+      "phase": "core",
+      "summary": "The minimal Node web framework — request lifecycle, error handling, and composing middleware.",
+      "from": "Express.js Routing and Middleware"
+    },
+    {
+      "title": "SQL Database Fundamentals",
+      "phase": "core",
+      "summary": "Tables, relationships, queries, indexes — the durable foundation under every backend.",
+      "from": "SQL Database Fundamentals"
+    },
+    {
+      "title": "Prisma and Modern ORMs",
+      "phase": "core",
+      "summary": "Type-safe queries, migrations, the n+1 problem, and the abstractions that pay off.",
+      "from": "Prisma and Modern ORMs"
+    },
+    {
+      "title": "Database Migrations",
+      "phase": "core",
+      "summary": "Schema versioning, forward + backward compatibility, and zero-downtime deploys.",
+      "from": "Database Migrations"
+    },
+    {
+      "title": "NoSQL Databases",
+      "phase": "core",
+      "summary": "MongoDB, Redis, DynamoDB — when document/key-value stores beat relational and where they don't.",
+      "from": "NoSQL Databases"
+    },
+    {
+      "title": "Authentication and Sessions",
+      "phase": "core",
+      "summary": "JWTs vs cookies, session storage, and the tradeoffs that affect security and UX.",
+      "from": "Authentication and Sessions"
+    },
+    {
+      "title": "File Uploads and Storage",
+      "phase": "core",
+      "summary": "Multipart, signed URLs, S3 + CloudFront — the architecture behind every avatar upload.",
+      "from": "File Uploads and Storage"
+    },
+    {
+      "title": "TanStack Query (React Query)",
+      "phase": "core",
+      "summary": "Server state vs client state — caching, refetching, optimistic updates done right.",
+      "from": "TanStack Query (React Query)"
+    },
+    {
+      "title": "Server-Side Rendering with Next.js",
+      "phase": "core",
+      "summary": "Why SSR matters for SEO and performance — and how the App Router structures it.",
+      "from": "Server-Side Rendering with Next.js"
+    },
+    {
+      "title": "Testing: Unit, Integration, E2E",
+      "phase": "core",
+      "summary": "The testing pyramid — what each layer catches and the tools that fit each role.",
+      "from": "Testing: Unit, Integration, E2E"
+    },
+    {
+      "title": "Deployment and CI/CD",
+      "phase": "core",
+      "summary": "From git push to live URL — pipelines, environments, and zero-downtime releases.",
+      "from": "Deployment and CI/CD"
+    },
+    {
+      "title": "CSS-in-JS Approaches",
+      "phase": "advanced",
+      "summary": "Styled-components, Emotion, vanilla-extract — the runtime/buildtime tradeoffs.",
+      "from": "CSS-in-JS Approaches"
+    },
+    {
+      "title": "GraphQL vs REST",
+      "phase": "advanced",
+      "summary": "Schema-first APIs, over/under-fetching solved, and the operational complexity tradeoffs.",
+      "from": "GraphQL vs REST"
+    },
+    {
+      "title": "WebSockets and Real-Time Communication",
+      "phase": "advanced",
+      "summary": "Duplex channels, Socket.IO, server-sent events — picking the right transport.",
+      "from": "WebSockets and Real-Time Communication"
+    },
+    {
+      "title": "Web Security: CORS, CSP, OWASP for Frontend",
+      "phase": "advanced",
+      "summary": "The headers and policies that prevent the browser from being a vector.",
+      "from": "Web Security: CORS, CSP, OWASP for Frontend"
+    },
+    {
+      "title": "Static Site Generation vs ISR",
+      "phase": "advanced",
+      "summary": "Build-time, request-time, revalidation — picking the right rendering for each page.",
+      "from": "Static Site Generation vs ISR"
+    },
+    {
+      "title": "Server Components and Streaming",
+      "phase": "advanced",
+      "summary": "React Server Components, Suspense boundaries, and the rendering model that changes data fetching.",
+      "from": "Server Components and Streaming"
+    },
+    {
+      "title": "Image Optimization in Next.js",
+      "phase": "advanced",
+      "summary": "next/image, AVIF/WebP, responsive sources, lazy loading — and the LCP wins.",
+      "from": "Image Optimization in Next.js"
+    },
+    {
+      "title": "Edge Functions and Edge Runtime",
+      "phase": "advanced",
+      "summary": "Geo-distributed compute — what runs at the edge, what doesn't, and the latency wins.",
+      "from": "Edge Functions and Edge Runtime"
+    },
+    {
+      "title": "Build Tools: Webpack, Vite, esbuild",
+      "phase": "advanced",
+      "summary": "Bundler architectures — what each prioritizes (DX, speed, output size) and when to switch.",
+      "from": "Build Tools: Webpack, Vite, esbuild"
+    },
+    {
+      "title": "Performance: Caching, CDNs, Code Splitting",
+      "phase": "advanced",
+      "summary": "Why your page is slow and the layered fixes — from network to bundle to runtime.",
+      "from": "Performance: Caching, CDNs, Code Splitting"
+    },
+    {
+      "title": "Web Performance Metrics: Core Web Vitals",
+      "phase": "advanced",
+      "summary": "LCP, INP, CLS — what Google measures and the techniques that move each needle.",
+      "from": "Web Performance Metrics: Core Web Vitals"
+    },
+    {
+      "title": "Accessibility Audit and WCAG",
+      "phase": "advanced",
+      "summary": "ARIA, keyboard nav, screen reader testing, color contrast — and axe-core in CI.",
+      "from": "Accessibility Audit and WCAG"
+    },
+    {
+      "title": "SEO Fundamentals for Modern Apps",
+      "phase": "advanced",
+      "summary": "Meta tags, sitemaps, structured data, and how SPAs solve the indexing problem.",
+      "from": "SEO Fundamentals for Modern Apps"
+    },
+    {
+      "title": "Internationalization (i18n)",
+      "phase": "advanced",
+      "summary": "Locale routing, message catalogs, RTL support, and the surprising complexity of plurals.",
+      "from": "Internationalization (i18n)"
+    },
+    {
+      "title": "Progressive Web Apps (PWAs)",
+      "phase": "advanced",
+      "summary": "Manifests, install prompts, app-like behavior — and the iOS limitations.",
+      "from": "Progressive Web Apps (PWAs)"
+    },
+    {
+      "title": "Service Workers and Offline Support",
+      "phase": "advanced",
+      "summary": "Cache strategies, background sync, push notifications — making the web work without network.",
+      "from": "Service Workers and Offline Support"
+    },
+    {
+      "title": "Monitoring and Observability",
+      "phase": "advanced",
+      "summary": "Logs, metrics, traces — the three pillars and the OpenTelemetry standard tying them together.",
+      "from": "Monitoring and Observability"
+    },
+    {
+      "title": "Message Queues and Event-Driven Design",
+      "phase": "advanced",
+      "summary": "Kafka, RabbitMQ, SQS — decoupling services and the at-least-once / exactly-once spectrum.",
+      "from": "Message Queues and Event-Driven Design"
+    },
+    {
+      "title": "Database Sharding and Replication",
+      "phase": "advanced",
+      "summary": "Horizontal scaling, read replicas, and the consistency tradeoffs that come with each.",
+      "from": "Database Sharding and Replication"
+    },
+    {
+      "title": "Microservices and Backend Architecture",
+      "phase": "advanced",
+      "summary": "When monoliths break, when microservices break worse, and the modular monolith middle ground.",
+      "from": "Microservices and Backend Architecture"
+    },
+    {
+      "title": "Micro-Frontends",
+      "phase": "advanced",
+      "summary": "Splitting a frontend into independently-shipped pieces — when it's worth the integration cost.",
+      "from": "Micro-Frontends"
+    }
+  ]
+}

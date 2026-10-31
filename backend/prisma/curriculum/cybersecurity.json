@@ -1,0 +1,401 @@
+{
+  "slug": "cybersecurity",
+  "topics": [
+    {
+      "title": "What Is Cybersecurity?",
+      "phase": "foundations",
+      "summary": "What security professionals protect, who attacks and why, and the main career paths from SOC analyst to penetration tester.",
+      "from": null
+    },
+    {
+      "title": "The CIA Triad",
+      "phase": "foundations",
+      "summary": "Confidentiality, Integrity, Availability — the three properties every security control protects.",
+      "from": "The CIA Triad"
+    },
+    {
+      "title": "Threats, Vulnerabilities, and Risk",
+      "phase": "foundations",
+      "summary": "How attackers, weaknesses, and impact combine into the risk equation that drives every decision.",
+      "from": "Threats, Vulnerabilities, and Risk"
+    },
+    {
+      "title": "Common Attack Vectors",
+      "phase": "foundations",
+      "summary": "Phishing, malware, social engineering, and credential reuse — the everyday ways breaches start.",
+      "from": "Common Attack Vectors"
+    },
+    {
+      "title": "Security Mindset and Defense in Depth",
+      "phase": "foundations",
+      "summary": "Thinking like an attacker and layering independent controls so that no single failure becomes a breach.",
+      "from": "Security Mindset and Defense in Depth"
+    },
+    {
+      "title": "Ethics, Law, and Responsible Hacking",
+      "phase": "foundations",
+      "summary": "Authorization, scope, computer-misuse laws, and responsible disclosure: the rules that separate security testing from crime.",
+      "from": null
+    },
+    {
+      "title": "Operating System Security Basics",
+      "phase": "foundations",
+      "summary": "Users, groups, permissions, capabilities — the OS-level model behind every privilege escalation.",
+      "from": "Operating System Security Basics"
+    },
+    {
+      "title": "Linux Command Line Essentials",
+      "phase": "foundations",
+      "summary": "Navigating files, permissions, processes, and logs from a shell, the everyday interface of almost every security tool.",
+      "from": null
+    },
+    {
+      "title": "Networking Basics: TCP/IP, DNS, and ARP",
+      "phase": "foundations",
+      "summary": "How packets move from one machine to another, what ports are, and how TCP/IP, UDP, DNS, and ARP work together.",
+      "from": "Network Protocols Overview"
+    },
+    {
+      "title": "How Web Applications Work",
+      "phase": "foundations",
+      "summary": "Browsers, servers, HTTP requests and responses, cookies, and databases: the moving parts that web attacks target.",
+      "from": null
+    },
+    {
+      "title": "Building a Safe Home Lab",
+      "phase": "foundations",
+      "summary": "Setting up virtual machines, Kali Linux, and deliberately vulnerable targets so you can practise attacks legally and safely.",
+      "from": null
+    },
+    {
+      "title": "Python Scripting for Security",
+      "phase": "foundations",
+      "summary": "Writing small Python scripts to parse logs, call APIs, and automate scans instead of repeating manual steps.",
+      "from": null
+    },
+    {
+      "title": "Cryptography Basics",
+      "phase": "foundations",
+      "summary": "What encryption is, why it needs keys, and the difference between symmetric and asymmetric approaches.",
+      "from": "Cryptography Basics"
+    },
+    {
+      "title": "Symmetric Encryption: AES & ChaCha20",
+      "phase": "foundations",
+      "summary": "Block ciphers vs stream ciphers, modes (CBC, GCM), and how the same key encrypts and decrypts.",
+      "from": "Symmetric Encryption: AES & ChaCha20"
+    },
+    {
+      "title": "Asymmetric Encryption: RSA & ECC",
+      "phase": "foundations",
+      "summary": "Public/private keypairs, key exchange, and why elliptic curves give the same security with smaller keys.",
+      "from": "Asymmetric Encryption: RSA & ECC"
+    },
+    {
+      "title": "Hashing and Digital Signatures",
+      "phase": "foundations",
+      "summary": "One-way functions, integrity checks, and how signatures prove authenticity without revealing secrets.",
+      "from": "Hashing and Digital Signatures"
+    },
+    {
+      "title": "Random Numbers and Entropy",
+      "phase": "foundations",
+      "summary": "PRNGs vs CSPRNGs, why /dev/urandom matters, and how weak randomness cracks crypto.",
+      "from": "Random Numbers and Entropy"
+    },
+    {
+      "title": "Authentication vs Authorization",
+      "phase": "foundations",
+      "summary": "Proving who you are versus what you're allowed to do — and why mixing them up causes most access bugs.",
+      "from": "Authentication vs Authorization"
+    },
+    {
+      "title": "Password Storage: bcrypt, Argon2, Salting",
+      "phase": "foundations",
+      "summary": "Why you never store passwords plain or with fast hashes — and how slow hashes + per-user salts defeat rainbow tables.",
+      "from": "Password Storage: bcrypt, Argon2, Salting"
+    },
+    {
+      "title": "Multi-Factor Authentication",
+      "phase": "foundations",
+      "summary": "Something you know/have/are — TOTP, U2F/WebAuthn, push notifications, and SMS's many problems.",
+      "from": "Multi-Factor Authentication"
+    },
+    {
+      "title": "TLS, HTTPS, and Public Key Infrastructure",
+      "phase": "core",
+      "summary": "How browsers and servers establish encrypted, authenticated channels using certificates and CAs.",
+      "from": "TLS, HTTPS, and Public Key Infrastructure"
+    },
+    {
+      "title": "Network Attacks and Segmentation",
+      "phase": "core",
+      "summary": "Sniffing, spoofing, ARP poisoning, and man-in-the-middle attacks, and how segmentation limits how far an intruder can move.",
+      "from": "Network Fundamentals for Security"
+    },
+    {
+      "title": "Firewall Types and Rule Design",
+      "phase": "core",
+      "summary": "Stateful vs stateless, packet vs application, and the principle of explicit deny.",
+      "from": "Firewall Types and Rule Design"
+    },
+    {
+      "title": "VPNs and Encrypted Tunnels",
+      "phase": "core",
+      "summary": "IPsec, WireGuard, OpenVPN — what each protects and the threat models they don't address.",
+      "from": "VPNs and Encrypted Tunnels"
+    },
+    {
+      "title": "Wireless Network Security",
+      "phase": "core",
+      "summary": "WEP/WPA2/WPA3, evil twin attacks, and why public Wi-Fi is hostile by default.",
+      "from": "Wireless Network Security"
+    },
+    {
+      "title": "Intrusion Detection and Prevention (IDS/IPS)",
+      "phase": "core",
+      "summary": "Signature vs anomaly detection, where to place sensors, and the noise problem.",
+      "from": "Intrusion Detection and Prevention (IDS/IPS)"
+    },
+    {
+      "title": "Identity and Access Management (IAM)",
+      "phase": "core",
+      "summary": "Roles, least privilege, MFA, and the lifecycle of an identity from provisioning to revocation.",
+      "from": "Identity and Access Management (IAM)"
+    },
+    {
+      "title": "Access Control Models: RBAC vs ABAC",
+      "phase": "core",
+      "summary": "Roles vs attributes — when each fits, and why most apps end up combining them.",
+      "from": "Access Control Models: RBAC vs ABAC"
+    },
+    {
+      "title": "OAuth 2.0 and OpenID Connect",
+      "phase": "core",
+      "summary": "Authorization vs authentication, flows (auth code, PKCE), scopes — the modern delegated-access standard.",
+      "from": "OAuth 2.0 and OpenID Connect"
+    },
+    {
+      "title": "Single Sign-On (SSO)",
+      "phase": "core",
+      "summary": "SAML, OIDC, and the federation patterns enterprises use to avoid 50 passwords per employee.",
+      "from": "Single Sign-On (SSO)"
+    },
+    {
+      "title": "OWASP Top 10 Web Vulnerabilities",
+      "phase": "core",
+      "summary": "The most common web app weaknesses and the patterns that prevent them.",
+      "from": "OWASP Top 10 Web Vulnerabilities"
+    },
+    {
+      "title": "Input Validation and Sanitization",
+      "phase": "core",
+      "summary": "Allowlist vs blocklist, why output encoding is non-negotiable, and where validation belongs.",
+      "from": "Input Validation and Sanitization"
+    },
+    {
+      "title": "SQL Injection and Prevention",
+      "phase": "core",
+      "summary": "How untrusted input becomes executable SQL, and why parameterized queries are the durable fix.",
+      "from": "SQL Injection and Prevention"
+    },
+    {
+      "title": "Cross-Site Scripting (XSS)",
+      "phase": "core",
+      "summary": "When attacker JavaScript runs in your users' browsers — reflected, stored, and DOM-based variants.",
+      "from": "Cross-Site Scripting (XSS)"
+    },
+    {
+      "title": "Cross-Site Request Forgery (CSRF)",
+      "phase": "core",
+      "summary": "When the user's browser is the attack tool — and the SameSite cookies + token patterns that stop it.",
+      "from": "Cross-Site Request Forgery (CSRF)"
+    },
+    {
+      "title": "Session Management Best Practices",
+      "phase": "core",
+      "summary": "Cookie flags, rotation, idle/absolute timeouts, and the lifecycle of a secure session.",
+      "from": "Session Management Best Practices"
+    },
+    {
+      "title": "JSON Web Tokens (JWT) Security",
+      "phase": "core",
+      "summary": "Signing vs encryption, the alg:none disaster, key rotation, and when JWTs are the wrong tool.",
+      "from": "JSON Web Tokens (JWT) Security"
+    },
+    {
+      "title": "API Security and Rate Limiting",
+      "phase": "core",
+      "summary": "Throttling, abuse prevention, API keys vs JWTs, and the OWASP API Top 10.",
+      "from": "API Security and Rate Limiting"
+    },
+    {
+      "title": "Secure Coding Practices",
+      "phase": "core",
+      "summary": "The repeating patterns — input validation, output encoding, least privilege — across every language.",
+      "from": "Secure Coding Practices"
+    },
+    {
+      "title": "Phishing and Social Engineering Defense",
+      "phase": "core",
+      "summary": "Why technical controls alone fail — and the user training + email auth (SPF/DKIM/DMARC) that helps.",
+      "from": "Phishing and Social Engineering Defense"
+    },
+    {
+      "title": "Endpoint Detection and Response (EDR)",
+      "phase": "core",
+      "summary": "Beyond antivirus — telemetry collection, behavioral detection, and rapid containment.",
+      "from": "Endpoint Detection and Response (EDR)"
+    },
+    {
+      "title": "Logging and Audit Trails",
+      "phase": "core",
+      "summary": "What to log, what NOT to log, log integrity, and why your future incident response depends on it.",
+      "from": "Logging and Audit Trails"
+    },
+    {
+      "title": "Vulnerability Scanning Tools",
+      "phase": "core",
+      "summary": "Nessus, OpenVAS, Burp — what each finds, what each misses, and how to triage results.",
+      "from": "Vulnerability Scanning Tools"
+    },
+    {
+      "title": "Patch Management",
+      "phase": "core",
+      "summary": "The boring discipline that prevents most breaches — and the change-management tradeoffs.",
+      "from": "Patch Management"
+    },
+    {
+      "title": "Data Loss Prevention (DLP)",
+      "phase": "core",
+      "summary": "Classifying sensitive data and the controls that stop it from leaving the perimeter.",
+      "from": "Data Loss Prevention (DLP)"
+    },
+    {
+      "title": "Threat Modeling with STRIDE",
+      "phase": "advanced",
+      "summary": "Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation — a structured way to find threats early.",
+      "from": "Threat Modeling with STRIDE"
+    },
+    {
+      "title": "Zero Trust Architecture",
+      "phase": "advanced",
+      "summary": "Never trust, always verify — assume breach and authenticate every request, every time.",
+      "from": "Zero Trust Architecture"
+    },
+    {
+      "title": "Compliance Frameworks: SOC 2, ISO 27001, PCI",
+      "phase": "advanced",
+      "summary": "SOC 2, ISO 27001, PCI-DSS, HIPAA — what each requires and how they overlap.",
+      "from": "Compliance Frameworks"
+    },
+    {
+      "title": "GDPR and Privacy Regulations",
+      "phase": "advanced",
+      "summary": "Data subject rights, lawful basis, breach notification, and the cross-border data flow rules.",
+      "from": "GDPR and Privacy Regulations"
+    },
+    {
+      "title": "Cloud Security and Shared Responsibility",
+      "phase": "advanced",
+      "summary": "What the cloud provider secures vs what you secure — and the misconfigurations that cause most breaches.",
+      "from": "Cloud Security and Shared Responsibility"
+    },
+    {
+      "title": "Container Security: Docker",
+      "phase": "advanced",
+      "summary": "Image scanning, minimal base images, runtime restrictions, and the daemon trust problem.",
+      "from": "Container Security: Docker"
+    },
+    {
+      "title": "Kubernetes Security Hardening",
+      "phase": "advanced",
+      "summary": "RBAC, network policies, pod security standards, secrets management — and the misconfig defaults.",
+      "from": "Kubernetes Security Hardening"
+    },
+    {
+      "title": "Supply Chain Security",
+      "phase": "advanced",
+      "summary": "SolarWinds, Log4Shell, dependency confusion — and SBOMs + signing as the modern response.",
+      "from": "Supply Chain Security"
+    },
+    {
+      "title": "SIEM and Security Operations Centers",
+      "phase": "advanced",
+      "summary": "Splunk, Elastic, Sentinel — collecting telemetry and the alert-fatigue problem at scale.",
+      "from": "SIEM and Security Operations Centers"
+    },
+    {
+      "title": "Threat Intelligence and OSINT",
+      "phase": "advanced",
+      "summary": "MITRE ATT&CK, IoCs, threat feeds, and turning intel into actionable defenses.",
+      "from": "Threat Intelligence and OSINT"
+    },
+    {
+      "title": "Incident Response and Forensics",
+      "phase": "advanced",
+      "summary": "Detect, contain, eradicate, recover — and the evidence chain that survives in court.",
+      "from": "Incident Response and Forensics"
+    },
+    {
+      "title": "Malware Analysis",
+      "phase": "advanced",
+      "summary": "Static vs dynamic analysis, sandboxes, and the indicators-of-compromise that show up in IR.",
+      "from": "Malware Analysis Basics"
+    },
+    {
+      "title": "Reverse Engineering",
+      "phase": "advanced",
+      "summary": "Disassemblers, decompilers, and reading binaries to understand what untrusted code does.",
+      "from": "Reverse Engineering Basics"
+    },
+    {
+      "title": "Penetration Testing Methodology",
+      "phase": "advanced",
+      "summary": "Recon, scanning, exploitation, post-exploitation, reporting — how authorized attackers work.",
+      "from": "Penetration Testing Methodology"
+    },
+    {
+      "title": "Web Application Penetration Testing",
+      "phase": "advanced",
+      "summary": "Burp Suite workflows, manual testing patterns, and the OWASP Testing Guide playbook.",
+      "from": "Web Application Penetration Testing"
+    },
+    {
+      "title": "Network Penetration Testing",
+      "phase": "advanced",
+      "summary": "Nmap, Metasploit, lateral movement, privilege escalation — the attacker's network playbook.",
+      "from": "Network Penetration Testing"
+    },
+    {
+      "title": "Active Directory Security",
+      "phase": "advanced",
+      "summary": "Kerberos, Golden Tickets, BloodHound — and why AD is the crown jewel in most enterprise breaches.",
+      "from": "Active Directory Security"
+    },
+    {
+      "title": "Binary Exploitation and Buffer Overflows",
+      "phase": "advanced",
+      "summary": "Stack smashing, ROP chains, and the mitigations (ASLR, stack canaries, NX) that complicate them.",
+      "from": "Binary Exploitation and Buffer Overflows"
+    },
+    {
+      "title": "Bug Bounty Hunting",
+      "phase": "advanced",
+      "summary": "Reporting workflows, scope rules, payouts, and building a portfolio in HackerOne / Bugcrowd.",
+      "from": "Bug Bounty Hunting"
+    },
+    {
+      "title": "Red Team vs Blue Team Operations",
+      "phase": "advanced",
+      "summary": "Adversary emulation, purple-team exercises, and the feedback loop that hardens orgs.",
+      "from": "Red Team vs Blue Team Operations"
+    },
+    {
+      "title": "AI/ML Security and Adversarial Attacks",
+      "phase": "advanced",
+      "summary": "Model evasion, data poisoning, prompt injection — the new attack surface AI systems introduce.",
+      "from": "AI/ML Security and Adversarial Attacks"
+    }
+  ]
+}

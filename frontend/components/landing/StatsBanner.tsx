@@ -30,7 +30,7 @@ const STATS: Stat[] = [
   },
   {
     icon: Layers,
-    value: 540,
+    value: 580,
     suffix: "+",
     label: "Curated topics",
     hint: "Across nine full roadmaps",
