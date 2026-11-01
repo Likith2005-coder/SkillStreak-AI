@@ -9,13 +9,14 @@
  * under reduced motion everything is simply there.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { Flame, Snowflake, Target } from "lucide-react";
 import { fetchHeatmap, type Streak, type TodayProgress } from "@/lib/api";
 import { GoalRing, WeekBars, goalMessage } from "@/components/playground/DailyGoal";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+import { Flare, GoalComet } from "@/components/dashboard/cinema";
 import { cn } from "@/lib/utils";
 
 type Day = { key: string; label: string; active: boolean; today: boolean };
@@ -55,7 +56,18 @@ function useStreakWeek() {
   return week;
 }
 
-export function TodayPanel({ today, streak }: { today: TodayProgress | null; streak: Streak | null }) {
+export function TodayPanel({
+  today,
+  streak,
+  className,
+  style,
+}: {
+  today: TodayProgress | null;
+  streak: Streak | null;
+  /** Lets the dashboard's opening shot time this panel's entrance. */
+  className?: string;
+  style?: CSSProperties;
+}) {
   const met = !!today && today.goalXp > 0 && today.xpToday >= today.goalXp;
   return (
     <section
@@ -63,7 +75,9 @@ export function TodayPanel({ today, streak }: { today: TodayProgress | null; str
       className={cn(
         "card-chunky spotlight flex h-full flex-col p-5 [--spot:var(--primary)] sm:p-6",
         met && "glow-primary",
+        className,
       )}
+      style={style}
     >
       <div className="flex items-center justify-between gap-3">
         <h2 id="today-h" className="label-mono flex items-center gap-1.5 text-primary">
@@ -109,7 +123,11 @@ function GoalBlock({ today }: { today: TodayProgress | null }) {
   ].filter(Boolean);
   return (
     <div className="mt-4 flex items-center gap-5">
-      <GoalRing xp={today.xpToday} goal={today.goalXp} size={104} />
+      {/* overflow-visible: the ring's glow was being clipped square at the SVG box. */}
+      <div className="relative shrink-0 [&_svg]:overflow-visible">
+        <GoalRing xp={today.xpToday} goal={today.goalXp} size={104} />
+        <GoalComet pct={today.goalXp > 0 ? Math.min(1, today.xpToday / today.goalXp) : 0} size={104} />
+      </div>
       <div className="min-w-0">
         <p className="font-display text-xl leading-tight text-foreground [text-wrap:balance]">
           <span className="sr-only">
@@ -160,7 +178,9 @@ function StreakBlock({ streak }: { streak: Streak | null }) {
         <div className="min-w-0 flex-1">
           <p className="flex items-baseline gap-2">
             <span className={cn("font-display text-[1.75rem] tabular-nums leading-none", alive ? "text-energy" : "text-foreground")}>
-              {shown}
+              <Flare shown={shown} target={days} color="var(--energy)">
+                {shown}
+              </Flare>
             </span>
             <span className="text-sm font-medium text-foreground">day streak</span>
           </p>

@@ -4,10 +4,15 @@
  * The SignalBot as a character: an idle bob over a soft glow, a live bot
  * that watches the cursor and reacts (SignalBotLive), and a sleek speech
  * bubble that says something about where the learner actually is.
+ *
+ * When the bot says a reactive line ("Let's go!", "Boop!", a bus line…) it
+ * briefly takes over the bubble: the normal content fades out but keeps its
+ * size (so nothing shifts), the line pops in on top, and after ~2.5s the
+ * normal content returns. Without a bubble, the bot shows its own floating one.
  */
 
-import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { SignalBotLive } from "@/components/3d/SignalBotLive";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
@@ -19,6 +24,7 @@ export function Mascot({
   size = 120,
   side = "right",
   className,
+  quiet,
 }: {
   message?: string;
   /** Custom bubble content (e.g. a rotating tip); replaces `message`. */
@@ -28,8 +34,15 @@ export function Mascot({
   /** Which side of the bot the speech bubble sits on. */
   side?: "left" | "right";
   className?: string;
+  /** The bot never says reactive lines. */
+  quiet?: boolean;
 }) {
   const reduce = useReducedMotionSafe();
+  const hasBubble = !!(bubble || message);
+  const [quip, setQuip] = useState<{ id: number; text: string } | null>(null);
+  const n = useRef(0);
+  const onSay = useCallback((text: string | null) => setQuip(text ? { id: ++n.current, text } : null), []);
+
   return (
     <div className={cn("flex items-end gap-3", side === "left" && "flex-row-reverse", className)}>
       <div className="relative shrink-0" style={{ width: size, height: size }}>
@@ -39,10 +52,10 @@ export function Mascot({
           className="absolute inset-x-[10%] bottom-0 h-1/3 rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-3)/0.35),transparent)] blur-md"
         />
         <div className="anim-bob-6 relative h-full w-full">
-          <SignalBotLive className="h-full w-full" />
+          <SignalBotLive className="h-full w-full" onSay={hasBubble ? onSay : undefined} quiet={quiet} />
         </div>
       </div>
-      {(bubble || message) && (
+      {hasBubble && (
         <motion.div
           key={bubble ? "bubble" : message}
           initial={reduce ? false : { opacity: 0, scale: 0.9, y: 6 }}
@@ -54,7 +67,30 @@ export function Mascot({
             bubbleClassName,
           )}
         >
-          {bubble ?? message}
+          <div
+            className={cn(
+              "transition-opacity duration-200 motion-reduce:transition-none",
+              quip && "pointer-events-none opacity-0",
+            )}
+          >
+            {bubble ?? message}
+          </div>
+          {/* A reactive line sits on top of the normal content for a moment. */}
+          <AnimatePresence>
+            {quip && (
+              <motion.p
+                key={quip.id}
+                aria-hidden
+                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.6, y: 6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: reduce ? 0 : 0.15 } }}
+                transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 24 }}
+                className="pointer-events-none absolute inset-0 grid place-items-center px-4 text-center text-base font-semibold text-foreground [text-wrap:balance]"
+              >
+                {quip.text}
+              </motion.p>
+            )}
+          </AnimatePresence>
           {/* bubble tail */}
           <span
             aria-hidden

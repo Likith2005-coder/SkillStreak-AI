@@ -7,27 +7,92 @@
  * the border beam.
  */
 
+import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
 import { Link } from "next-view-transitions";
 import { ArrowRight, BookOpen, Compass, Gem, ListChecks, Map as MapIcon, Sparkles } from "lucide-react";
 import type { ProgressOverview } from "@/lib/api";
 import { PathPreview } from "@/components/playground/PathPreview";
 import { Button } from "@/components/ui/button";
 import { useCountUp } from "@/hooks/useCountUp";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+import { Flare } from "@/components/dashboard/cinema";
 import { cn } from "@/lib/utils";
 
-export function ContinueHero({ overview }: { overview: ProgressOverview | null }) {
+/**
+ * `ignite` (the dashboard's opening shot): the panel scales in, its border
+ * beam fades up and a light pool blooms inside, timed by `--d` / `--d-ignite`.
+ */
+export function ContinueHero({
+  overview,
+  ignite,
+  delayMs = 0,
+  igniteMs = 0,
+}: {
+  overview: ProgressOverview | null;
+  ignite?: boolean;
+  delayMs?: number;
+  igniteMs?: number;
+}) {
+  const reduce = useReducedMotionSafe();
+  const pool = useRef<HTMLDivElement>(null);
+  const raf = useRef(0);
+  const at = useRef({ x: 0, y: 0 });
+
+  // Hover: the top-right light pool leans toward the cursor (desktop mouse
+  // only; transform-only, eased by a CSS transition, one write per frame).
+  const onMove = (e: PointerEvent<HTMLElement>) => {
+    if (reduce || e.pointerType !== "mouse") return;
+    const host = e.currentTarget;
+    at.current = { x: e.clientX, y: e.clientY };
+    if (raf.current) return;
+    raf.current = requestAnimationFrame(() => {
+      raf.current = 0;
+      const el = pool.current;
+      if (!el) return;
+      const r = host.getBoundingClientRect();
+      // The pool's resting centre is near the top-right corner.
+      const homeX = r.right - 0.12 * r.width;
+      const homeY = r.top + 0.05 * r.height;
+      const dx = (at.current.x - homeX) * 0.55;
+      const dy = (at.current.y - homeY) * 0.55;
+      el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.08)`;
+    });
+  };
+  const onLeave = () => {
+    if (raf.current) cancelAnimationFrame(raf.current);
+    raf.current = 0;
+    if (pool.current) pool.current.style.transform = "";
+  };
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
   const totals = overview?.totals;
   const pct =
     totals && totals.topicsAvailable > 0 ? Math.round((totals.topicsCompleted / totals.topicsAvailable) * 100) : 0;
   const rec = overview?.recommended;
 
   return (
-    <section aria-label="Continue learning" className="card-chunky border-beam h-full">
+    <section
+      aria-label="Continue learning"
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      className={cn("card-chunky border-beam h-full", ignite && "cine cine-hero cine-ignite")}
+      style={
+        ignite
+          ? ({ ["--d" as string]: `${delayMs}ms`, ["--d-ignite" as string]: `${igniteMs}ms` } as CSSProperties)
+          : undefined
+      }
+    >
       {/* Light pools, clipped inside the panel (the panel itself can't clip:
           the border beam lives just outside its edge). */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
         <div className="absolute -bottom-32 -left-24 h-80 w-[30rem] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-4)/0.14),transparent)] blur-2xl" />
-        <div className="absolute -right-20 -top-28 h-80 w-[28rem] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.2),transparent)] blur-2xl" />
+        <div
+          ref={pool}
+          className="absolute -right-20 -top-28 h-80 w-[28rem] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.2),transparent)] blur-2xl transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+        />
+        {ignite && (
+          <div className="cine-bloom absolute left-[8%] top-[-30%] h-[130%] w-[84%] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.32),hsl(var(--aurora-3)/0.10)_55%,transparent)]" />
+        )}
         <div className="grid-faint absolute inset-0 opacity-60" />
       </div>
 
@@ -122,9 +187,9 @@ function HeroStats({ pct, done, quizzes }: { pct: number; done: number; quizzes:
   const shownDone = useCountUp(done, 1100);
   const shownQuiz = useCountUp(quizzes, 1100);
   const stats = [
-    { label: "Complete", value: `${shownPct}%`, lit: true },
-    { label: "Topics", value: shownDone.toLocaleString(), lit: false },
-    { label: "Quizzes", value: shownQuiz.toLocaleString(), lit: false },
+    { label: "Complete", value: `${shownPct}%`, shown: shownPct, target: pct, lit: true },
+    { label: "Topics", value: shownDone.toLocaleString(), shown: shownDone, target: done, lit: false },
+    { label: "Quizzes", value: shownQuiz.toLocaleString(), shown: shownQuiz, target: quizzes, lit: false },
   ];
   return (
     <dl className="grid grid-cols-3 divide-x divide-white/[0.06] border-t border-white/[0.06] pt-5">
@@ -137,7 +202,9 @@ function HeroStats({ pct, done, quizzes }: { pct: number; done: number; quizzes:
               s.lit ? "text-primary text-glow" : "text-foreground",
             )}
           >
-            {s.value}
+            <Flare shown={s.shown} target={s.target}>
+              {s.value}
+            </Flare>
           </dd>
         </div>
       ))}

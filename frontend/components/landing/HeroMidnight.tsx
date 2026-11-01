@@ -114,16 +114,25 @@ export function HeroMidnight() {
         >
           {/* SignalBot hovers at the window's corner and watches the visitor:
               follows the cursor, glances at the buttons, boings when clicked. */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 24, scale: 0.6 }}
-            animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
-            transition={{ type: "spring", duration: 0.7, bounce: 0.35, delay: reduce ? 0 : 1.1 }}
-            className="absolute -top-[5.5rem] right-4 z-20 h-28 w-28 sm:-top-[7.5rem] sm:right-12 sm:h-36 sm:w-36"
-          >
-            <div className="anim-bob-6 h-full w-full">
+          {/* Reduced motion: a plain, visible wrapper. The preference is only
+              known after hydration, and an entrance that started hidden could
+              be left stranded at opacity 0. */}
+          {reduce ? (
+            <div className="absolute -top-[5.5rem] right-4 z-20 h-28 w-28 sm:-top-[7.5rem] sm:right-12 sm:h-36 sm:w-36">
               <SignalBotLive className="h-full w-full" label="SignalBot, your AI tutor. Click me!" />
             </div>
-          </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.6 }}
+              animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
+              transition={{ type: "spring", duration: 0.7, bounce: 0.35, delay: 1.1 }}
+              className="absolute -top-[5.5rem] right-4 z-20 h-28 w-28 sm:-top-[7.5rem] sm:right-12 sm:h-36 sm:w-36"
+            >
+              <div className="anim-bob-6 h-full w-full">
+                <SignalBotLive className="h-full w-full" label="SignalBot, your AI tutor. Click me!" />
+              </div>
+            </motion.div>
+          )}
           <motion.div
             style={reduce ? undefined : { rotateX, scale, y: lift, transformOrigin: "50% 0%" }}
             className="will-change-transform"

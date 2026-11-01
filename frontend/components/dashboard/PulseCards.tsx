@@ -16,6 +16,7 @@ import { fetchLeaderboard, type LeaderboardEntry, type ReviewList } from "@/lib/
 import { Button } from "@/components/ui/button";
 import { levelForXp } from "@/lib/level";
 import { useCountUp } from "@/hooks/useCountUp";
+import { Flare } from "@/components/dashboard/cinema";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { useUserStore } from "@/store/userStore";
 import { cn } from "@/lib/utils";
@@ -132,7 +133,11 @@ export function ReviewPulse({ review }: { review: ReviewList | null }) {
       }
     >
       <p className="flex items-baseline gap-2">
-        <span className="font-display text-[2.5rem] tabular-nums leading-none text-foreground">{count}</span>
+        <span className="font-display text-[2.5rem] tabular-nums leading-none text-foreground">
+          <Flare shown={count} target={review.total} color="var(--grape)">
+            {count}
+          </Flare>
+        </span>
         <span className="text-sm font-medium text-foreground">
           question{review.total === 1 ? "" : "s"} to fix
         </span>
@@ -271,7 +276,9 @@ export function LeaguePulse() {
           <p className="flex items-baseline gap-2">
             <span className="font-display text-[2.5rem] tabular-nums leading-none text-foreground">
               <span className="text-muted-foreground">#</span>
-              {rank}
+              <Flare shown={rank} target={mine.rank} color="var(--xp)">
+                {rank}
+              </Flare>
             </span>
             <span className="text-sm font-medium text-foreground">your rank</span>
           </p>

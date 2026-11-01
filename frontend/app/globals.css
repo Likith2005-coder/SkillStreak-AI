@@ -554,6 +554,170 @@
     .term-cursor::after { animation: none; }
   }
 
+  /* ── Dashboard cinematography (components/dashboard/cinema.tsx) ──
+     The opening shot is a set of one-shot keyframes on `.cine-*` classes.
+     Each animates FROM its hidden state to the element's resting style, so
+     when the shot ends (or is skipped) the classes are dropped and nothing
+     jumps. Transform / opacity, plus filter and clip-path on small text. */
+  .cine {
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-delay: var(--d, 0ms);
+  }
+  .cine-rise { animation-name: cine-rise; }
+  .cine-fade { animation-name: cine-fade; animation-duration: 900ms; }
+  .cine-word { animation-name: cine-word; animation-duration: 900ms; }
+  .cine-name {
+    animation-name: cine-word, cine-name-glow;
+    animation-duration: 900ms, 1500ms;
+  }
+  .cine-type {
+    animation-name: cine-type;
+    animation-duration: 560ms;
+    animation-timing-function: steps(20, end);
+  }
+  .cine-hero { animation-name: cine-hero; animation-duration: 900ms; }
+  .cine-ignite::before {
+    animation:
+      beam-spin 6s linear infinite,
+      cine-beam-in 1200ms cubic-bezier(0.22, 1, 0.36, 1) var(--d-ignite, 900ms) both;
+  }
+  .cine-bloom {
+    animation: cine-bloom 1200ms cubic-bezier(0.22, 1, 0.36, 1) var(--d-ignite, 900ms) both;
+    will-change: transform, opacity;
+  }
+  .cine-cascade > * {
+    animation: cine-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 90ms);
+  }
+  .cine-cascade > :nth-child(2) { --i: 1; }
+  .cine-cascade > :nth-child(3) { --i: 2; }
+  .cine-cascade > :nth-child(4) { --i: 3; }
+
+  @keyframes cine-rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } }
+  @keyframes cine-fade { from { opacity: 0; } }
+  @keyframes cine-word {
+    from { opacity: 0; transform: translate3d(0, 0.42em, 0); filter: blur(10px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes cine-name-glow {
+    0% { text-shadow: 0 0 0 transparent; }
+    45% { text-shadow: 0 0 40px hsl(var(--primary) / 0.95), 0 0 10px hsl(var(--primary) / 0.6); }
+    100% { text-shadow: 0 0 24px hsl(var(--primary) / 0.45); }
+  }
+  @keyframes cine-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes cine-hero { from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.98); } }
+  @keyframes cine-beam-in { from { opacity: 0; } }
+  @keyframes cine-bloom {
+    0% { opacity: 0; transform: scale(0.6); }
+    35% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+
+  /* The fade up from black: above the page and nav, never interactive. */
+  .cine-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: hsl(230 30% 2%);
+    pointer-events: none;
+    animation: cine-curtain 900ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+  }
+  @keyframes cine-curtain { to { opacity: 0; visibility: hidden; } }
+  /* Waiting for data: every opening keyframe holds its first frame. */
+  .cine-wait .cine,
+  .cine-wait .cine-cascade > *,
+  .cine-wait .cine-sweep,
+  .cine-wait .cine-bloom,
+  .cine-wait .cine-ignite::before,
+  .cine-curtain.is-held { animation-play-state: paused; }
+
+  /* One diagonal band of aurora light crossing the top of the page, once. */
+  .cine-sweep {
+    position: absolute;
+    top: -25%;
+    left: 0;
+    width: 55%;
+    height: 150%;
+    background: linear-gradient(100deg, transparent 8%, hsl(var(--aurora-1) / 0.2) 40%, hsl(var(--aurora-3) / 0.16) 54%, hsl(var(--aurora-4) / 0.07) 64%, transparent 86%);
+    will-change: transform, opacity;
+    animation: cine-sweep 1500ms cubic-bezier(0.45, 0, 0.2, 1) 120ms both;
+  }
+  @keyframes cine-sweep {
+    0% { transform: translate3d(-120%, 0, 0) skewX(-18deg); opacity: 0; }
+    18% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate3d(240%, 0, 0) skewX(-18deg); opacity: 0; }
+  }
+
+  /* The header's light layer: fades out toward the content below. */
+  .cine-backdrop {
+    -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+    mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  }
+  .cine-paused .aurora-css { animation-play-state: paused; }
+
+  /* Cursor light: positioned by transform from one rAF-throttled handler. */
+  .cine-cursor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 640px;
+    height: 640px;
+    margin: -320px 0 0 -320px;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, hsl(var(--aurora-2) / 0.12), hsl(var(--aurora-1) / 0.05) 55%, transparent);
+    opacity: 0;
+    transition: opacity 600ms ease;
+    will-change: transform;
+  }
+  .cine-cursor.is-on { opacity: 1; }
+
+  /* A count-up landing. Ends on the element's own text-shadow. */
+  .cine-flare {
+    display: inline-block;
+    animation: cine-flare 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes cine-flare {
+    0% { transform: scale(1); }
+    22% {
+      transform: scale(1.06);
+      text-shadow: 0 0 22px hsl(var(--flare, var(--primary)) / 0.95), 0 0 4px hsl(var(--flare, var(--primary)) / 0.8);
+    }
+    100% { transform: scale(1); }
+  }
+
+  /* The goal ring's comet: one rotation riding the drawing arc. */
+  .cine-comet {
+    opacity: 0;
+    animation: cine-comet 1100ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  }
+  .cine-comet-head { filter: drop-shadow(0 0 4px hsl(var(--primary))) drop-shadow(0 0 10px hsl(var(--primary) / 0.8)); }
+  @keyframes cine-comet {
+    0% { transform: rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    78% { opacity: 1; }
+    100% { transform: rotate(var(--to, 0deg)); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cine,
+    .cine-ignite::before,
+    .cine-bloom,
+    .cine-cascade > *,
+    .cine-sweep,
+    .cine-curtain,
+    .cine-flare,
+    .cine-comet,
+    .aurora-css { animation: none !important; }
+    .cine-curtain,
+    .cine-sweep,
+    .cine-bloom,
+    .cine-comet,
+    .cine-cursor { display: none; }
+  }
+
   /* ── Reduced motion: the catch-all ────────────────────────────
      Every animation in the system must have a still fallback (DESIGN.md
      invariant). The blocks above cover the effects defined next to them;

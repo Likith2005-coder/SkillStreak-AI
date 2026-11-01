@@ -8,16 +8,28 @@
  *   4. the explore tabs: Up next · Your domains · Activity · Trophies
  * and the Arsenal door as a slim strip at the end.
  *
- * Entrance: one staggered rise (0.06s apart, 0.4s each) so the page settles
- * in about half a second; it is the most-visited screen. Reduced motion:
- * everything is in place from the first frame.
+ * Entrance (see components/dashboard/cinema.tsx):
+ *   - first visit in a browser session: a ~2s opening shot. The page fades up
+ *     from black under one aurora light sweep, the kicker types in, the
+ *     headline rises word by word out of a blur and the name glows on last,
+ *     the mascot drops in on a spring, the Continue panel ignites (beam +
+ *     light bloom), Today's ring draws with a comet riding it, then the pulse
+ *     cards and the explore area cascade in. Any click, key, wheel, touch or
+ *     scroll completes it instantly; everything is clickable throughout.
+ *   - every later visit: one staggered rise (0.06s apart, 0.4s each), so the
+ *     most-visited screen settles in about half a second.
+ *   - reduced motion: everything is in place from the first frame; no sweep,
+ *     drift, parallax or cursor light.
+ * Atmosphere: drifting aurora pools, film grain and a cursor light behind the
+ * header, on a layer that lags the content on scroll.
  */
 
 import { useEffect, useState } from "react";
 import { Link } from "next-view-transitions";
-import { motion, type Variants } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { Activity, BarChart3, Compass, LayoutGrid, Trophy } from "lucide-react";
 import { fireGoalConfetti } from "@/components/playground/DailyGoal";
+import { botReact } from "@/components/mascot/bus";
 import { MascotTips } from "@/components/dashboard/MascotTips";
 import { ContinueHero } from "@/components/dashboard/ContinueHero";
 import { TodayPanel } from "@/components/dashboard/TodayPanel";
@@ -25,8 +37,18 @@ import { LeaguePulse, LevelPulse, ReviewPulse } from "@/components/dashboard/Pul
 import { ExploreTabs, type ExploreTab } from "@/components/dashboard/ExploreTabs";
 import { RecentAttempts } from "@/components/dashboard/RecentAttempts";
 import { ArsenalStrip } from "@/components/dashboard/ArsenalStrip";
-import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
+import {
+  CinemaBackdrop,
+  Curtain,
+  EASE,
+  Reveal,
+  RevealHeading,
+  SHOT,
+  shot,
+  useOpeningShot,
+} from "@/components/dashboard/cinema";
 import { useUserStore } from "@/store/userStore";
+import { cn } from "@/lib/utils";
 import {
   apiErrorMessage,
   fetchBadges,
@@ -46,8 +68,6 @@ import { WeakAreasCard } from "@/components/progress/WeakAreasCard";
 import { BadgeCoverflow } from "@/components/gamification/BadgeCoverflow";
 import { RecommendedNext } from "@/components/resources/RecommendedNext";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
 const page: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
@@ -59,7 +79,6 @@ const rise: Variants = {
 
 export default function DashboardPage() {
   const user = useUserStore((s) => s.user);
-  const reduce = useReducedMotion();
   const [overview, setOverview] = useState<ProgressOverview | null>(null);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [badges, setBadges] = useState<Badge[] | null>(null);
@@ -97,8 +116,30 @@ export default function DashboardPage() {
     };
   }, []);
 
-  // Celebrate the daily goal once per browser session per (UTC) day.
+  const { mode, playing, started, waiting, reduce } = useOpeningShot(overview !== null || error !== null);
+  const quick = mode === "quick";
+
+  // Header text drifts a little slower than the page on scroll (depth).
+  const { scrollY } = useScroll();
+  const headY = useTransform(scrollY, [0, 600], [0, 18], { clamp: true });
+
+  // During the opening, Today's numbers wait for their panel to arrive so the
+  // ring draws (with its comet) on screen rather than before the reveal.
+  const [todayGate, setTodayGate] = useState(!playing);
   useEffect(() => {
+    if (!playing) {
+      setTodayGate(true);
+      return;
+    }
+    if (!started) return;
+    const t = window.setTimeout(() => setTodayGate(true), SHOT.todayData);
+    return () => window.clearTimeout(t);
+  }, [playing, started]);
+
+  // Celebrate the daily goal once per browser session per (UTC) day: confetti
+  // plus the mascot cheering. After an opening shot, right as it lands.
+  useEffect(() => {
+    if (playing) return;
     if (!today || today.goalXp <= 0 || today.xpToday < today.goalXp) return;
     const KEY = "skillstreak.goalCelebrated";
     try {
@@ -107,9 +148,15 @@ export default function DashboardPage() {
     } catch {
       // storage blocked: still celebrate, just maybe more than once
     }
-    const t = window.setTimeout(fireGoalConfetti, 700);
+    const t = window.setTimeout(
+      () => {
+        fireGoalConfetti();
+        botReact({ mood: "celebrate", say: "Goal smashed!" });
+      },
+      mode === "opening" ? 150 : 700,
+    );
     return () => window.clearTimeout(t);
-  }, [today]);
+  }, [today, playing, mode]);
 
   if (!user) return null;
 
@@ -191,97 +238,185 @@ export default function DashboardPage() {
     },
   ];
 
+  // Quick mode: the classic staggered rise. Opening / still: framer stays
+  // out of the way (the opening's keyframes are CSS classes, see `shot`).
+  const v = quick ? rise : undefined;
+  const words = ["Welcome", "back,"];
+  const nameAt = SHOT.words + words.length * SHOT.wordStagger + 60;
+  const kicker = shot(playing, "cine-type", SHOT.kicker);
+  const lead = shot(playing, "cine-fade", SHOT.lead);
+  const name = shot(playing, "cine-name", nameAt);
+  const pulse = shot(playing, "", SHOT.pulse);
+
   return (
-    <motion.main
-      variants={page}
-      initial={reduce ? false : "hidden"}
-      animate="show"
-      className="container max-w-[1280px] px-4 pb-16 pt-8 lg:pt-10"
-    >
-      {/* ── 1. Welcome ──────────────────────────────────────── */}
-      <motion.header variants={rise} className="relative isolate flex items-end justify-between gap-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-32 -top-40 -z-10 h-[26rem] w-[44rem] max-w-[100vw] rounded-full bg-[radial-gradient(closest-side,hsl(var(--aurora-1)/0.16),hsl(var(--aurora-2)/0.05)_60%,transparent)] blur-2xl"
-        />
-        <div className="min-w-0">
-          <p className="label-mono flex items-center gap-2 text-muted-foreground">
-            <span aria-hidden className="relative flex h-2 w-2">
-              {!reduce && <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />}
-              <span className="relative h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
-            </span>
-            {todayLabel}
-            {days > 0 && <span className="text-energy">· Day {days}</span>}
-          </p>
-          <h1 className="mt-3 font-display text-[clamp(2.4rem,6vw,4.25rem)] leading-[0.95] text-foreground [text-wrap:balance]">
-            Welcome back, <span className="font-serif-accent text-primary text-glow">{firstName}</span>
-            <span className="text-primary">.</span>
-          </h1>
-          <p className="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            {overview
-              ? totals && totals.topicsCompleted > 0
-                ? `${totals.topicsCompleted} of ${totals.topicsAvailable} topics cleared across ${activeDomains} domain${activeDomains === 1 ? "" : "s"}. Your next unit is lined up.`
-                : "Your path is lined up. One topic today starts the streak."
-              : "Loading your path…"}
-          </p>
-        </div>
-        {overview && (
-          <MascotTips
-            key={domainSlug ?? "generic"}
-            domainSlug={domainSlug}
-            domainName={domainName}
-            size={96}
-            className="hidden shrink-0 md:flex"
-          />
-        )}
-      </motion.header>
+    <div className={cn("relative isolate overflow-x-clip", waiting && "cine-wait")}>
+      <CinemaBackdrop playing={playing} reduce={reduce} />
+      {/* Film grain: static, fixed, on its own layer (cheap while scrolling). */}
+      <div className="noise-overlay" aria-hidden />
+      {playing && <Curtain held={waiting} />}
 
-      {error && (
-        <div className="mt-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text">
-          {error}
-        </div>
-      )}
-
-      {/* ── 2. Focus row: Continue + Today ──────────────────── */}
-      <motion.div
-        variants={rise}
-        className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]"
+      <motion.main
+        variants={page}
+        initial={quick ? "hidden" : false}
+        animate="show"
+        className="container max-w-[1280px] px-4 pb-16 pt-8 lg:pt-10"
       >
-        <ContinueHero overview={overview} />
-        <TodayPanel today={today} streak={streak} />
-      </motion.div>
+        {/* ── 1. Welcome ──────────────────────────────────────── */}
+        <motion.header variants={v}>
+          {/* md+: reserve the mascot block's height (~142px) so the headline
+              doesn't drop when the mascot mounts with the data. */}
+          <motion.div
+            style={reduce ? undefined : { y: headY }}
+            className="flex items-end justify-between gap-8 md:min-h-[142px]"
+          >
+            <div className="min-w-0">
+              <p className="label-mono flex items-center gap-2 text-muted-foreground">
+                <span aria-hidden className="relative flex h-2 w-2">
+                  {!reduce && <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />}
+                  <span className="relative h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+                </span>
+                <span className={kicker.className} style={kicker.style}>
+                  {todayLabel}
+                  {days > 0 && <span className="text-energy"> · Day {days}</span>}
+                </span>
+              </p>
+              <h1 className="mt-3 font-display text-[clamp(2.4rem,6vw,4.25rem)] leading-[0.95] text-foreground [text-wrap:balance]">
+                {words.map((w, i) => {
+                  const p = shot(playing, "cine-word", SHOT.words + i * SHOT.wordStagger);
+                  return (
+                    <span key={w}>
+                      <span className={cn("inline-block", p.className)} style={p.style}>
+                        {w}
+                      </span>{" "}
+                    </span>
+                  );
+                })}
+                <span className={cn("inline-block", name.className)} style={name.style}>
+                  <span className="font-serif-accent text-primary text-glow">{firstName}</span>
+                  <span className="text-primary">.</span>
+                </span>
+              </h1>
+              <p
+                className={cn(
+                  "mt-3 max-w-[56ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base",
+                  lead.className,
+                )}
+                style={lead.style}
+              >
+                {overview
+                  ? totals && totals.topicsCompleted > 0
+                    ? `${totals.topicsCompleted} of ${totals.topicsAvailable} topics cleared across ${activeDomains} domain${activeDomains === 1 ? "" : "s"}. Your next unit is lined up.`
+                    : "Your path is lined up. One topic today starts the streak."
+                  : "Loading your path…"}
+              </p>
+            </div>
+            {overview && (
+              // The mascot drops in from above on a spring during the opening;
+              // a skip snaps it home.
+              <motion.div
+                className="hidden shrink-0 md:block"
+                initial={playing ? { y: -90, opacity: 0, rotate: -8 } : false}
+                animate={
+                  waiting
+                    ? { y: -90, opacity: 0, rotate: -8 }
+                    : playing
+                    ? {
+                        y: 0,
+                        opacity: 1,
+                        rotate: 0,
+                        transition: {
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 17,
+                          mass: 0.9,
+                          delay: SHOT.mascot / 1000,
+                          opacity: { duration: 0.3, delay: SHOT.mascot / 1000 },
+                        },
+                      }
+                    : { y: 0, opacity: 1, rotate: 0, transition: { duration: 0 } }
+                }
+              >
+                <MascotTips
+                  key={domainSlug ?? "generic"}
+                  domainSlug={domainSlug}
+                  domainName={domainName}
+                  size={96}
+                  className="flex"
+                />
+              </motion.div>
+            )}
+          </motion.div>
+        </motion.header>
 
-      {/* ── 3. Pulse row ────────────────────────────────────── */}
-      <motion.div variants={rise} className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-3 sm:gap-6">
-        <ReviewPulse review={review} />
-        <LevelPulse xp={user.xp} />
-        <LeaguePulse />
-      </motion.div>
+        {error && (
+          <div className="mt-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive-text">
+            {error}
+          </div>
+        )}
 
-      {/* Phones: the tips live here, under the stats (the header has no room). */}
-      {overview && (
-        <motion.div variants={rise} className="mt-6 md:hidden">
-          <MascotTips
-            key={domainSlug ?? "generic"}
-            domainSlug={domainSlug}
-            domainName={domainName}
-            size={64}
-            className="w-full"
-            bubbleClassName="mb-3 min-w-0 flex-1 max-w-none"
+        {/* ── 2. Focus row: Continue + Today ──────────────────── */}
+        <motion.div
+          variants={v}
+          className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]"
+        >
+          <ContinueHero overview={overview} ignite={playing} delayMs={SHOT.hero} igniteMs={SHOT.ignite} />
+          <TodayPanel
+            today={todayGate ? today : null}
+            streak={todayGate ? streak : null}
+            {...shot(playing, "cine-rise", SHOT.today)}
           />
         </motion.div>
-      )}
 
-      {/* ── 4. Explore ──────────────────────────────────────── */}
-      <motion.section variants={rise} aria-label="Explore" className="mt-10">
-        <ExploreTabs tabs={tabs} />
-      </motion.section>
+        {/* ── 3. Pulse row ────────────────────────────────────── */}
+        <motion.div variants={v} className="mt-6">
+          <Reveal>
+            <div
+              className={cn("grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-3 sm:gap-6", playing && "cine-cascade")}
+              style={pulse.style}
+            >
+              <ReviewPulse review={review} />
+              <LevelPulse xp={user.xp} />
+              <LeaguePulse />
+            </div>
+          </Reveal>
+        </motion.div>
 
-      {/* ── Arsenal door ───────────────────────────────────── */}
-      <motion.div variants={rise} className="mt-10">
-        <ArsenalStrip />
-      </motion.div>
-    </motion.main>
+        {/* Phones: the tips live here, under the stats (the header has no room). */}
+        {overview && (
+          <motion.div variants={v} className="mt-6 md:hidden">
+            <div {...shot(playing, "cine-rise", SHOT.phoneMascot)}>
+              <MascotTips
+                key={domainSlug ?? "generic"}
+                domainSlug={domainSlug}
+                domainName={domainName}
+                size={64}
+                className="w-full"
+                bubbleClassName="mb-3 min-w-0 flex-1 max-w-none"
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── 4. Explore ──────────────────────────────────────── */}
+        <motion.section variants={v} aria-labelledby="explore-h" className="mt-12">
+          <div {...shot(playing, "cine-rise", SHOT.explore)}>
+            <RevealHeading id="explore-h" lead="More to" accent="explore" />
+            <Reveal>
+              <ExploreTabs tabs={tabs} />
+            </Reveal>
+          </div>
+        </motion.section>
+
+        {/* ── Arsenal door ───────────────────────────────────── */}
+        <motion.div variants={v} className="mt-10">
+          <Reveal>
+            <div {...shot(playing, "cine-rise", SHOT.arsenal)}>
+              <ArsenalStrip />
+            </div>
+          </Reveal>
+        </motion.div>
+      </motion.main>
+    </div>
   );
 }
 
