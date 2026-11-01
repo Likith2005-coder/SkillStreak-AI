@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { BookOpen, Layers, ListChecks, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MaskHeading } from "./Reveal";
 
 type Stat = {
   icon: typeof BookOpen;
@@ -15,6 +16,7 @@ type Stat = {
   text: string; // numeral + icon colour (bright on dark)
   well: string; // role-tinted icon well
   glow: string; // numeral glow (text-shadow)
+  flare: string; // the flash behind the numeral when the count lands
 };
 
 // Written out in full so Tailwind can see every class.
@@ -27,6 +29,7 @@ const STATS: Stat[] = [
     text: "text-secondary",
     well: "bg-secondary/10 text-secondary ring-secondary/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--secondary)/0.55)]",
+    flare: "bg-[radial-gradient(closest-side,hsl(var(--secondary)/0.45),transparent)]",
   },
   {
     icon: Layers,
@@ -37,6 +40,7 @@ const STATS: Stat[] = [
     text: "text-grape",
     well: "bg-grape/10 text-grape ring-grape/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--grape)/0.55)]",
+    flare: "bg-[radial-gradient(closest-side,hsl(var(--grape)/0.45),transparent)]",
   },
   {
     icon: ListChecks,
@@ -46,6 +50,7 @@ const STATS: Stat[] = [
     text: "text-primary",
     well: "bg-primary/10 text-primary ring-primary/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--primary)/0.55)]",
+    flare: "bg-[radial-gradient(closest-side,hsl(var(--primary)/0.45),transparent)]",
   },
   {
     icon: Trophy,
@@ -55,6 +60,7 @@ const STATS: Stat[] = [
     text: "text-xp",
     well: "bg-xp/10 text-xp ring-xp/20",
     glow: "[text-shadow:0_0_36px_hsl(var(--xp)/0.5)]",
+    flare: "bg-[radial-gradient(closest-side,hsl(var(--xp)/0.45),transparent)]",
   },
 ];
 
@@ -78,22 +84,22 @@ export function StatsBanner() {
       <div className="relative mx-auto max-w-6xl">
         {/* Off-centre on purpose: the page's one left-aligned header, so the
             section rhythm isn't a stack of centred blocks. */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
-          className="mb-12 grid gap-5 md:grid-cols-[1.3fr_1fr] md:items-end"
-        >
-          <h2 className="font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
+        <div className="mb-12 grid gap-5 md:grid-cols-[1.3fr_1fr] md:items-end">
+          <MaskHeading line="left" className="font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
             What&apos;s inside, from{" "}
             <span className="font-serif-accent text-primary text-glow">day one.</span>
-          </h2>
-          <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground md:justify-self-end md:pb-2 md:text-base">
+          </MaskHeading>
+          <motion.p
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: reduce ? 0 : 0.8, delay: reduce ? 0 : 0.25, ease: EASE }}
+            className="max-w-sm text-[15px] leading-relaxed text-muted-foreground md:justify-self-end md:pb-8 md:text-base"
+          >
             Every domain is a full roadmap, every topic ends in a quiz, and every day you show up is
             counted.
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
 
         <div className="card-chunky spotlight grid grid-cols-2 overflow-hidden lg:grid-cols-4">
           {STATS.map((s, i) => (
@@ -135,15 +141,30 @@ function StatCell({ stat, index }: { stat: Stat; index: number }) {
         <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
       </span>
 
-      <div
-        className={cn(
-          "mt-6 font-display text-6xl leading-none tabular-nums transition-[text-shadow] duration-700 sm:text-7xl",
-          stat.text,
-          landed && stat.glow,
+      <div className="relative mt-6 self-start">
+        {/* The landing flare: a one-off flash of the stat's colour behind the
+            numeral, and a small pulse of the numeral itself. */}
+        {landed && !reduce && (
+          <motion.span
+            aria-hidden
+            initial={{ opacity: 0.85, scale: 0.4 }}
+            animate={{ opacity: 0, scale: 1.7 }}
+            transition={{ duration: 0.9, ease: EASE }}
+            className={cn("pointer-events-none absolute left-1/2 top-1/2 -ml-16 -mt-16 h-32 w-32 rounded-full", stat.flare)}
+          />
         )}
-      >
-        {display}
-        {stat.suffix}
+        <motion.div
+          animate={landed && !reduce ? { scale: [1, 1.08, 1] } : undefined}
+          transition={{ duration: 0.55, ease: EASE }}
+          className={cn(
+            "relative origin-left font-display text-6xl leading-none tabular-nums transition-[text-shadow] duration-700 sm:text-7xl",
+            stat.text,
+            landed && stat.glow,
+          )}
+        >
+          {display}
+          {stat.suffix}
+        </motion.div>
       </div>
       <p className="mt-4 text-[15px] font-semibold text-foreground">{stat.label}</p>
       <p className="mt-1 text-sm text-muted-foreground">{stat.hint}</p>

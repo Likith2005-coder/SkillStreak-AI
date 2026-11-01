@@ -9,9 +9,12 @@ import { ScrollStory } from "@/components/landing/ScrollStory";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { CursorFollower } from "@/components/landing/CursorFollower";
-import { Reveal } from "@/components/landing/Reveal";
+import { MaskHeading, Reveal, Seam } from "@/components/landing/Reveal";
 import { TiltCard } from "@/components/landing/TiltCard";
 import { HeroMidnight } from "@/components/landing/HeroMidnight";
+import { DomainMarquee } from "@/components/landing/DomainMarquee";
+import { ArsenalStage } from "@/components/landing/ArsenalStage";
+import { CompanionBot } from "@/components/landing/CompanionBot";
 
 // Marketing landing page: identical for every (logged-out) visitor and changes
 // infrequently. Serve the pre-rendered HTML from cache and regenerate at most
@@ -19,19 +22,6 @@ import { HeroMidnight } from "@/components/landing/HeroMidnight";
 // per request. All interactive/animated regions are client components that
 // hydrate on top of this static shell.
 export const revalidate = 3600;
-
-// All nine domains, set as type. Each name takes its domain hue on hover.
-const DOMAIN_TICKER = [
-  { name: "Cybersecurity", hover: "hover:text-rose-300" },
-  { name: "Web Development", hover: "hover:text-blue-300" },
-  { name: "Artificial Intelligence", hover: "hover:text-violet-300" },
-  { name: "Machine Learning", hover: "hover:text-emerald-300" },
-  { name: "Data Science", hover: "hover:text-cyan-300" },
-  { name: "Cloud Computing", hover: "hover:text-sky-300" },
-  { name: "DevOps", hover: "hover:text-orange-300" },
-  { name: "Blockchain", hover: "hover:text-amber-300" },
-  { name: "Internet of Things", hover: "hover:text-teal-300" },
-];
 
 export default function LandingPage() {
   return (
@@ -42,37 +32,59 @@ export default function LandingPage() {
       <ScrollProgress />
       <SmoothScroll />
       <CursorFollower />
+      {/* SignalBot rides along in the corner and narrates each [data-narrate] section */}
+      <CompanionBot />
 
-      {/* ── Section 1 — Hero: WebGL aurora + tilted product preview ── */}
+      {/* ── Section 1 — Hero: one full screen of aurora light and type ── */}
       <HeroMidnight />
 
-      {/* ── Section 2 — Domains: a quiet, endless rail of hairline chips.
+      {/* ── Section 2 — Domains: an endless rail of type that answers the scroll.
           Transparent with no borders so it flows straight on from the hero. */}
-      <section className="relative pb-16 pt-4 sm:pb-20" aria-labelledby="domains-h">
-        <h2 id="domains-h" className="mb-8 px-4 text-center font-display text-2xl text-foreground md:text-3xl">
+      <section
+        className="relative pb-16 pt-4 sm:pb-24 sm:pt-6"
+        aria-labelledby="domains-h"
+        data-narrate="Nine paths. Pick any!"
+        data-narrate-mood="happy"
+      >
+        <MaskHeading
+          id="domains-h"
+          wrapClassName="mb-10 px-4"
+          className="text-center font-display text-2xl text-foreground md:text-3xl"
+        >
           Nine domains. <span className="font-serif-accent text-primary">Pick one, or all of them.</span>
-        </h2>
+        </MaskHeading>
         <DomainMarquee />
       </section>
 
+      <Seam tone="aurora-2" />
+
       {/* ── Section 3 — Stats: glowing count-up numerals in one bento ── */}
-      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_640px]">
+      <div
+        className="[content-visibility:auto] [contain-intrinsic-size:auto_640px]"
+        data-narrate="580+ topics. No rush."
+      >
         <StatsBanner />
       </div>
 
       {/* ── Section 5 — How it works: a luminous path with live demos ── */}
-      <div id="how-it-works" className="scroll-mt-16">
+      <div id="how-it-works" className="scroll-mt-16" data-narrate="Here's how it works ↓" data-narrate-mood="curious">
         <ScrollStory />
       </div>
+
+      <Seam tone="aurora-3" className="max-w-4xl" />
 
       {/* ── Section 6 — Ethical Hacking Arsenal spotlight ────── */}
       <section
         id="arsenal"
+        data-narrate="Ooh, the secret level 👀"
+        data-narrate-mood="curious"
         className="relative scroll-mt-16 px-4 py-16 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12 lg:py-24"
       >
         <div className="mx-auto max-w-6xl">
           {/* The Arsenal keeps its own identity: a phosphor-green terminal
-              world, set into the Midnight page as one deep, lit panel. */}
+              world, set into the Midnight page as one deep, lit panel that
+              tilts up into place as it reaches the centre of the screen. */}
+          <ArsenalStage>
           <div className="spotlight relative rounded-[1.4rem] border border-emerald-400/20 bg-[#030806] text-foreground shadow-[inset_0_1px_0_rgb(110_231_183/0.08),0_30px_80px_-30px_rgb(16_185_129/0.35)] [--spot:152_76%_50%]">
           <div className="isolate grid items-center gap-10 overflow-hidden rounded-[inherit] p-6 sm:p-8 lg:grid-cols-2 lg:p-12">
             {/* Phosphor light + grid, faded toward the far corner */}
@@ -109,7 +121,7 @@ export default function LandingPage() {
                   AI step-by-step guides
                 </Pill>
               </ul>
-              <div className="mt-8">
+              <div className="mt-8" data-bot-avoid="">
                 <Button
                   asChild
                   size="lg"
@@ -165,6 +177,7 @@ export default function LandingPage() {
             </Reveal>
           </div>
           </div>
+          </ArsenalStage>
         </div>
       </section>
 
@@ -186,7 +199,7 @@ export default function LandingPage() {
             </span>
             <span className="ml-2 text-xs">© {new Date().getFullYear()}</span>
           </div>
-          <nav aria-label="Footer" className="-mx-3 flex flex-wrap items-center">
+          <nav aria-label="Footer" data-bot-avoid="" className="-mx-3 flex flex-wrap items-center">
             {[
               { href: "#how-it-works", label: "How it works", a: true },
               { href: "#arsenal", label: "Arsenal", a: true },
@@ -216,28 +229,5 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
       {icon}
       {children}
     </li>
-  );
-}
-
-function DomainMarquee() {
-  // Duplicate the list so the loop is seamless.
-  const items = [...DOMAIN_TICKER, ...DOMAIN_TICKER];
-  return (
-    <div className="group/marquee relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
-      <ul className="flex w-max animate-marquee items-center group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
-        {items.map((d, i) => (
-          <li
-            key={`${d.name}-${i}`}
-            aria-hidden={i >= DOMAIN_TICKER.length || undefined}
-            className="flex shrink-0 items-center"
-          >
-            <span className={`whitespace-nowrap px-6 font-display text-4xl text-foreground/85 transition-colors duration-300 md:px-8 md:text-6xl ${d.hover}`}>
-              {d.name}
-            </span>
-            <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.8)]" />
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }

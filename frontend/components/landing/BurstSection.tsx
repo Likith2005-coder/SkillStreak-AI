@@ -23,7 +23,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { HeroCTA } from "./HeroCTA";
 import { MeshText } from "./MeshText";
@@ -37,6 +37,13 @@ export function BurstSection() {
   const reduce = useReducedMotion();
 
   const isInView = useInView(sectionRef, { once: true, amount: 0.55 });
+
+  // The build-up: while the finale scrolls into view, the light gathers
+  // (scroll-linked) so the bloom lands as the climax rather than a surprise.
+  const { scrollYProgress: approach } = useScroll({ target: sectionRef, offset: ["start end", "start start"] });
+  const gatherOpacity = useTransform(approach, [0, 0.85], [0, 1]);
+  const gatherScale = useTransform(approach, [0, 1], [0.7, 1.05]);
+  const gatherY = useTransform(approach, [0, 1], ["18%", "0%"]);
 
   const [origin, setOrigin] = useState({ x: 50, y: 30 });
 
@@ -80,6 +87,8 @@ export function BurstSection() {
   return (
     <section
       ref={sectionRef}
+      data-narrate="Your first streak starts here!"
+      data-narrate-mood="celebrate"
       className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-background py-20"
     >
       {/* ── Aurora bloom: grows out of the wordmark ───────────────── */}
@@ -104,6 +113,19 @@ export function BurstSection() {
         aria-hidden
       />
 
+      {/* Gathering light: brightens as the section arrives (scroll-linked) */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[8%] -z-10 mx-auto h-[70%] w-[min(90rem,140vw)] will-change-transform"
+        style={
+          reduced
+            ? { opacity: 1 }
+            : { opacity: gatherOpacity, scale: gatherScale, y: gatherY }
+        }
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(50%_45%_at_50%_45%,hsl(var(--aurora-2)/0.26),hsl(var(--aurora-1)/0.12)_55%,transparent_80%)]" />
+      </motion.div>
+
       {/* Slow aurora curtains drifting across the band */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <motion.div
@@ -124,10 +146,16 @@ export function BurstSection() {
 
       {/* ── Foreground stack ───────────────────────────────────────── */}
       <div className="relative z-10 flex w-full flex-col items-center px-4 text-center">
+        {/* The wordmark comes into focus: it settles from slightly large and
+            soft to sharp as the bloom opens behind it (a one-off blur). */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: animate ? 1 : 0, y: animate ? 0 : 40 }}
-          transition={{ delay: reduced ? 0 : 0.15, duration: reduced ? 0 : 0.6, ease: EASE }}
+          initial={{ opacity: 0, y: 40, scale: 1.06, filter: "blur(14px)" }}
+          animate={
+            animate
+              ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }
+              : { opacity: 0, y: 40, scale: 1.06, filter: "blur(14px)" }
+          }
+          transition={{ delay: reduced ? 0 : 0.15, duration: reduced ? 0 : 1.1, ease: EASE }}
           className="flex w-full flex-col items-center"
         >
           <p className="font-serif-accent text-xl text-foreground/90 sm:text-2xl">Ready when you are.</p>
@@ -171,7 +199,7 @@ export function BurstSection() {
             tomorrow to keep it alive.
           </p>
 
-          <div className="mt-8 w-full">
+          <div className="mt-8 w-full" data-bot-avoid="">
             <HeroCTA />
           </div>
 

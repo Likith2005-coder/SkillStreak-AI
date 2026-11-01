@@ -28,6 +28,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MaskHeading } from "./Reveal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -110,10 +111,13 @@ export function ScrollStory() {
     <MotionConfig reducedMotion={reduce ? "always" : "never"}>
       <section className="relative px-4 py-20 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <h2 className="mx-auto max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl">
+          <MaskHeading
+            variant="focus"
+            className="mx-auto max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl"
+          >
             From curious to <span className="font-serif-accent text-primary text-glow">capable</span>, step by step.
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-muted-foreground [text-wrap:pretty] md:text-lg">
+          </MaskHeading>
+          <p className="mx-auto mt-6 max-w-xl text-center text-base leading-relaxed text-muted-foreground [text-wrap:pretty] md:text-lg">
             Pick a path, learn it with the tutor, prove it in a quiz, and keep the streak alive.
           </p>
 
