@@ -43,7 +43,7 @@ export function CommandPalette() {
   // Cmd+K / Ctrl+K toggles the palette. Esc closes (handled by cmdk itself).
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key?.toLowerCase() === "k") {
         e.preventDefault();
         // Remember the opener now: by the time an effect runs, the input's
         // autoFocus has already moved focus into the palette.

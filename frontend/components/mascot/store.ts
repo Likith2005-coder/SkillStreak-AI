@@ -59,6 +59,8 @@ const onOver = (e: PointerEvent) => {
 
 const NON_TEXT = /^(button|checkbox|radio|range|color|file|submit|reset|image|hidden)$/;
 const onKey = (e: KeyboardEvent) => {
+  // Browser autofill fires keydown events with no `key` at all, so guard it.
+  if (typeof e.key !== "string") return;
   if (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Enter") return; // Shift, Tab, arrows…
   const a = document.activeElement as HTMLElement | null;
   if (!a) return;
