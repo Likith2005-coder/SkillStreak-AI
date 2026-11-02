@@ -3,7 +3,7 @@ title SkillStreak AI (close this window to stop the site)
 cd /d "%~dp0"
 
 rem Already running? Just open the browser.
-powershell -NoProfile -Command "if ((Test-NetConnection localhost -Port 3000 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 } else { exit 1 }" >nul 2>&1
+powershell -NoProfile -Command "$up = { param($p) (Test-NetConnection localhost -Port $p -WarningAction SilentlyContinue).TcpTestSucceeded }; if ((& $up 3000) -and (& $up 4000)) { exit 0 } else { exit 1 }" >nul 2>&1
 if %errorlevel%==0 (
   echo SkillStreak is already running. Opening http://localhost:3000 ...
   start "" http://localhost:3000
