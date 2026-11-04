@@ -104,7 +104,7 @@ Every phase of a real penetration test (recon → scan → access → post-explo
 Every AI call goes through one guarded gateway with a circuit breaker, a timeout and a concurrency cap. The two features most likely to go wrong (quizzes and links) each have an extra safety net.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Learner asks for a quiz] --> B{Cached for this<br/>topic + level?}
     B -- yes --> Z[Serve instantly]
     B -- no --> C[Generator<br/>5 MCQs · temp 0.6]
