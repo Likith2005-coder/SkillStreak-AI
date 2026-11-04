@@ -37,8 +37,18 @@ export type PublicQuestion = {
 };
 
 const QUIZ_TTL_SECONDS = 7 * 24 * 60 * 60; // battleplan §4.6
+// How long a learner has to finish the quiz they were served.
+const SERVED_TTL_SECONDS = 24 * 60 * 60;
 const PASS_THRESHOLD = 3;
 const TOTAL_QUESTIONS = 5;
+
+// The shared cache (`quiz:<topic>:level:<level>`) is reused by every learner
+// at that level to save AI calls, and any of them can regenerate it. So each
+// learner also gets a private snapshot of exactly the questions they were
+// shown, and grading reads that. Otherwise someone else's "fresh" quiz would
+// silently replace the answer key of a quiz you're halfway through.
+const servedKey = (userId: string, topicId: string) => `quiz-served:${userId}:${topicId}`;
+type ServedQuiz = { level: SkillLevel; questions: QuizQuestion[] };
 
 function priorLevelToSkillLevel(priorLevel: string | undefined | null): SkillLevel {
   if (priorLevel === "experienced") return "advanced";
@@ -183,7 +193,10 @@ export async function generateQuiz(opts: {
   if (opts.fresh) {
     const seed = Math.floor(Math.random() * 1_000_000);
     const questions = await generateAndValidate({ topic, level, seed });
-    await setJson(cacheKey, { questions }, QUIZ_TTL_SECONDS);
+    await Promise.all([
+      setJson(cacheKey, { questions }, QUIZ_TTL_SECONDS),
+      setJson<ServedQuiz>(servedKey(opts.userId, topic.id), { level, questions }, SERVED_TTL_SECONDS),
+    ]);
     return {
       topicId: topic.id,
       level,
@@ -199,6 +212,11 @@ export async function generateQuiz(opts: {
       const questions = await generateAndValidate({ topic, level });
       return { questions };
     }
+  );
+  await setJson<ServedQuiz>(
+    servedKey(opts.userId, topic.id),
+    { level, questions: value.questions },
+    SERVED_TTL_SECONDS
   );
 
   return {
@@ -219,9 +237,15 @@ function toPublic(q: QuizQuestion): PublicQuestion {
 }
 
 /**
- * Internal: fetch the cached/regenerated full quiz with answers (for grading).
+ * Internal: the full quiz with answers, for grading. Prefers the learner's own
+ * snapshot of what they were served; the shared cache is only a fallback for
+ * quizzes served before snapshots existed.
  */
 async function getFullQuiz(topicId: string, userId: string): Promise<Quiz> {
+  const served = await getJson<ServedQuiz>(servedKey(userId, topicId));
+  if (served && served.questions?.length === TOTAL_QUESTIONS) {
+    return { topicId, level: served.level, questions: served.questions };
+  }
   const profile = await prisma.userProfile.findUnique({
     where: { userId },
     select: { priorLevel: true },
