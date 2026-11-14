@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { Zap } from "lucide-react";
 import { useBootstrapUser } from "@/hooks/useUser";
 import { Mascot } from "@/components/playground/Mascot";

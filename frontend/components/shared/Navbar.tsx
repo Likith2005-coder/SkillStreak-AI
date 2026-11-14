@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { animate, AnimatePresence, motion } from "framer-motion";
 import {

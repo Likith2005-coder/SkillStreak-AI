@@ -11,7 +11,7 @@
  * line on top of the active tab.
  */
 
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, Map, MessageCircle, Terminal, Trophy } from "lucide-react";

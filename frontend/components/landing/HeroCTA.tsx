@@ -6,7 +6,7 @@
  * and a hairline outline, both from the Midnight Button.
  */
 
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

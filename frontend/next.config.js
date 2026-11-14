@@ -1,3 +1,5 @@
+const { PHASE_DEVELOPMENT_SERVER } = require("next/constants");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Strict mode double-invokes effects in dev which inflates the dev error
@@ -15,4 +17,9 @@ const nextConfig = {
   transpilePackages: ["shiki"],
 };
 
-module.exports = nextConfig;
+// The dev server writes to its own folder, so running `next dev` never
+// overwrites the production build that `next start` (and the launcher) serve.
+module.exports = (phase) => ({
+  ...nextConfig,
+  distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next",
+});

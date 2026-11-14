@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { Maximize2, Sparkles, X } from "lucide-react";

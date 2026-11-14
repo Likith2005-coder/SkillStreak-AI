@@ -25,7 +25,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { Activity, BarChart3, Compass, LayoutGrid, Trophy } from "lucide-react";
 import { fireGoalConfetti } from "@/components/playground/DailyGoal";

@@ -15,7 +15,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { BookOpen, Check, Play } from "lucide-react";
 import { fetchDomainProgress, type DomainProgressDetail } from "@/lib/api";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";

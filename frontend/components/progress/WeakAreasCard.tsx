@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ChevronRight, ListChecks, PartyPopper, Target } from "lucide-react";
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";

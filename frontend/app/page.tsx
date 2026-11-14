@@ -1,4 +1,4 @@
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ArrowRight, Bot, ShieldCheck, Terminal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingIntro } from "@/components/landing/LandingIntro";

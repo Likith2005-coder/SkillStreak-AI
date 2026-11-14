@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
 import { cachedDomain } from "@/lib/domainCache";
 import { useParams } from "next/navigation";

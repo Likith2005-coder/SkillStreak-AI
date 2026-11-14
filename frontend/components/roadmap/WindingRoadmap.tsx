@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 import { BookOpen, Check, Play, Star } from "lucide-react";

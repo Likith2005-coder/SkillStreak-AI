@@ -7,7 +7,7 @@
  */
 
 import type { CSSProperties } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { Check, ChevronRight, History, X } from "lucide-react";
 import type { RecentAttempt } from "@/lib/api";
 import { styleFor } from "@/lib/domain-style";

@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ArrowRight, Compass, Map as MapIcon } from "lucide-react";
 import type { ProgressOverview } from "@/lib/api";
 import { PathPreview } from "@/components/playground/PathPreview";

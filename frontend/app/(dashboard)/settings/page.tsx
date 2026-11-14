@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,

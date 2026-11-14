@@ -7,7 +7,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ChevronRight, Terminal } from "lucide-react";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 

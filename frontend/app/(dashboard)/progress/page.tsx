@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, ChevronRight, LineChart } from "lucide-react";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";

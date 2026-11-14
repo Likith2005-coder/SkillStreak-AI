@@ -10,7 +10,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { ArrowRight, CheckCheck, ChevronRight, Crown, Gem, RotateCcw, Star } from "lucide-react";
 import { fetchLeaderboard, type LeaderboardEntry, type ReviewList } from "@/lib/api";
 import { Button } from "@/components/ui/button";

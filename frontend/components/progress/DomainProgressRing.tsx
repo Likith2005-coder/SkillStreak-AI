@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { DomainIcon } from "@/components/shared/DomainIcon";
 import { hexFor, styleFor } from "@/lib/domain-style";
