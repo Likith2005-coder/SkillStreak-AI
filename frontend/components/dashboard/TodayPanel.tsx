@@ -80,8 +80,8 @@ export function TodayPanel({
       style={style}
     >
       <div className="flex items-center justify-between gap-3">
-        <h2 id="today-h" className="label-mono flex items-center gap-1.5 text-primary">
-          <Target className="h-3.5 w-3.5" aria-hidden /> Today
+        <h2 id="today-h" className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Target className="h-4 w-4 text-primary" aria-hidden /> Today
         </h2>
         {today && (
           <span className="font-mono text-[11px] tabular-nums text-muted-foreground">

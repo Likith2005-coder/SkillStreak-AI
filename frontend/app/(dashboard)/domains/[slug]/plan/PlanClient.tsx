@@ -472,7 +472,7 @@ function PhaseCard({
           {phase.miniProject && (
             <div className="rounded-xl border border-grape/25 bg-grape/[0.06] p-4">
               <h4 className="flex items-center gap-1.5 text-sm font-semibold text-grape">
-                <Hammer className="h-4 w-4" strokeWidth={2.2} /> Mini project — {phase.miniProject.title}
+                <Hammer className="h-4 w-4" strokeWidth={2.2} /> Mini project: {phase.miniProject.title}
               </h4>
               <p className="mt-1.5 text-sm text-muted-foreground">{phase.miniProject.brief}</p>
               <ol className="mt-3 space-y-2">

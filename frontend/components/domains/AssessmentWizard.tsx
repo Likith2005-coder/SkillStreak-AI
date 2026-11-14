@@ -167,7 +167,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
       onDone();
     } catch (err) {
       setGenerating(false);
-      setError(apiErrorMessage(err, "Could not generate your plan — please try again"));
+      setError(apiErrorMessage(err, "Could not generate your plan. Please try again."));
     }
   };
 
@@ -291,7 +291,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
                       <Button onClick={confirmMulti} className="w-full sm:w-auto">
                         {multiDraft.length > 0
                           ? `Continue with ${multiDraft.length} selected`
-                          : "None of these — continue"}
+                          : "None of these, continue"}
                       </Button>
                     </div>
                   )}
@@ -305,13 +305,13 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
         {generating && (
           <motion.div {...bubbleIn} className="space-y-4">
             <MentorBubble>
-              Great — that&apos;s everything I need. Designing your {domainName} plan…
+              That&apos;s everything I need. Designing your {domainName} plan…
             </MentorBubble>
             <div className="card-chunky border-beam flex items-center gap-3 px-4 py-4 text-sm text-muted-foreground sm:ml-[52px]">
               <Loader2 className="h-5 w-5 shrink-0 animate-spin text-grape motion-reduce:animate-none" />
               <span>
-                Building your phases, picking resources, designing your capstone
-                project — usually 20–40 seconds.
+                Building your phases, picking resources and designing your capstone
+                project. This usually takes 20 to 40 seconds.
               </span>
             </div>
           </motion.div>
@@ -344,7 +344,7 @@ export function AssessmentWizard({ slug, domainName, questions, onDone, onSkip }
             <ArrowLeft className="h-4 w-4" strokeWidth={2.2} /> Back
           </Button>
           <Button variant="ghost" onClick={onSkip} className="h-auto min-h-11 whitespace-normal text-right text-muted-foreground">
-            Skip — browse the curated trail instead
+            Skip, browse the standard roadmap instead
           </Button>
         </div>
       )}
@@ -389,27 +389,21 @@ export function AssessmentIntro({
         className="justify-center text-left"
       />
       <h2 className="mt-8 font-display text-4xl leading-[1.02] text-foreground sm:text-5xl [text-wrap:balance]">
-        Before the roadmap&nbsp;— let&apos;s make it{" "}
+        First, make this roadmap{" "}
         <span className="font-serif-accent text-glow text-primary">yours</span>.
       </h2>
       <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
-        Answer a few quick questions about your goals and experience with{" "}
-        {domainName}, and your AI mentor will design a personal phase-by-phase
-        plan — with resources, projects and a capstone build.
+        Answer a few questions about your goals and what you already know about{" "}
+        {domainName}. The tutor turns them into a phase-by-phase plan with
+        resources, projects and a capstone build.
       </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-2">
-        {["About 2 minutes", "Tap to answer", "Retake any time"].map((t) => (
-          <span key={t} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-muted-foreground">
-            {t}
-          </span>
-        ))}
-      </div>
+      <p className="mt-3 text-sm text-muted-foreground">Takes about two minutes. You can redo it any time.</p>
       <div className="mt-8 flex w-full flex-col items-center gap-3 sm:w-auto">
         <Button size="lg" onClick={onStart} className="w-full sm:w-auto sm:min-w-[300px]">
           Start the 2-minute chat
         </Button>
         <Button variant="ghost" onClick={onSkip} className="text-muted-foreground">
-          Skip — show me the curated trail
+          Skip, show me the standard roadmap
         </Button>
       </div>
     </motion.div>

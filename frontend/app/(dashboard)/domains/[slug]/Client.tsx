@@ -230,7 +230,7 @@ export default function RoadmapPage() {
           <h2 className="mt-4 font-display text-2xl text-foreground">Roadmap on demand</h2>
           <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-muted-foreground">
             We don&apos;t have a curated roadmap for this domain yet. Open the AI
-            tutor and ask for one — it&apos;ll generate a personalized path on the fly.
+            tutor and ask for one. It will write you a path on the spot.
           </p>
           <Button asChild variant="grape" size="lg" className="mt-6">
             <Link href={`/chatbot?domain=${data.slug}`}>
@@ -664,13 +664,13 @@ function InterviewUnlockCTA({
       pillText={adminView ? "Admin override · Interview prep" : "Unlocked · Interview prep"}
       title={
         adminView
-          ? "Admin access — full interview prep available."
-          : "You finished the roadmap. Now nail the interview."
+          ? "Admin access: full interview prep available."
+          : "You finished the roadmap. Next, the interview."
       }
-      body="15 senior-level questions, 2 system-design scenarios, behavioral STAR templates, common traps, and a 7-day cram plan — calibrated to your level."
+      body="15 senior-level questions, 2 system-design scenarios, behavioral STAR templates, common traps and a 7-day cram plan, all pitched at your level."
       cta="Open prep"
       lockedTitle="Interview prep"
-      lockedBody="Complete every topic in this roadmap to unlock a hand-tuned interview prep brief — questions, system design, behavioral, the lot."
+      lockedBody="Opens when every topic in this roadmap is complete: interview questions, system design, behavioral answers and a 7-day cram plan."
       completed={completed}
       total={total}
     />
@@ -719,10 +719,10 @@ function CareerUnlockCTA({
       icon={Compass}
       pillText={isAdmin && !completionUnlocked ? "Admin override · Career path" : "Unlocked · Career path"}
       title="The road ends here. Your career starts now."
-      body="Your personalized career map for this domain — stages with timeframes at your pace, real certifications worth taking, role and salary progression, and portfolio projects to build."
+      body="Your career map for this domain: stages timed to your pace, certifications worth taking, how roles and salaries progress, and portfolio projects to build."
       cta="See my career path"
       lockedTitle="Career path"
-      lockedBody="Finish the trail above to unlock your career map — stages, certifications, roles and salaries, personalized to your profile."
+      lockedBody="Opens when you finish the roadmap above: stages, certifications, roles and salaries, based on your profile."
       completed={completed}
       total={total}
     />

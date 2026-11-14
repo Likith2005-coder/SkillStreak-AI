@@ -6,7 +6,7 @@ import { MorphTextStyle } from "@/components/shared/MorphTextStyle";
 import { Mascot } from "@/components/playground/Mascot";
 import { motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
-import { ArrowRight, BookOpen, Clock, MessageCircle } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import {
   apiErrorMessage,
   fetchDomains,
@@ -15,9 +15,7 @@ import {
   type DomainProgressTile,
 } from "@/lib/api";
 import { rememberDomains } from "@/lib/domainCache";
-import { styleFor } from "@/lib/domain-style";
 import { DomainTile, domainPalette, withAlpha } from "@/components/shared/DomainIcon";
-import { cn } from "@/lib/utils";
 
 export default function DomainsPage() {
   const [domains, setDomains] = useState<Domain[] | null>(null);
@@ -47,7 +45,6 @@ export default function DomainsPage() {
     };
   }, []);
 
-  const curated = domains?.filter((d) => d.isCurated).length ?? 5;
   const count = domains ? domains.length : 9;
 
   return (
@@ -61,16 +58,13 @@ export default function DomainsPage() {
 
       <header className="flex items-end justify-between gap-6">
         <div className="max-w-3xl">
-          <p className="label-mono text-muted-foreground">
-            {count} domains · {curated} curated roadmaps
-          </p>
-          <h1 className="mt-3 font-display text-[clamp(2.4rem,6vw,4.75rem)] leading-[0.95] text-foreground [text-wrap:balance]">
+          <h1 className="font-display text-[clamp(2.4rem,6vw,4.75rem)] leading-[0.95] text-foreground [text-wrap:balance]">
             {count} paths into{" "}
             <span className="font-serif-accent text-glow text-primary">modern tech</span>
           </h1>
           <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-muted-foreground">
-            Every domain is a full roadmap, from your first concept to job-ready. The AI
-            tutor fills in anything else you&apos;re curious about along the way.
+            Each one is a full roadmap of 60-odd topics, ordered from the basics up. Open any of
+            them. You can run more than one at a time.
           </p>
         </div>
         <Mascot
@@ -108,7 +102,6 @@ function DomainCard({
   index: number;
   progress?: DomainProgressTile;
 }) {
-  const s = styleFor(domain.color);
   const p = domainPalette(domain.color);
   const reduce = useReducedMotion();
   const href = domain.isCurated ? `/domains/${domain.slug}` : `/chatbot?domain=${domain.slug}`;
@@ -145,21 +138,13 @@ function DomainCard({
             className="transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"
             style={{ viewTransitionName: `domain-icon-${domain.slug}` }}
           />
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-              domain.isCurated
-                ? "border-primary/25 bg-primary/10 text-primary"
-                : "border-grape/25 bg-grape/10 text-grape"
-            )}
-          >
-            {domain.isCurated ? (
-              <BookOpen className="h-3.5 w-3.5" aria-hidden />
-            ) : (
+          {/* Only the exception is labelled: a domain without a curated roadmap. */}
+          {!domain.isCurated && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">
               <MessageCircle className="h-3.5 w-3.5" aria-hidden />
-            )}
-            {domain.isCurated ? "Full roadmap" : "AI tutor"}
-          </span>
+              AI tutor
+            </span>
+          )}
         </div>
 
         <h2
@@ -172,21 +157,17 @@ function DomainCard({
           {domain.description}
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-1.5">
-          <span className={cn("rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize", s.badgeBg)}>
+        <p className="mt-4 text-sm text-muted-foreground">
+          <span className="font-medium capitalize" style={{ color: p.light }}>
             {domain.difficulty}
           </span>
           {domain.roadmap && (
             <>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-                {domain.roadmap.totalTopics} topics
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-                <Clock className="h-3 w-3" aria-hidden /> ~{domain.roadmap.estimatedDays} days
-              </span>
+              {" · "}
+              {domain.roadmap.totalTopics} topics · about {domain.roadmap.estimatedDays} days
             </>
           )}
-        </div>
+        </p>
 
         {/* Pushes the footer to the bottom so every card in a row lines up */}
         <div className="flex-1" />

@@ -158,7 +158,7 @@ export default function SettingsPage() {
     try {
       const { remaining } = await spendStreakFreeze();
       setStreak({ ...streak, freezesAvailable: remaining });
-      toast.success("❄️ Freeze banked — your streak is safer");
+      toast.success("Freeze banked. Tomorrow is covered.");
     } catch (err) {
       toast.error(apiErrorMessage(err, "Could not use freeze"));
     } finally {
@@ -189,7 +189,7 @@ export default function SettingsPage() {
           className="pointer-events-none absolute -left-10 -top-16 h-48 w-80 rounded-full bg-aurora-2/[0.12] blur-3xl"
         />
         <h1 className="relative font-display text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.02] text-foreground">
-          <span className="font-serif-accent text-primary">Your</span> settings
+          Settings
         </h1>
         <p className="relative mt-3 max-w-[60ch] text-[15px] leading-relaxed text-muted-foreground">
           Profile, preferences, notifications, and account actions.
@@ -200,10 +200,10 @@ export default function SettingsPage() {
         {/* ── Account info (read-only) ─────────────────────── */}
         <SettingCard
           icon={User}
-          tone="bg-secondary/10 text-secondary ring-secondary/20"
+          tone="bg-white/[0.05] text-foreground/80 ring-white/10"
           spot="var(--secondary)"
           title="Account"
-          hint="Your profile snapshot."
+          hint="Who you are signed in as."
         >
           <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] sm:grid-cols-3">
             <Field label="Name" value={user.name} />
@@ -260,7 +260,7 @@ export default function SettingsPage() {
           tone="bg-energy/10 text-energy ring-energy/20"
           spot="var(--energy)"
           title="Streak"
-          hint="Use a freeze proactively to protect tomorrow's day."
+          hint="A freeze covers one missed day. Bank one before you need it."
         >
           <div className="flex flex-wrap items-end justify-between gap-5">
             <div>
@@ -313,10 +313,10 @@ export default function SettingsPage() {
         {/* ── Learning preferences ──────────────────────────── */}
         <SettingCard
           icon={Target}
-          tone="bg-grape/10 text-grape ring-grape/20"
+          tone="bg-white/[0.05] text-foreground/80 ring-white/10"
           spot="var(--grape)"
           title="Learning preferences"
-          hint="Adjust what the AI tutor knows about your level and goals."
+          hint="The tutor pitches its explanations to these."
           footer={
             <Button onClick={handleSavePrefs} disabled={savingPrefs} className="w-full sm:w-auto">
               {savingPrefs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
@@ -383,10 +383,10 @@ export default function SettingsPage() {
         {/* ── Notifications ─────────────────────────────────── */}
         <SettingCard
           icon={Bell}
-          tone="bg-xp/10 text-xp ring-xp/20"
+          tone="bg-white/[0.05] text-foreground/80 ring-white/10"
           spot="var(--xp)"
           title="Notifications"
-          hint="Email reminders and weekly summary."
+          hint="A daily reminder and a Sunday summary, by email."
           footer={
             <Button onClick={handleSaveNotifs} disabled={savingNotifs} className="w-full sm:w-auto">
               {savingNotifs && <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />}
@@ -471,7 +471,7 @@ export default function SettingsPage() {
         {/* ── Danger zone ───────────────────────────────────── */}
         <SettingCard
           icon={LogOut}
-          tone="bg-destructive/10 text-destructive-text ring-destructive/25"
+          tone="bg-white/[0.05] text-foreground/80 ring-white/10"
           spot="var(--destructive)"
           title="Account actions"
           hint="Sign out of this browser."

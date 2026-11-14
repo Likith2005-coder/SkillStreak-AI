@@ -45,7 +45,7 @@ export function WeakAreasCard({ items, attempts }: Props) {
             <ListChecks className="h-5 w-5" />
           </span>
           <p className="text-sm text-muted-foreground">
-            Take a quiz — anything you score under 60% on shows up here.
+            Take a quiz. Anything you score under 60% on shows up here.
           </p>
         </div>
       ) : items.length === 0 ? (

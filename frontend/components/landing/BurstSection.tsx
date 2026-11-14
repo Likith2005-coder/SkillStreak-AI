@@ -10,7 +10,7 @@
  * Layout (top → bottom, inside a min-h-[100svh] section):
  *   wordmark (WebGL mesh on desktop, real type below) · tagline
  *   horizon line
- *   "Your first streak is one click away." · copy · CTAs · reassurance row
+ *   "Day one of your streak can be today." · copy · CTAs
  *
  * Choreography (triggered once by `useInView`, amount 0.55):
  *   0.00 → 0.80s  Aurora bloom scales 0 → 1 from the measured "a" position.
@@ -192,25 +192,17 @@ export function BurstSection() {
           className="flex w-full max-w-2xl flex-col items-center"
         >
           <h3 className="font-display text-3xl leading-tight [text-wrap:balance] sm:text-4xl lg:text-5xl">
-            Your first <span className="font-serif-accent text-primary text-glow">streak</span> is one click away.
+            Day one of your <span className="font-serif-accent text-primary text-glow">streak</span> can be today.
           </h3>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            Sign up in a minute. Start with the topic your AI tutor picks for you, and come back
-            tomorrow to keep it alive.
+            Sign-up takes about a minute and costs nothing. Pick a domain, finish one topic, and come
+            back tomorrow to keep the streak going.
           </p>
 
           <div className="mt-8 w-full" data-bot-avoid="">
             <HeroCTA />
           </div>
 
-          <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            {["Free forever", "Built for students", "Sign up in 60 seconds"].map((t) => (
-              <li key={t} className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.9)]" />
-                {t}
-              </li>
-            ))}
-          </ul>
         </motion.div>
       </div>
     </section>

@@ -48,7 +48,7 @@ export function RecommendedNext({ showHeading = true }: { showHeading?: boolean 
       {showHeading && (
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-display text-2xl text-foreground">
-            Up next <span className="font-serif-accent text-[1.15em] text-primary">for you</span>
+            Up next for you
           </h2>
           {personalized && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-grape/25 bg-grape/10 px-2.5 py-0.5 text-xs font-medium text-grape">

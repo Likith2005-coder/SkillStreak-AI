@@ -150,8 +150,8 @@ export function HeroMidnight() {
           animate={state}
           className="mt-7 max-w-[34rem] text-[17px] leading-relaxed text-foreground/80 [text-wrap:pretty]"
         >
-          Roadmaps for nine tech domains, an AI tutor that teaches at your level, and quizzes that
-          prove it. The streak makes tomorrow easy.
+          Nine roadmaps, from cybersecurity to IoT. An AI tutor explains each topic at your level,
+          a five-question quiz checks that it stuck, and the streak brings you back tomorrow.
         </motion.p>
 
         <motion.div
@@ -177,7 +177,7 @@ export function HeroMidnight() {
           animate={state}
           className="mt-8 text-sm text-muted-foreground [text-wrap:balance]"
         >
-          9 domains · 580+ topics · AI-checked quizzes · free forever
+          9 domains, 582 topics, a quiz after every one. Free.
         </motion.p>
       </motion.div>
 

@@ -126,11 +126,11 @@ export default function LeaderboardPage() {
               <Crown className="h-8 w-8 drop-shadow-[0_0_10px_hsl(var(--xp)/0.8)]" fill="currentColor" />
             </span>
             <p className="relative mt-6 font-display text-3xl text-foreground [text-wrap:balance]">
-              The crown is <span className="font-serif-accent text-xp">up for grabs</span>
+              Nobody holds the crown yet
             </p>
             <p className="relative mt-3 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-              Nobody has scored this week. Finish a topic (+10 XP) or ace a quiz (up to +25 XP)
-              and you take rank #1 instantly.
+              No one has scored this week. Finish a topic (+10 XP) or pass its quiz (up to +25 XP)
+              and rank #1 is yours.
             </p>
             <Button asChild size="lg" className="relative mt-7">
               <Link href="/domains">Start a topic</Link>

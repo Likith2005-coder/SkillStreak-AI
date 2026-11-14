@@ -181,7 +181,7 @@ export default function InterviewPrepPage() {
               </p>
               <p className="mt-1 text-sm text-destructive-text">
                 {isTimeout
-                  ? "Cold-cache generation can spike to 30-60s on a busy day. Try again — most retries return a cached copy in under a second."
+                  ? "Cold-cache generation can spike to 30-60s on a busy day. Try again. Most retries return a cached copy in under a second."
                   : error}
               </p>
               <Button variant="outline" className="mt-3" onClick={() => setReloadKey((k) => k + 1)}>
@@ -320,7 +320,7 @@ function InterviewBody({
           tone="bg-grape-bright"
           edge="hsl(var(--grape-shade))"
           title="System Design Scenarios"
-          subtitle="Treat each as a 35-minute round — explore tradeoffs out loud."
+          subtitle="Treat each as a 35-minute round and talk through the tradeoffs out loud."
         />
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
           {prep.systemDesign.map((s, i) => (
@@ -438,7 +438,7 @@ function Hero({
           </h1>
           <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-muted-foreground">
             15 questions, 2 system-design scenarios, behavioral STAR templates, and a
-            7-day cram plan — calibrated to your level. Mark each question as you go.
+            7-day cram plan, pitched at your level. Mark each question as you go.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -538,7 +538,7 @@ function QuestionsSection({
         tone="bg-xp-bright"
         edge="hsl(var(--xp-shade))"
         title="Real questions, real answers"
-        subtitle={`${questions.length} questions — filter, shuffle, or run a focused practice session.`}
+        subtitle={`${questions.length} questions. Filter, shuffle, or run a focused practice session.`}
       />
 
       {/* Sticky from sm up only: on a phone the wrapped chips would eat the screen. */}
@@ -930,7 +930,7 @@ function PracticeMode({
               </Button>
             ) : (
               <Button size="sm" onClick={onClose} className="h-11">
-                {allReviewed ? "All reviewed — done" : "Finish"}
+                {allReviewed ? "All reviewed, done" : "Finish"}
                 <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
               </Button>
             )}

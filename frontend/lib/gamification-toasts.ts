@@ -41,24 +41,24 @@ export function surfaceGamification(delta: GamificationDelta | null) {
   }
 
   if (delta.xp.newLevel > delta.xp.oldLevel) {
-    toast.success(`🎉 Level up! → Lvl ${delta.xp.newLevel}`, {
-      description: "You unlocked a new tier. Keep going.",
+    toast.success(`Level ${delta.xp.newLevel} reached`, {
+      description: `Up from level ${delta.xp.oldLevel}.`,
       duration: 6000,
     });
     fireConfetti();
   }
 
   if (delta.streak.changedToday && delta.streak.current > 1) {
-    toast(`🔥 ${delta.streak.current}-day streak`, { duration: 3500 });
+    toast(`${delta.streak.current}-day streak`, { duration: 3500 });
   }
 
   if (delta.streak.freezeUsed) {
-    toast(`❄️ Freeze used — streak rescued`, { duration: 4000 });
+    toast(`Freeze used. Your streak is intact.`, { duration: 4000 });
   }
 
   if (delta.streak.comebackBonus) {
     toast(`Comeback bonus claimed`, {
-      description: "Your streak reset to 1 — welcome back.",
+      description: "Your streak restarts at day 1. Welcome back.",
       duration: 4000,
     });
   }

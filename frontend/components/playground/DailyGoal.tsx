@@ -125,7 +125,7 @@ export function WeekBars({ week, goal }: { week: TodayProgress["week"]; goal: nu
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="label-mono text-muted-foreground">This week</span>
+        <span className="text-[13px] font-medium text-muted-foreground">This week</span>
         <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
           <span className="font-semibold text-xp">{total.toLocaleString()} XP</span>
           {daysMet > 0 && <> · {daysMet}/7 goals</>}

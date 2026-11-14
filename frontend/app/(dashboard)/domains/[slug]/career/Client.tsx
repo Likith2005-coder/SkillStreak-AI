@@ -61,7 +61,7 @@ const LOADING_LINES = [
   "Picking certifications that actually matter…",
   "Mapping roles and salary bands…",
   "Choosing portfolio projects…",
-  "Almost there — polishing your roadmap…",
+  "Almost there, polishing your roadmap…",
 ];
 
 const PERSONA_LABELS: Record<string, string> = {
@@ -154,8 +154,8 @@ function LockedState({ slug }: { slug?: string }) {
         Your career path is waiting at the end of the roadmap.
       </h1>
       <p className="mt-2 max-w-sm text-base text-muted-foreground">
-        Complete every topic in this domain to unlock your personalized career
-        map — stages, certifications, roles and salaries.
+        Complete every topic in this domain to open your career map: stages,
+        certifications, roles and salaries.
       </p>
       <Button asChild size="lg" className="mt-6">
         <Link href={slug ? `/domains/${slug}` : "/domains"}>Back to the roadmap</Link>
@@ -272,7 +272,7 @@ function CareerView({
           <div className="min-w-0 flex-1">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Star className="h-3.5 w-3.5 fill-current" />
-              {adminOverride ? "Admin preview" : `Roadmap completed — your ${career.domainName} career map`}
+              {adminOverride ? "Admin preview" : `Roadmap completed · your ${career.domainName} career map`}
             </p>
             <h1 className="mt-4 font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.02] text-foreground [text-wrap:balance]">
               {career.headline}
@@ -315,7 +315,7 @@ function CareerView({
       </Section>
 
       {/* ── The road (stages timeline) ── */}
-      <Section icon={Flag} tone="primary" title="The road" sub="Your stages, in order — timeframes already adjusted to your pace.">
+      <Section icon={Flag} tone="primary" title="The road" sub="Your stages, in order. Timeframes are already adjusted to your pace.">
         <ol className="relative space-y-6">
           {/* the road itself */}
           <span aria-hidden className="absolute bottom-6 left-[23px] top-6 w-0.5 rounded-full bg-gradient-to-b from-primary via-primary/40 to-white/[0.06] shadow-[0_0_12px_hsl(var(--primary)/0.5)]" />
@@ -348,7 +348,7 @@ function CareerView({
       </Section>
 
       {/* ── Certification ladder ── */}
-      <Section icon={Award} tone="xp" title="Certification ladder" sub="Real, hiring-relevant certifications — cheapest and easiest first.">
+      <Section icon={Award} tone="xp" title="Certification ladder" sub="Certifications employers ask for, cheapest and easiest first.">
         <div className="grid gap-4 sm:grid-cols-2">
           {career.certifications.map((c) => {
             const style = CERT_LEVEL_STYLES[c.level] ?? CERT_LEVEL_STYLES.foundation;
@@ -393,7 +393,7 @@ function CareerView({
       </Section>
 
       {/* ── Portfolio projects ── */}
-      <Section icon={FolderGit2} tone="secondary" title="Prove it with projects" sub="Portfolio pieces that make recruiters stop scrolling — easiest first.">
+      <Section icon={FolderGit2} tone="secondary" title="Prove it with projects" sub="Portfolio pieces a recruiter can open and run, easiest first.">
         <div className="grid gap-4 lg:grid-cols-3">
           {career.projects.map((p) => (
             <div key={p.title} className="card-chunky p-5">
@@ -406,7 +406,7 @@ function CareerView({
       </Section>
 
       <p className="mt-16 text-center text-sm text-muted-foreground">
-        Generated from your onboarding answers — experience, goal and pace.
+        Generated from your onboarding answers: experience, goal and pace.
         Salary bands are indicative, not guarantees.
       </p>
     </div>

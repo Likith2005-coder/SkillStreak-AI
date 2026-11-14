@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
 import { Link } from "next-view-transitions";
-import { ArrowRight, BookOpen, Compass, Gem, ListChecks, Map as MapIcon, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, Map as MapIcon } from "lucide-react";
 import type { ProgressOverview } from "@/lib/api";
 import { PathPreview } from "@/components/playground/PathPreview";
 import { Button } from "@/components/ui/button";
@@ -100,15 +100,16 @@ export function ContinueHero({
         <div className="flex min-w-0 flex-col p-6 sm:p-7">
           {rec ? (
             <>
-              <p className="label-mono flex items-center gap-2 text-primary">
-                <MapIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                <span className="truncate">{rec.domain.name} · Next up</span>
+              <p className="flex items-center gap-2 text-sm font-medium text-primary">
+                <MapIcon className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">Next up in {rec.domain.name}</span>
               </p>
               <h2 className="mt-3 font-display text-[2rem] leading-[1.05] text-foreground sm:text-4xl [text-wrap:balance]">
                 {rec.topicTitle}
               </h2>
               <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-muted-foreground">
-                Read the lesson, ask the tutor anything, then lock it in with a five-question quiz.
+                Read the lesson, ask the tutor anything, then lock it in with a five-question quiz.{" "}
+                <span className="whitespace-nowrap font-medium text-xp">Worth up to 35 XP.</span>
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg" className="h-[3.25rem] px-8 text-base">
@@ -120,31 +121,11 @@ export function ContinueHero({
                   <Link href={`/domains/${rec.domain.slug}`}>View roadmap</Link>
                 </Button>
               </div>
-              {/* The unit loop: what "Continue" actually involves. */}
-              <ol aria-label="This unit" className="mt-6 hidden flex-wrap items-center gap-2 sm:flex">
-                {[
-                  { icon: BookOpen, label: "Lesson" },
-                  { icon: Sparkles, label: "Tutor" },
-                  { icon: ListChecks, label: "Quiz" },
-                ].map((step) => (
-                  <li key={step.label}>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-muted-foreground">
-                      <step.icon className="h-3.5 w-3.5 text-foreground/80" aria-hidden />
-                      {step.label}
-                    </span>
-                  </li>
-                ))}
-                <li>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-xp/25 bg-xp/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-xp">
-                    <Gem className="h-3.5 w-3.5" aria-hidden /> +35 XP
-                  </span>
-                </li>
-              </ol>
             </>
           ) : overview ? (
             <>
-              <p className="label-mono flex items-center gap-2 text-primary">
-                <Compass className="h-3.5 w-3.5" aria-hidden /> Start here
+              <p className="flex items-center gap-2 text-sm font-medium text-primary">
+                <Compass className="h-4 w-4" aria-hidden /> Start here
               </p>
               <h2 className="mt-3 font-display text-[2rem] leading-[1.05] text-foreground sm:text-4xl [text-wrap:balance]">
                 Pick a domain and start your <span className="font-serif-accent text-primary">first streak</span>.

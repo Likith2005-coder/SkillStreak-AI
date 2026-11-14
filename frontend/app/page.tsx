@@ -58,10 +58,10 @@ export default function LandingPage() {
 
       <Seam tone="aurora-2" />
 
-      {/* ── Section 3 — Stats: glowing count-up numerals in one bento ── */}
+      {/* ── Section 3 — What's inside: one big number and a spec sheet ── */}
       <div
         className="[content-visibility:auto] [contain-intrinsic-size:auto_640px]"
-        data-narrate="580+ topics. No rush."
+        data-narrate="582 topics. No rush."
       >
         <StatsBanner />
       </div>
@@ -76,7 +76,7 @@ export default function LandingPage() {
       {/* ── Section 6 — Ethical Hacking Arsenal spotlight ────── */}
       <section
         id="arsenal"
-        data-narrate="Ooh, the secret level 👀"
+        data-narrate="Ooh, the secret level."
         data-narrate-mood="curious"
         className="relative scroll-mt-16 px-4 py-16 [content-visibility:auto] [contain-intrinsic-size:auto_720px] lg:px-12 lg:py-24"
       >
@@ -107,7 +107,7 @@ export default function LandingPage() {
               </h2>
               <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground md:text-base">
                 Every phase of a real pentest, from recon to reporting, with the actual tools and an
-                AI field guide for each. Nmap, Metasploit, Burp, sqlmap and 30+ more, in a real
+                AI field guide for each. Nmap, Metasploit, Burp, sqlmap and 33 more, in a real
                 terminal.
               </p>
               <ul className="mt-6 flex flex-wrap gap-2 text-sm text-emerald-100/90">
@@ -115,7 +115,7 @@ export default function LandingPage() {
                   5 attack phases
                 </Pill>
                 <Pill icon={<Terminal className="h-3.5 w-3.5 text-emerald-400" />}>
-                  37+ real tools
+                  37 real tools
                 </Pill>
                 <Pill icon={<Bot className="h-3.5 w-3.5 text-emerald-400" />}>
                   AI step-by-step guides

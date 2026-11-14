@@ -107,7 +107,7 @@ export default function TopicPage() {
       // Visible rollback so the user isn't misled into thinking it saved.
       setCompleteState("idle");
       toast.error("Couldn't mark complete", {
-        description: `${apiErrorMessage(err, "Please try again")} — not saved.`,
+        description: `${apiErrorMessage(err, "Please try again")}. Not saved.`,
       });
     }
   }

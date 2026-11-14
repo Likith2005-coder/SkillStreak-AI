@@ -80,7 +80,7 @@ export function ChatWindow({ emptyTitle, emptyHint, className, compact = false }
             }
             hint={
               emptyHint ??
-              "Explanations, roadmaps, quizzes, debugging — your AI tutor knows your level."
+              "Ask for an explanation, a quiz or help with a bug. The tutor already knows your level."
             }
             compact={compact}
             onPick={(t) => send(t, { topicId: activeSession?.topicId ?? null })}

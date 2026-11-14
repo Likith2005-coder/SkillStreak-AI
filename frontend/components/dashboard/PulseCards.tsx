@@ -63,7 +63,7 @@ function PulseCard({
           <span aria-hidden className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-lg ring-1", well)}>
             {icon}
           </span>
-          <h2 id={id} className={cn("label-mono truncate", titleClass)}>
+          <h2 id={id} className={cn("truncate text-sm font-semibold", titleClass)}>
             {title}
           </h2>
         </div>
@@ -102,7 +102,7 @@ export function ReviewPulse({ review }: { review: ReviewList | null }) {
         }
       >
         <p className="font-display text-[1.75rem] leading-none text-foreground">
-          Clean <span className="font-serif-accent text-primary">slate</span>.
+          Clean slate.
         </p>
         <p className="mt-2 text-[13px] text-muted-foreground">Nothing to fix right now.</p>
       </PulseCard>

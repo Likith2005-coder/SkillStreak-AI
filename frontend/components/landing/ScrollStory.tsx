@@ -48,7 +48,7 @@ type Step = {
 const STEPS: Step[] = [
   {
     title: "Pick your path",
-    copy: "Nine tech domains, each a full roadmap. Choose a goal and get a clear trail from foundations to mastery.",
+    copy: "Nine domains, each a full roadmap. Tell it your goal and how much you already know, and it lays out the topics in order.",
     icon: BookOpen,
     tone: "secondary",
     text: "text-secondary",
@@ -58,7 +58,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Learn with an AI tutor",
-    copy: "A streaming tutor that knows your level and current topic. Ask for analogies, deeper dives or a quick quiz. Every chat is saved, every code block copy-ready.",
+    copy: "The tutor knows which topic you are on and how much you know. Ask for an analogy, a harder example or a quick quiz. Chats are saved, and code blocks copy in one click.",
     icon: Bot,
     tone: "grape",
     text: "text-grape",
@@ -68,7 +68,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Prove it",
-    copy: "5 AI-written questions per topic, checked by a second AI pass. Score 3 out of 5 to complete it. Plus a hands-on Ethical Hacking Arsenal for real practice.",
+    copy: "Five questions per topic, written by the AI and checked by a second pass. Three right completes the topic. For hands-on practice there is the Ethical Hacking Arsenal.",
     icon: ListChecks,
     tone: "primary",
     text: "text-primary",
@@ -78,7 +78,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Build the habit",
-    copy: "Daily streaks with automatic freezes, XP and levels, 8 unlockable badges and a weekly league. Momentum you can feel.",
+    copy: "A daily streak, with freezes that cover a missed day. XP, levels, eight badges and a weekly league give you a reason to open it again tomorrow.",
     icon: Flame,
     tone: "energy",
     text: "text-energy",
@@ -87,8 +87,8 @@ const STEPS: Step[] = [
     vignetteLabel: "A five-day streak, level progress and a league rank",
   },
   {
-    title: "Watch yourself level up",
-    copy: "A 90-day activity heatmap, per-domain progress, weak-area detection and score trends. Visible proof you're actually improving.",
+    title: "See where you stand",
+    copy: "A 90-day activity heatmap, progress per domain and your quiz scores over time. Topics you scored under 60% on are flagged for a retake.",
     icon: TrendingUp,
     tone: "xp",
     text: "text-xp",
@@ -115,10 +115,10 @@ export function ScrollStory() {
             variant="focus"
             className="mx-auto max-w-3xl text-center font-display text-4xl leading-[1.05] [text-wrap:balance] md:text-6xl"
           >
-            From curious to <span className="font-serif-accent text-primary text-glow">capable</span>, step by step.
+            How a topic goes from new to <span className="font-serif-accent text-primary text-glow">known</span>.
           </MaskHeading>
           <p className="mx-auto mt-6 max-w-xl text-center text-base leading-relaxed text-muted-foreground [text-wrap:pretty] md:text-lg">
-            Pick a path, learn it with the tutor, prove it in a quiz, and keep the streak alive.
+            Five steps. You repeat the middle three every day.
           </p>
 
           <ol ref={trackRef} className="relative mt-14 space-y-12 md:mt-20 md:space-y-20">

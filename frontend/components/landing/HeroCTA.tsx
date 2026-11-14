@@ -15,7 +15,7 @@ export function HeroCTA() {
     <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
       <Button asChild size="lg" className="group h-[52px] px-8 text-base">
         <Link href="/register">
-          Get started — it&apos;s free
+          Create a free account
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
         </Link>
       </Button>

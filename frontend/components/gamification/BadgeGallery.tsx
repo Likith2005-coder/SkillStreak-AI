@@ -48,7 +48,7 @@ export function BadgeHeader({ earned, total, children }: { earned: number; total
     <div className="flex items-center justify-between gap-4">
       <div className="min-w-0 flex-1">
         <h3 className="font-display text-2xl text-foreground">
-          Trophy <span className="font-serif-accent text-[1.15em] text-xp">case</span>
+          Trophy case
         </h3>
         <div className="mt-2 flex items-center gap-3">
           <div

@@ -395,7 +395,7 @@ function EmptyState() {
         <CheckCheck className="h-6 w-6" aria-hidden />
       </span>
       <h1 className="mt-5 font-display text-3xl text-foreground">
-        No mistakes to <span className="font-serif-accent text-primary text-glow">review</span>.
+        No mistakes to review.
       </h1>
       <p className="mt-2 max-w-[40ch] text-[15px] leading-relaxed text-muted-foreground">
         Take a quiz and anything you miss lands here.

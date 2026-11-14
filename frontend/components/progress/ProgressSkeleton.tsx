@@ -15,14 +15,6 @@ export function ProgressSkeleton() {
         </div>
         <div className={`mt-6 h-2 w-full rounded-full ${PULSE}`} />
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="card-chunky h-[108px] p-4 sm:p-5">
-            <div className={`h-3 w-20 rounded ${PULSE}`} />
-            <div className={`mt-6 h-8 w-16 rounded-md ${PULSE}`} />
-          </div>
-        ))}
-      </div>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className="card-chunky h-[320px]" />
         <div className="card-chunky h-[320px]" />

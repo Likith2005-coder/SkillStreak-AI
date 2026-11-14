@@ -3,7 +3,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "next-view-transitions";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronRight, CalendarCheck, ListChecks, BookOpenCheck, Zap, LineChart, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ChevronRight, LineChart } from "lucide-react";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import {
   apiErrorMessage,
@@ -67,13 +67,6 @@ export default function ProgressPage() {
       ? Math.round((overview.totals.topicsCompleted / overview.totals.topicsAvailable) * 100)
       : 0;
 
-  const stats: StatDef[] = [
-    { icon: BookOpenCheck, value: overview.totals.topicsCompleted, label: "Topics done", well: "bg-primary/10 text-primary ring-primary/20", text: "text-primary", spot: "var(--primary)" },
-    { icon: ListChecks, value: overview.totals.attempts, label: "Quizzes", well: "bg-secondary/10 text-secondary ring-secondary/20", text: "text-secondary", spot: "var(--secondary)" },
-    { icon: CalendarCheck, value: heatmap.totalActiveDays, label: "Active days", well: "bg-energy/10 text-energy ring-energy/20", text: "text-energy", spot: "var(--energy)" },
-    { icon: Zap, value: heatmap.totalActions, label: "Actions", well: "bg-grape/10 text-grape ring-grape/20", text: "text-grape", spot: "var(--grape)" },
-  ];
-
   return (
     <main className="container max-w-6xl px-4 py-8">
       <Link
@@ -98,7 +91,9 @@ export default function ProgressPage() {
             </h1>
             <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
               <span className="font-semibold tabular-nums text-foreground">{overview.totals.topicsCompleted}</span> of{" "}
-              <span className="tabular-nums">{overview.totals.topicsAvailable}</span> topics complete
+              <span className="tabular-nums">{overview.totals.topicsAvailable}</span> topics complete ·{" "}
+              <span className="font-semibold tabular-nums text-foreground">{overview.totals.attempts}</span>{" "}
+              {overview.totals.attempts === 1 ? "quiz" : "quizzes"} taken
             </p>
           </div>
           <div className="flex items-baseline gap-1 sm:text-right">
@@ -126,12 +121,6 @@ export default function ProgressPage() {
         </div>
       </header>
 
-      <section className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" aria-label="Totals">
-        {stats.map((st, i) => (
-          <StatTile key={st.label} stat={st} index={i} />
-        ))}
-      </section>
-
       <section className="mt-4 grid gap-4 lg:grid-cols-2">
         <Heatmap data={heatmap} />
         <QuizTrendCard items={overview.recentAttempts} />
@@ -150,41 +139,6 @@ export default function ProgressPage() {
         </div>
       </section>
     </main>
-  );
-}
-
-type StatDef = {
-  icon: LucideIcon;
-  value: number;
-  label: string;
-  /** Role-tinted icon well classes. */
-  well: string;
-  text: string;
-  /** Spotlight colour channels. */
-  spot: string;
-};
-
-function StatTile({ stat, index }: { stat: StatDef; index: number }) {
-  const reduce = useReducedMotionSafe();
-  const Icon = stat.icon;
-  return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.1 + index * 0.06, ease: EASE }}
-      className="card-chunky spotlight flex flex-col gap-4 p-4 sm:p-5"
-      style={{ "--spot": stat.spot } as CSSProperties}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className="label-mono truncate text-muted-foreground">{stat.label}</span>
-        <span aria-hidden className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ring-1", stat.well)}>
-          <Icon className="h-4 w-4" />
-        </span>
-      </div>
-      <div className={cn("font-display text-3xl leading-none tabular-nums sm:text-4xl", stat.text)}>
-        {stat.value.toLocaleString()}
-      </div>
-    </motion.div>
   );
 }
 

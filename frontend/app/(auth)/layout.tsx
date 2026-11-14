@@ -63,7 +63,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               {onRegister ? "starts today." : "is waiting."}
             </h2>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-muted-foreground [text-wrap:pretty]">
-              The crew watches you type. They look away for passwords — promise.
+              The crew watches you type. They look away for passwords. Promise.
             </p>
           </div>
 

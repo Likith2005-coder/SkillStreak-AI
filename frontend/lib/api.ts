@@ -172,7 +172,7 @@ export function apiErrorMessage(err: unknown, fallback = "Something went wrong")
     // Transport failures carry developer-facing text ("timeout of 15000ms
     // exceeded", "Network Error"). Say something the reader can act on.
     if (err.code === "ECONNABORTED" || err.message?.startsWith("timeout of")) {
-      return "This is taking longer than usual — the AI is still generating. Try again in a moment.";
+      return "This is taking longer than usual. The AI is still generating, so try again in a moment.";
     }
     if (err.code === "ERR_NETWORK") {
       return "Can't reach the server. Check that the backend is running.";

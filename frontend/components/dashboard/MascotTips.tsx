@@ -56,7 +56,7 @@ export function MascotTips({
       onBlur={() => setPaused(false)}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="label-mono flex min-w-0 items-center gap-1.5 text-grape">
+        <p className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-grape">
           <Lightbulb className="h-3.5 w-3.5 shrink-0" aria-hidden />
           <span className="truncate">Did you know?</span>
           {domainName && <span className="sr-only"> ({domainName})</span>}
