@@ -41,11 +41,24 @@ Domain colours (`lib/domain-style.ts`): `text-X-300` on dark, `bg-X-500/15` well
 - **Bricolage Grotesque** (`--font-sans`, `font-sans` / `.font-display`): one family with an
   optical-size axis, crisp as body copy and dramatic at display sizes. Display = 700,
   `-0.035em`, `text-wrap: balance`, hero clamp max 6rem.
-- **Instrument Serif italic** (`--font-serif`, `.font-serif-accent`): one or two accent words
-  per major headline, usually volt with `.text-glow`. Contrast on the serif/sans axis.
-- **Martian Mono** (`--font-mono`, `.label-mono`): data labels, counters, and the terminal.
+- **Instrument Serif italic** (`--font-serif`, `.font-serif-accent`): one or two accent words,
+  usually volt with `.text-glow`, on page titles, landing headings and celebration moments
+  only. Settings, empty states and minor headings stay plain sans; an accent in every heading
+  becomes a formula.
+- **Martian Mono** (`--font-mono`, `.label-mono`): real data labels, counters, and the
+  terminal. Not for headings or decorative kickers: card and section headings are
+  sentence-case sans.
 
 No gradient text: `.gradient-text` is solid volt.
+
+## Emphasis
+
+- Emphasis stays scarce: one emphasised element per region. Role colours appear only where
+  they carry their meaning (ember on the streak, gold on XP); neutral icons elsewhere.
+- Badges and pills mark the exception, not the rule: a label that would sit on every card is
+  dropped, and a row of meta pills becomes one plain text line.
+- Numbers: one large figure with a plain spec list beside it, not a row of equal glowing stat
+  tiles. Don't repeat a number that is already on the page.
 
 ## Surfaces and light
 
@@ -71,7 +84,15 @@ shadow, volt focus ring. shadcn/radix primitives, `cva`, `cn()`, `sonner`, `luci
 ## Motion
 
 framer-motion; ease `cubic-bezier(0.22, 1, 0.36, 1)`. Entrances rise out of a blur; rewards
-spring; numbers count up. The hero's product preview lies tilted back and swings upright on
-scroll. View transitions (`next-view-transitions`) morph a domain card into its roadmap header.
+spring; a headline number counts up. The hero copy scales back and fades as you scroll away,
+and SignalBot follows from the bottom-right corner. View transitions (`next-view-transitions`)
+morph a domain card into its roadmap header.
 Every animation goes through `useReducedMotionSafe()`, and reduced motion gets a still or
 crossfade alternative. This is a hard invariant.
+
+## Copy
+
+Plain, specific and confident, written for students learning tech. Use real facts (9 domains,
+582 topics, 5-question quizzes, pass at 3/5, 37 Arsenal tools, 8 badges), never rounded-up
+claims like "580+". No emoji in UI text, toasts or mascot lines, no em-dash constructions, and
+no stock marketing words (unlock, elevate, supercharge, seamless) or empty triads.
