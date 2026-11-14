@@ -13,7 +13,7 @@
  * slide never affects the outer baseline the headline aligns to.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotionSafe as useReducedMotion } from "@/hooks/useReducedMotionSafe";
 
@@ -36,17 +36,66 @@ export function RotatingWord({ words, intervalMs = 2200, className }: RotatingWo
 
   const longest = words.reduce((a, b) => (b.length > a.length ? b : a), "");
 
+  // The slot is as wide as the word on show, not the longest word: a fixed
+  // longest-word slot leaves empty space after short words ("AI"), which
+  // pushes a centred headline visibly left. Widths come from invisible copies
+  // of every word in the same font, re-measured when fonts load or the
+  // viewport (and so the clamp()ed font size) changes.
+  const measureRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [width, setWidth] = useState<number | null>(null);
+  const [animateWidth, setAnimateWidth] = useState(false);
+  const [resizeTick, setResizeTick] = useState(0);
+
+  useLayoutEffect(() => {
+    if (reduce) return;
+    const el = measureRefs.current[i];
+    if (el) setWidth(el.getBoundingClientRect().width);
+  }, [i, reduce, resizeTick]);
+
+  useEffect(() => {
+    if (reduce) return;
+    const bump = () => setResizeTick((n) => n + 1);
+    window.addEventListener("resize", bump);
+    document.fonts?.ready.then(bump);
+    // Only animate width changes after the first measurement, so the slot
+    // doesn't visibly shrink on load.
+    const t = setTimeout(() => setAnimateWidth(true), 50);
+    return () => {
+      window.removeEventListener("resize", bump);
+      clearTimeout(t);
+    };
+  }, [reduce]);
+
   if (reduce) {
     return <span className={className}>{words[0]}</span>;
   }
 
   return (
-    <span className="relative inline-block align-baseline">
-      {/* In-flow reserver: sets width to the longest word and gives the element
-          a real text baseline so the headline line stays aligned. */}
+    <span
+      className="relative inline-block align-baseline"
+      style={{
+        width: width ?? undefined,
+        transition: animateWidth ? "width 0.5s cubic-bezier(0.22, 1, 0.36, 1)" : undefined,
+      }}
+    >
+      {/* In-flow reserver: gives the element a real text baseline so the
+          headline line stays aligned (its width is overridden above). */}
       <span aria-hidden className="invisible whitespace-nowrap">
         {longest}
       </span>
+      {/* Invisible copies used only to measure each word's width. */}
+      {words.map((w, n) => (
+        <span
+          key={w}
+          aria-hidden
+          ref={(el) => {
+            measureRefs.current[n] = el;
+          }}
+          className="pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap"
+        >
+          {w}
+        </span>
+      ))}
       {/* Nested clip layer — absolute so it doesn't disturb the baseline above,
           overflow-hidden so the vertical slide is contained to the line box. */}
       {/* The clip extends past the line box on every side, and the word is
